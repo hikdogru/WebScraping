@@ -24,6 +24,7 @@ namespace WebScraping.WebUI.Controllers
         private List<Book> books;
         private List<string> _amazonBookDetails;
         private List<HtmlNodeCollection> BookDetailsNode = new List<HtmlNodeCollection>();
+        private List<string> BookDetailUrl = new List<string>();
         Dictionary<string, string> _booksLogoUrl = new Dictionary<string, string>()
         {
                 {"Bkm Kitap","http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
@@ -83,7 +84,6 @@ namespace WebScraping.WebUI.Controllers
                 "https://www.fidankitap.com/cok-satanlar-2",
                 "https://www.fidankitap.com/index.php?p=ProductBestsellers&mod_id=146&page=2"
             };
-            var BookDetailUrl = new List<string>();
             HtmlWeb web = new HtmlWeb();
             foreach (var url in websitesUrl)
             {
@@ -113,6 +113,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//div[@class='col col-12 currentPrice']");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//a[@class='col col-12 text-title mt']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//span[@class='imgInner']/img");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//a[contains(@class, 'text-description')]");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add("https://www.bkmkitap.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "BKM Kitap";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
                 }
@@ -123,6 +128,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//b[@class='lastPrice']");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//a[@class='publisher']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//div[@class='image']/a/img/@src");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//a[contains(@class, 'book-name')]");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add("https://www.kidega.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "Kidega";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
                 }
@@ -133,6 +143,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//span[@class='price price_sale convert_cur']");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//div[@class='publisher']/a");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//div[@class='image image_b']/a/img/@src");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//div[contains(@class, 'name')]/a");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add(HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "Kitap16";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
                 }
@@ -143,6 +158,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//span[@class='price']");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//a[@class='who mb10']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//div[@class='content']/a/figure/img/@data-src");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//a[contains(@class, 'item-name')]");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add("https://www.dr.com.tr" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "D&R";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
                 }
@@ -153,6 +173,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//span[@class='price price_sale convert_cur']");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//div[@class='publisher']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//div[@class='image image_b']/a/img/@src");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//div[contains(@class, 'name')]/a");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add("https://www.ilknokta.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "İlk Nokta";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
                 }
@@ -163,6 +188,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//div[@class='product-price']/span/following-sibling::text()");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//div[@class='product-store']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//div[@class='prod-list-item']/div/a/img/@src");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//a[contains(@class, 'product-name')]");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add("https://www.eganba.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "Eganba";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
                 }
@@ -172,6 +202,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//span[@class='price price']");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//a[@class='who2 alternate']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//div[@class='image-area']/img");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//div[contains(@class, 'box-title')]/a");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add("https://www.idefix.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "Idefix";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
                 }
@@ -181,6 +216,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookNameNode = doc.DocumentNode.SelectNodes("//div[@class='name']/a");
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//span[@class='price price_sale convert_cur']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//a[@class='tooltip-ajax']/img");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//div[contains(@class, 'writer')]/a");
+                    foreach (var node in bookDetailNode)
+                    {
+                        BookDetailUrl.Add("https://www.fidankitap.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                    }
                     string websiteName = "Fidan Kitap";
                     BookScraping(bookNameNode, bookPriceNode, null, bookImageNode, websiteName, n);
                 }
@@ -246,7 +286,7 @@ namespace WebScraping.WebUI.Controllers
 
                 var image = WebUtility.HtmlDecode(bookImages[s - 1]);
                 var website = websiteName;
-                var book = new Book() { Id = s, Name = bookName, Price = bookPrice, Publisher = publisher, Website = website, Image = image };
+                var book = new Book() { Id = s, Name = bookName, Price = bookPrice, Publisher = publisher, Website = website, Image = image , BookDetailUrl = BookDetailUrl[s-1]};
 
                 _books.Add(book);
 

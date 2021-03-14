@@ -1,0 +1,53 @@
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "build",
+                "type": "shell",
+                "command": "msbuild",
+                "args": [
+                    "/property:GenerateFullPaths=true",
+                    "/t:build"
+                ],
+                "windows": {
+                    "command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin\\msbuild.exe"
+                },
+                "group": "build",
+                "presentation": {
+                    "reveal": "always"
+                },
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "label": "iisexpress-WebApp",
+                "type": "shell",
+                "windows": {
+                    "command": "C:\\Program Files (x86)\\IIS Express\\iisexpress.exe"
+                },
+                "args": [
+                    "/path:${workspaceRoot}\\WebScraping.WebUI",
+                    "/port:44323"
+                ],
+                "presentation": {
+                    "reveal": "always"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "iisexpress-API",
+                "type": "shell",
+                "windows": {
+                    "command": "C:\\Program Files (x86)\\IIS Express\\iisexpress.exe"
+                },
+                "args": [
+                    "/path:${workspaceRoot}\\Api",
+                    "/port:49243"
+                ],
+                "presentation": {
+                    "reveal": "always"
+                }
+            }
+        ]
+    }

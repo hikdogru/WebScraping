@@ -13,5 +13,6 @@ namespace WebScraping.WebUI.Models
         public string Price { get; set; }
         public string Website { get; set; }
         public string Image { get; set; }
+        public string BookDetailUrl { get; set; }
     }
 }
