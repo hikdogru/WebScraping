@@ -54,8 +54,8 @@ namespace WebScraping.WebUI.Controllers
             int n = 100;
             List<string> websitesUrl = new List<string>()
             {
-                "https://www.amazon.com.tr/gp/bestsellers/books/",
-                "https://www.amazon.com.tr/gp/bestsellers/books/ref=zg_bs_pg_2?ie=UTF8&pg=2",
+                //"https://www.amazon.com.tr/gp/bestsellers/books/",
+                //"https://www.amazon.com.tr/gp/bestsellers/books/ref=zg_bs_pg_2?ie=UTF8&pg=2",
 
                 "https://www.bkmkitap.com/kitap/cok-satan-kitaplar/",
                 "https://www.bkmkitap.com/kitap/cok-satan-kitaplar?pg=2/",
@@ -113,13 +113,14 @@ namespace WebScraping.WebUI.Controllers
                     var bookPriceNode = doc.DocumentNode.SelectNodes("//div[@class='col col-12 currentPrice']");
                     var bookPublisherNode = doc.DocumentNode.SelectNodes("//a[@class='col col-12 text-title mt']");
                     var bookImageNode = doc.DocumentNode.SelectNodes("//span[@class='imgInner']/img");
-                    var bookDetailNode = doc.DocumentNode.SelectNodes("//a[contains(@class, 'text-description')]");
+                    var bookDetailNode = doc.DocumentNode.SelectNodes("//a[@class='fl col-12 text-description detailLink']");
                     foreach (var node in bookDetailNode)
                     {
                         BookDetailUrl.Add("https://www.bkmkitap.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
                     }
                     string websiteName = "BKM Kitap";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
 
                 else if (url.Contains("kidega"))
@@ -131,10 +132,11 @@ namespace WebScraping.WebUI.Controllers
                     var bookDetailNode = doc.DocumentNode.SelectNodes("//a[contains(@class, 'book-name')]");
                     foreach (var node in bookDetailNode)
                     {
-                        BookDetailUrl.Add("https://www.kidega.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                        BookDetailUrl.Add(HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
                     }
                     string websiteName = "Kidega";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
 
                 else if (url.Contains("kitap16"))
@@ -150,6 +152,7 @@ namespace WebScraping.WebUI.Controllers
                     }
                     string websiteName = "Kitap16";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
 
                 else if (url.Contains("dr"))
@@ -165,6 +168,7 @@ namespace WebScraping.WebUI.Controllers
                     }
                     string websiteName = "D&R";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
 
                 else if (url.Contains("ilknokta"))
@@ -180,6 +184,7 @@ namespace WebScraping.WebUI.Controllers
                     }
                     string websiteName = "İlk Nokta";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
 
                 else if (url.Contains("eganba"))
@@ -195,6 +200,7 @@ namespace WebScraping.WebUI.Controllers
                     }
                     string websiteName = "Eganba";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
                 else if (url.Contains("idefix"))
                 {
@@ -209,6 +215,7 @@ namespace WebScraping.WebUI.Controllers
                     }
                     string websiteName = "Idefix";
                     BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
 
                 else if (url.Contains("fidan"))
@@ -223,6 +230,7 @@ namespace WebScraping.WebUI.Controllers
                     }
                     string websiteName = "Fidan Kitap";
                     BookScraping(bookNameNode, bookPriceNode, null, bookImageNode, websiteName, n);
+                    BookDetailUrl.Clear();
                 }
             }
 
@@ -284,9 +292,10 @@ namespace WebScraping.WebUI.Controllers
                     publisher = WebUtility.HtmlDecode(bookPublishers[s - 1]);
                 }
 
+
                 var image = WebUtility.HtmlDecode(bookImages[s - 1]);
                 var website = websiteName;
-                var book = new Book() { Id = s, Name = bookName, Price = bookPrice, Publisher = publisher, Website = website, Image = image , BookDetailUrl = BookDetailUrl[s-1]};
+                var book = new Book() { Id = s, Name = bookName, Price = bookPrice, Publisher = publisher, Website = website, Image = image, BookDetailUrl = BookDetailUrl[s - 1] };
 
                 _books.Add(book);
 

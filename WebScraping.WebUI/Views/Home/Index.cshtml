@@ -161,8 +161,54 @@
                             </div>
                         </div>*@
 
-                    
-                        <div class="row center" style="width: 80%;">
+
+                    <div class="row center" style="width: 80%; background-color: antiquewhite;">
+                        <div class="col-md-3">
+                            <span class="site_logo">
+                                <img src="@logo.Value" class="logo">
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="urun_adi">
+                                <h5>  @(book.Publisher) </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <h3>
+                                <span class="badge badge-pill badge-secondary ">
+                                    @Html.Raw(book.Price.Replace("TL", " <i class='fa fa-try' aria-hidden='true'></i>"))
+                                </span>
+                            </h3>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">Siteye git</a>
+                        </div>
+                    </div>
+
+                }
+            }
+
+        }
+    </div>
+
+}
+
+else if (viewDataBook != null && viewDataOtherPublishers == null)
+{
+    <div class="image">
+        <img src="@viewDataBook[0].Image" class="card-img-top img" alt="Item Image">
+        <h3 class="text-center text-primary">@viewDataBook[0].Name</h3>
+    </div>
+    <div class="container">
+        <div class="row">
+            @foreach (var book in viewDataBook)
+            {
+
+                foreach (var logo in viewDataBooksLogo)
+                {
+                    if (logo.Key.ToLower().Contains(book.Website.ToLower()))
+                    {
+                        <div class="row center" style="width: 80%; background-color: antiquewhite;">
                             <div class="col-md-3">
                                 <span class="site_logo">
                                     <img src="@logo.Value" class="logo">
@@ -184,50 +230,9 @@
                                 <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">Siteye git</a>
                             </div>
                         </div>
-                    
-                }
-            }
-
-        }
-    </div>
-
-}
-
-else if (viewDataBook != null && viewDataOtherPublishers == null)
-{
-    <div class="image">
-        <img src="@viewDataBook[0].Image" class="card-img-top img" alt="Item Image">
-        <h3 class="text-center">@viewDataBook[0].Publisher</h3>
-    </div>
-    <div class="container">
-        <div class="row">
-            @foreach (var book in viewDataBook)
-            {
-                <div style="text-align: center" class="card-columns d-flex justify-content-center image col-md-3 mt-1" id="bookCard">
-                    @foreach (var logo in viewDataBooksLogo)
-                    {
-                        if (logo.Key.ToLower().Contains(book.Website.ToLower()))
-                        {
-                            <div class="card" style="width: 110px; display: inline-block;background-color: antiquewhite;">
-                                <div class="card-block" style="display: inline-block;">
-
-                                    <img src="@logo.Value" class="logo" alt="Book Logo" />
-                                    <div class="card-text">
-                                        <h4> @book.Website</h4>
-                                    </div>
-
-                                    <div class="card-text">
-                                        <h3>
-                                            <span class="badge badge-pill badge-secondary">
-                                                @Html.Raw(book.Price.Replace("TL", " <i class='fa fa-try' aria-hidden='true'></i>"))
-                                            </span>
-                                        </h3>
-                                    </div>
-                                </div>
-                            </div>
-                        }
                     }
-                </div>
+                }
+
             }
         </div>
     </div>
