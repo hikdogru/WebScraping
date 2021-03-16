@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace WebScraping.Entity
 {
-    public class Class1
+    public class Website
     {
+        public string Name { get; set; }
+        public string LogoUrl { get; set; }
+
     }
 }

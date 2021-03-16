@@ -1,4 +1,4 @@
-﻿@using WebScraping.WebUI.Models
+﻿@using WebScraping.Entity
 @model List<Book>
 @{
     ViewBag.Title = "Home Page";
@@ -58,11 +58,11 @@
 
     <div class="col-md-12">
         <div id="website">
-            <form action="~/Home/GetWebsite" method="POST">
+            <form action="~/Home/GetWebsite/@Model[0].WebsiteName.Replace(" ", "-")-CokSatanlar" method="POST">
                 <input type="hidden" id="hiddenWebsite" name="website">
                 <label for="selectWebsite">Website</label>
                 <select class="selectpicker" data-live-search="true" data-style="btn-primary" id="selectWebsite" data-width="auto" multiple>
-                    @foreach (var item in Model.Select(x => x.Website).Distinct())
+                    @foreach (var item in Model.Select(x => x.WebsiteName).Distinct())
                     {
                         <option value="@item" name="@item">@item</option>
                     }
@@ -142,7 +142,7 @@
         {
             foreach (var logo in viewDataBooksLogo)
             {
-                if (logo.Key.ToLower().Contains(book.Website.ToLower()))
+                if (logo.Key.ToLower().Contains(book.WebsiteName.ToLower()))
                 {
                     <div class="row center" style="width: 80%; background-color: antiquewhite;">
                         <div class="col-md-3">
@@ -152,7 +152,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="urun_adi">
-                                <h5>  @(book.Publisher) </h5>
+                                <i class="fa fa-book" aria-hidden="true"></i> <h5>  @(book.Publisher) </h5>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -163,7 +163,9 @@
                             </h3>
                         </div>
                         <div class="col-md-2">
-                            <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">Siteye git</a>
+                            <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Siteye git
+                            </a>
                         </div>
                     </div>
 
@@ -188,7 +190,7 @@ else if (viewDataBook != null && viewDataOtherPublishers == null)
 
                 foreach (var logo in viewDataBooksLogo)
                 {
-                    if (logo.Key.ToLower().Contains(book.Website.ToLower()))
+                    if (logo.Key.ToLower().Contains(book.WebsiteName.ToLower()))
                     {
                         <div class="row center" style="width: 80%; background-color: antiquewhite;">
                             <div class="col-md-3">
@@ -198,7 +200,7 @@ else if (viewDataBook != null && viewDataOtherPublishers == null)
                             </div>
                             <div class="col-md-4">
                                 <div class="urun_adi">
-                                    <h5>  @(book.Publisher) </h5>
+                                    <h5> <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher) </h5>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -209,7 +211,9 @@ else if (viewDataBook != null && viewDataOtherPublishers == null)
                                 </h3>
                             </div>
                             <div class="col-md-2">
-                                <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">Siteye git</a>
+                                <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                    <i class="fa fa-arrow-circle-right fa-lg" aria-hidden="true"></i> Siteye git
+                                </a>
                             </div>
                         </div>
                     }
@@ -220,32 +224,7 @@ else if (viewDataBook != null && viewDataOtherPublishers == null)
     </div>
 
 }
-@* Dropdown ile seçilince karşımıza çıkan ürünler*@
-@if (viewDataWebsiteBooks != null)
-{
-    <p class="text-center h2">Best Seller</p>
-    <div class="container">
-        <div class="row">
-            @foreach (var book in viewDataWebsiteBooks)
-            {
-                <div class="col-md-2 d-flex align-items-stretch mb-1">
-                    <div class="card border-0" style="width: 10rem;">
-                        <div class="image">
-                            <img src="@book.Image" class="card-img-top img" alt="..." id="img">
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">@(book.Name.Length>20?book.Name.Substring(0,20)+"...":book.Name)</h5>
-                            <p class="card-text">@book.Price</p>
-                            <p class="card-text">@book.Website</p>
-                            <p class="card-text">@book.Publisher</p>
-                        </div>
-                    </div>
-                </div>
-            }
 
-        </div>
-    </div>
-}
 
 
 

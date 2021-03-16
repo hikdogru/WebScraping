@@ -22,3 +22,45 @@ select,
 textarea {
     max-width: 280px;
 }
+
+input {
+    max-width: 400px !important;
+}
+
+.image {
+    display: block;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img.img {
+    max-width: 150px;
+    max-height: 225px;
+    position: relative;
+    vertical-align: middle;
+    left: 50%;
+    transform: translate(-50%);
+    height: 200px;
+    width: 125px;
+    object-fit: cover;
+}
+
+img.logo {
+    max-width: 150px;
+    max-height: 225px;
+    left: 50%;
+    width: 100px;
+    object-fit: cover;
+}
+
+div#bookCard .card, div#bookOtherPublisherCard .card {
+    box-shadow: 5px 10px 12px 12px rgb(120 43 45 / 10%), 0 6px 20px 0 rgb(43 45 56 / 10%);
+}
+
+.center {
+    margin: auto;
+    width: 100%;
+    border: 0.1px solid antiquewhite;
+    padding: 10px;
+}

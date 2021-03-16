@@ -1,18 +1,46 @@
-﻿@using WebScraping.WebUI.Models
-
-@{
-    Layout = null;
-}
+﻿@using WebScraping.Entity
+@model List<Book>
 
 <!DOCTYPE html>
 
 <html>
 <head>
     <title>title</title>
+    @section styles
+    {
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    }
 </head>
 <body>
-<div>
-   
-</div>
+    <div>
+        <div class="row">
+
+            @* Dropdown ile seçilince karşımıza çıkan ürünler*@
+            <div class="container">
+                <p class="text-center h2">@Model[0].WebsiteName Çok Satanlar</p>
+                <div class="row">
+                    @foreach (var book in Model)
+                    {
+                        <div class="col-md-2 d-flex align-items-stretch mb-1">
+                            <div class="card border-0" style="width: 10rem;">
+                                <div class="image">
+                                    <img src="@book.Image" class="card-img-top img" alt="..." id="img">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">@(book.Name.Length > 20 ? book.Name.Substring(0, 20) + "..." : book.Name)</h5>
+                                    <p class="card-text">@book.Price</p>
+                                    <p class="card-text">@book.Website</p>
+                                    <p class="card-text">@book.Publisher</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </body>
 </html>
