@@ -23,10 +23,11 @@ namespace WebScraping.WebUI.Controllers
     public class HomeController : Controller
     {
         private static List<Book> _books = new List<Book>();
-        private List<Book> books;
+        private static List<Book> books;
         private List<string> _amazonBookDetails;
         private List<HtmlNodeCollection> BookDetailsNode = new List<HtmlNodeCollection>();
         private List<string> BookDetailUrl = new List<string>();
+        int pageSize = 20;
         Dictionary<string, string> _booksLogoUrl = new Dictionary<string, string>()
         {
                 {"Bkm Kitap","http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
@@ -47,6 +48,7 @@ namespace WebScraping.WebUI.Controllers
             {
                 Book();
             }
+
 
             return View(_books);
         }
@@ -124,24 +126,8 @@ namespace WebScraping.WebUI.Controllers
                         BookDetailUrl.Add("https://www.bkmkitap.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
                     }
                     BookScraping(bookNode, "https://www.bkmkitap.com");
-                    BookDetailUrl.Clear();
                 }
 
-                //else if (url.Contains("bkm"))
-                //{
-                //    var bookNameNode = doc.DocumentNode.SelectNodes("//a[@class='fl col-12 text-description detailLink']");
-                //    var bookPriceNode = doc.DocumentNode.SelectNodes("//div[@class='col col-12 currentPrice']");
-                //    var bookPublisherNode = doc.DocumentNode.SelectNodes("//a[@class='col col-12 text-title mt']");
-                //    var bookImageNode = doc.DocumentNode.SelectNodes("//span[@class='imgInner']/img");
-                //    var bookDetailNode = doc.DocumentNode.SelectNodes("//a[@class='fl col-12 text-description detailLink']");
-                //    foreach (var node in bookDetailNode)
-                //    {
-                //        BookDetailUrl.Add("https://www.bkmkitap.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
-                //    }
-                //    string websiteName = "BKM Kitap";
-                //    BookScraping(bookNameNode, bookPriceNode, bookPublisherNode, bookImageNode, websiteName, n);
-                //    BookDetailUrl.Clear();
-                //}
 
                 //else if (url.Contains("kidega"))
                 //{
@@ -361,23 +347,20 @@ namespace WebScraping.WebUI.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetWebsite(string website)
+        public ActionResult GetWebsite(string website, int page = 1)
         {
             books = new List<Book>();
             List<string> websites = website.Split(',').ToList();
             IEnumerable<Book> distinct;
             foreach (var i in websites)
             {
-                if (i == "Amazon")
-                {
-                    distinct = _books.Where(b => b.WebsiteName == i).GroupBy(b => b.Name).Select(b => b.First());
-                }
+                //if (i == "Amazon")
+                //{
+                //    distinct = _books.Where(b => b.WebsiteName == i).GroupBy(b => b.Name).Select(b => b.First());
+                //}
 
-                else
-                {
-                    distinct = _books.Where(b => b.WebsiteName == i).GroupBy(b => b.Image).Select(b => b.First());
-                }
 
+                distinct = _books.Where(b => b.WebsiteName == i).GroupBy(b => b.Image).Select(b => b.First());
                 foreach (var book in distinct)
                 {
                     books.Add(book);
@@ -386,8 +369,29 @@ namespace WebScraping.WebUI.Controllers
 
             TempData["WebsiteBooks"] = books;
             TempData["BooksLogoUrl"] = _booksLogoUrl;
-            return View(books);
+            var booksView = new ItemViewModel()
+            {
+                BookPerPage = 24,
+                Books = books,
+                CurrentPage = page
+            };
+
+            TempData["BooksView"] = booksView;
+            return View(booksView);
         }
+
+        public ActionResult GetWebsite(int page)
+        {
+            
+            var booksView = new ItemViewModel()
+            {
+                BookPerPage = 24,
+                Books = books,
+                CurrentPage = page
+            };
+            return View(booksView);
+        }
+
 
         [HttpPost]
         public ActionResult Search(string query)

@@ -58,7 +58,8 @@
 
     <div class="col-md-12">
         <div id="website">
-            <form action="~/Home/GetWebsite/@Model[0].WebsiteName.Replace(" ", "-")-CokSatanlar" method="POST">
+            @* /@Model[0].WebsiteName.Replace(" ", "-")-CokSatanlar*@
+            <form action="~/Home/GetWebsite" method="POST">
                 <input type="hidden" id="hiddenWebsite" name="website">
                 <label for="selectWebsite">Website</label>
                 <select class="selectpicker" data-live-search="true" data-style="btn-primary" id="selectWebsite" data-width="auto" multiple>
