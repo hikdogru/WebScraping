@@ -18,13 +18,123 @@
                 margin-left: auto;
                 margin-right: auto;
             }
+            .sidenav {
+                height: 100%;
+                width: 300px;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                background-color: antiquewhite;
+                overflow-x: hidden;
+                padding-top: 20px;
+            }
         </style>
     }
 
 </head>
 <body>
-
+    
     <div class="row">
+        <div class="col-md-4 sidenav">
+            <div class="card ">
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside1"
+                           data-abc="true" aria-expanded="false" class="collapsed">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title">Website </h6>
+                        </a>
+                    </header>
+                    <div class="filter-content collapse" id="collapse_aside1" style="">
+                        <div class="card-body">
+                            <a href="#">@Model.Books.ToList()[0].WebsiteName</a>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
+                           data-abc="true" aria-expanded="false" class="collapsed">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title">Fiyat </h6>
+                        </a>
+                    </header>
+                    <div class="filter-content collapse" id="collapse_aside2" style="">
+                        <div class="card-body">
+                            <input type="range" class="custom-range" min="0" max="100" name="">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Min</label> <input class="form-control"
+                                                              placeholder="$0" type="number">
+                                </div>
+                                <div class="form-group text-right col-md-6">
+                                    <label>Max</label> <input class="form-control"
+                                                              placeholder="$500" type="number">
+                                </div>
+                            </div> <a href="#" class="highlight-button btn btn-medium button xs-margin-bottom-five"
+                                      data-abc="true">Apply Now</a>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
+                           data-abc="true" aria-expanded="false" class="collapsed">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title">Size </h6>
+                        </a>
+                    </header>
+                    <div class="filter-content collapse" id="collapse_aside3" style="">
+                        <div class="card-body">
+                            <label class="checkbox-btn">
+                                <input type="checkbox"> <span class="btn btn-light"> XS </span>
+                            </label> <label class="checkbox-btn">
+                                <input type="checkbox"> <span class="btn btn-light"> SM </span>
+                            </label> <label class="checkbox-btn">
+                                <input type="checkbox"> <span class="btn btn-light"> LG </span>
+                            </label> <label class="checkbox-btn">
+                                <input type="checkbox"> <span class="btn btn-light">
+                                    XXL
+                                </span>
+                            </label> <label class="checkbox-btn">
+                                <input type="checkbox"> <span class="btn btn-light"> XXXL </span>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
+                           data-abc="true" class="collapsed" aria-expanded="false">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title">Rating </h6>
+                        </a>
+                    </header>
+                    <div class="filter-content collapse" id="collapse_aside4" style="">
+                        <div class="card-body">
+                            <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Better </div>
+                            </label> <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Best </div>
+                            </label> <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Good</div>
+                            </label> <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Not good</div>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
         @* Dropdown ile seçilince karşımıza çıkan ürünler*@
         <div class="container">
             @if (Model.Books.Count() > 0)
