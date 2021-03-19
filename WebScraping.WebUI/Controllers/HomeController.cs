@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Xml.XPath;
 using HtmlAgilityPack;
 using Microsoft.Ajax.Utilities;
@@ -345,10 +347,36 @@ namespace WebScraping.WebUI.Controllers
             var node = doc.DocumentNode.SelectNodes(xpath);
             return node;
         }
+        public ActionResult GetWebsite(int? page=1, int minPrice=0, int maxPrice=0)
+        {
+            
+            if (minPrice != 0 && maxPrice != 0)
+            {
+                ViewBag.minPrice = minPrice;
+                ViewBag.maxPrice = maxPrice;
+                var filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+                var itemViewModel = new ItemViewModel()
+                {
+                    BookPerPage = 24,
+                    Books = filteredItems,
+                    CurrentPage = (int)page
+                };
+                return View(itemViewModel);
+            }
+
+            var booksView = new ItemViewModel()
+            {
+                BookPerPage = 24,
+                Books = books,
+                CurrentPage = (int)page
+            };
+            return View(booksView);
+        }
 
         [HttpPost]
         public ActionResult GetWebsite(string website, int page = 1)
         {
+            
             books = new List<Book>();
             List<string> websites = website.Split(',').ToList();
             IEnumerable<Book> distinct;
@@ -380,18 +408,27 @@ namespace WebScraping.WebUI.Controllers
             return View(booksView);
         }
 
-        public ActionResult GetWebsite(int page)
+        [HttpPost]
+        public ActionResult GetFilteredItems(int minPrice, int maxPrice)
         {
-            
-            var booksView = new ItemViewModel()
+            for (int i = 0; i < books.Count; i++)
+            {
+                books[i].Price = books[i].Price.Replace("TL", "");
+                books[i].Price = books[i].Price.Replace(",", ".");
+            }
+
+            var filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+
+            var itemViewModel = new ItemViewModel()
             {
                 BookPerPage = 24,
-                Books = books,
-                CurrentPage = page
+                Books = filteredItems,
+                CurrentPage = 1
             };
-            return View(booksView);
-        }
 
+            TempData["ItemViewModel"] = itemViewModel;
+            return RedirectToAction("GetWebsite", "Home" , new RouteValueDictionary(new {minPrice =minPrice, maxPrice = maxPrice}));
+        }
 
         [HttpPost]
         public ActionResult Search(string query)

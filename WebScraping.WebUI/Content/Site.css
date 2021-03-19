@@ -64,3 +64,17 @@ div#bookCard .card, div#bookOtherPublisherCard .card {
     border: 0.1px solid antiquewhite;
     padding: 10px;
 }
+
+.image {
+    padding: 10px;
+    transition: transform .2s;
+    width: 150px;
+    height: 225px;
+    margin: 0 auto;
+}
+
+    .image:hover {
+        -ms-transform: scale(1.5); /* IE 9 */
+        -webkit-transform: scale(1.5); /* Safari 3-8 */
+        transform: scale(1.5);
+    }
