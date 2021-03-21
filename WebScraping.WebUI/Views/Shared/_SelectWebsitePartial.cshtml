@@ -1,0 +1,17 @@
+﻿@using WebScraping.Entity
+@model List<Book>
+
+<div id="website">
+    <form action="~/Home/GetWebsite/@Model[0].WebsiteName.Replace(" ", "-")-CokSatanlar" method="POST">
+        <input type="hidden" id="hiddenWebsite" name="website">
+        <label for="selectWebsite">Website</label>
+        <select class="selectpicker" data-live-search="true" data-style="btn-primary" id="selectWebsite" data-width="auto" multiple>
+            @foreach (var item in Model.Select(x => x.WebsiteName).Distinct())
+            {
+                <option value="@item" name="@item">@item</option>
+            }
+
+        </select>
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+</div>

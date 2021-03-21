@@ -57,23 +57,11 @@
 <div class="row">
 
     <div class="col-md-12">
-        <div id="website">
-            @* /@Model[0].WebsiteName.Replace(" ", "-")-CokSatanlar*@
-            <form action="~/Home/GetWebsite" method="POST">
-                <input type="hidden" id="hiddenWebsite" name="website">
-                <label for="selectWebsite">Website</label>
-                <select class="selectpicker" data-live-search="true" data-style="btn-primary" id="selectWebsite" data-width="auto" multiple>
-                    @foreach (var item in Model.Select(x => x.WebsiteName).Distinct())
-                    {
-                        <option value="@item" name="@item">@item</option>
-                    }
-
-                </select>
-                <input type="submit" value="Submit" class="btn btn-primary">
-            </form>
-        </div>
-
+        @* Select website from dropdown   *@
+        @Html.Partial("_SelectWebsitePartial", Model)
         <hr>
+        
+        @* Search area *@
         <form action="/Home/Search" method="POST">
             <div class="input-group">
                 <input type="text" class="form-control" name="query" id="textSearch" placeholder="Search" required>

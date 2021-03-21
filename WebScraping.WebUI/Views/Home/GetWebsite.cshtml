@@ -1,4 +1,5 @@
-﻿@using WebScraping.WebUI.ViewModel
+﻿@using WebScraping.Entity
+@using WebScraping.WebUI.ViewModel
 @model ItemViewModel
 
 <!DOCTYPE html>
@@ -21,7 +22,7 @@
 
             .sidenav {
                 height: 100%;
-                width: 300px;
+                width: 320px;
                 position: fixed;
                 z-index: 1;
                 top: 0;
@@ -29,6 +30,10 @@
                 background-color: antiquewhite;
                 overflow-x: hidden;
                 padding-top: 20px;
+            }
+
+            input[type="range"] {
+                width: 55%;
             }
         </style>
     }
@@ -49,7 +54,7 @@
                     </header>
                     <div class="filter-content collapse" id="collapse_aside1" style="">
                         <div class="card-body">
-                            <a href="#">@Model.Books.ToList()[0].WebsiteName</a>
+                            <a href="#">@(Model.Books !=null ? Model.Books.ToList()[0].WebsiteName:"")</a>
                         </div>
                     </div>
                 </article>
@@ -62,29 +67,37 @@
                                 <h6 class="title d-inline">Fiyat </h6>
                             </a>
                         </header>
+                        @{
+                            for (int i = 0; i < Model.Books.ToList().Count; i++)
+                            {
+                                Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace("TL", "");
+                                Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace(",", ".");
+                            }
+                            var maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
+                            var minPrice = Model.Books.Min(b => double.Parse(b.Price));
+                            var publishers = ViewBag.Publishers;
+                            int n = 1;
+                        }
                         <div class="filter-content collapse" id="collapse_aside2" style="">
                             <div class="card-body">
-                                <input type="range" class="custom-range" min="0" max="100" name="range">
-                                @{
-                                    for (int i = 0; i < Model.Books.ToList().Count; i++)
-                                    {
-                                        Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace("TL", "");
-                                        Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace(",", ".");
-                                    }
-                                    var maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
-                                }
-                                @maxPrice
+                                @minPrice <i class='fa fa-try' aria-hidden='true'></i>
+                                <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="range" id="rangeSlider" oninput="sliderChange(this.value)">
+                                @maxPrice <i class='fa fa-try' aria-hidden='true'></i>
+                                <hr>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label>Min</label> <input class="form-control"
-                                                                  placeholder="$0" type="number" name="minPrice" min="0">
+                                        <label>Min</label>
+                                        <input class="form-control"
+                                               placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPrice">
                                     </div>
                                     <div class="form-group text-right col-md-6">
-                                        <label>Max</label> <input class="form-control"
-                                                                  placeholder="$500" type="number" name="maxPrice">
+                                        <label>Max</label>
+                                        <input class="form-control"
+                                               placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPrice">
                                     </div>
-                                </div> <button type="submit" class="highlight-button btn btn-medium button xs-margin-bottom-five"
-                                               data-abc="true">
+                                </div>
+                                <button type="submit" class="highlight-button btn btn-medium button xs-margin-bottom-five"
+                                        data-abc="true">
                                     Uygula
                                 </button>
                             </div>
@@ -96,26 +109,26 @@
                         <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
                            data-abc="true" aria-expanded="false" class="collapsed">
                             <i class="icon-control fa fa-chevron-down"></i>
-                            <h6 class="title d-inline">Size </h6>
+                            <h6 class="title d-inline">Yayınevleri </h6>
                         </a>
                     </header>
-                    <div class="filter-content collapse" id="collapse_aside3" style="">
-                        <div class="card-body">
-                            <label class="checkbox-btn">
-                                <input type="checkbox"> <span class="btn btn-light"> XS </span>
-                            </label> <label class="checkbox-btn">
-                                <input type="checkbox"> <span class="btn btn-light"> SM </span>
-                            </label> <label class="checkbox-btn">
-                                <input type="checkbox"> <span class="btn btn-light"> LG </span>
-                            </label> <label class="checkbox-btn">
-                                <input type="checkbox"> <span class="btn btn-light">
-                                    XXL
-                                </span>
-                            </label> <label class="checkbox-btn">
-                                <input type="checkbox"> <span class="btn btn-light"> XXXL </span>
-                            </label>
+                    <form action="~/Home/GetBooksByPublisher" method="POST">
+                        <div class="filter-content collapse" id="collapse_aside3" style="">
+                            <div class="card-body" id="divChkPublisher">
+
+                                @foreach (var publisher in publishers)
+                                {
+                                    <input type="text" name="publisher" id="publisher" value="@publisher"/>
+
+                                    <label class="checkbox-btn">
+                                        <input type="checkbox" name="chkPublisher" id="chkPublisher" onclick="if (this.checked) { this.form.submit() }"> <span class="btn btn-light"> @publisher </span>
+                                    </label>
+                                    n++;
+                                }
+
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </article>
                 <article class="filter-group">
                     <header class="card-header">
@@ -151,38 +164,53 @@
         </div>
         @{
             var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
-            var currentRoute = Request.Url.Query.Replace(" ", "");
+            var booksByPublisher = (IEnumerable<Book>)TempData["BooksByPublisher"];
         }
         @* Dropdown ile seçilince karşımıza çıkan ürünler*@
-    <div class="container">
-        @if (Model.Books.Count() > 0)
-        {
-            <p class="text-center h2">@Model.Books.ToList()[0].WebsiteName Çok Satanlar</p>
-            <hr>
-            <div class="row">
-                @Html.Partial("_BookPartial", itemViewModel == null ? Model.PaginatedBooks() : itemViewModel.PaginatedBooks())
-            </div>
+        <div class="container">
+            @if (Model.Books.Count() > 0)
+            {
+                <p class="text-center h2">@Model.Books.ToList()[0].WebsiteName Çok Satanlar</p>
+                <hr>
+                <div class="row">
+                    @if (booksByPublisher != null)
+                    {
+                        @Html.Partial("_BookPartial", booksByPublisher)
+                    }
+                    else
+                    {
+                        @Html.Partial("_BookPartial", itemViewModel == null ? Model.PaginatedBooks() : itemViewModel.PaginatedBooks())
+                    }
+                </div>
 
-            <ul class="pagination">
-                @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
-                {
-                    <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-                        @if (itemViewModel != null)
-                        {
-                            <a class="page-link" href="@Url.Action("GetWebsite", new {ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
-                        }
-                        else
-                        {
-                            <a class="page-link" href="@Url.Action("GetWebsite", new {page = i})">@i</a>
+                <ul class="pagination">
+                    @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
+                    {
+                        <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
 
-                        }
-                    </li>
-                }
-            </ul>
-        }
+                            <a class="page-link" href="@Url.Action("GetWebsite", new {ViewBag.Publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
+
+                        </li>
+                    }
+                </ul>
+            }
 
 
+        </div>
     </div>
-    </div>
+    @section scripts
+{
+        <script>
+            function sliderChange(val) {
+                document.getElementById('minPrice').value = parseInt(@minPrice);
+                document.getElementById('maxPrice').value = parseInt(val);
+            }
+            document.getElementById('rangeSlider').value = 2;
+        </script>
+
+    }
+
+
+
 </body>
 </html>
