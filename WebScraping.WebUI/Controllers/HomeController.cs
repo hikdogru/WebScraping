@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Xml.XPath;
 using HtmlAgilityPack;
 using Microsoft.Ajax.Utilities;
 using WebScraping.Entity;
@@ -26,6 +19,7 @@ namespace WebScraping.WebUI.Controllers
     {
         private static List<Book> _books = new List<Book>();
         private static List<Book> books;
+        private static List<ItemCheckedModel> _itemCheckedModels = new List<ItemCheckedModel>();
         private List<string> _amazonBookDetails;
         private List<HtmlNodeCollection> BookDetailsNode = new List<HtmlNodeCollection>();
         private List<string> BookDetailUrl = new List<string>();
@@ -351,7 +345,7 @@ namespace WebScraping.WebUI.Controllers
         {
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
-            itemViewModel.CurrentPage = (int) page;
+            itemViewModel.CurrentPage = (int)page;
             if (minPrice != 0 && maxPrice != 0)
             {
                 ViewBag.minPrice = minPrice;
@@ -370,7 +364,23 @@ namespace WebScraping.WebUI.Controllers
             {
                 itemViewModel.Books = books;
             }
-            ViewBag.Publishers = books.GroupBy(b => b.Publisher).Select(b => b.Key);
+
+            var publishers = books.GroupBy(b => b.Publisher).Select(b => b.Key);
+
+            int itemId = 1;
+            foreach (var publisherName in publishers)
+            {
+                var itemCheckedModel = new ItemCheckedModel();
+                itemCheckedModel.IsCheck = false;
+                itemCheckedModel.ItemName = publisherName;
+                itemCheckedModel.ItemId = itemId;
+                _itemCheckedModels.Add(itemCheckedModel);
+                itemId++;
+            }
+
+            // checkbox publishers value
+            TempData["Publishers"] = _itemCheckedModels;
+
             return View(itemViewModel);
         }
 
@@ -478,12 +488,30 @@ namespace WebScraping.WebUI.Controllers
             return RedirectToAction("Index");
         }
         [HttpPost]
-        public ActionResult GetBooksByPublisher(string publisher)
+        public ActionResult GetBooksByPublisher(string publisher, int? publisherId)
         {
             if (publisher != null)
             {
-                var booksByPublisher = books.Where(b => b.Publisher == publisher);
+
+                var entity = _itemCheckedModels.Where(m => m.ItemId == publisherId && m.ItemName == publisher).FirstOrDefault();
+                if (entity != null)
+                {
+                    if (entity.IsCheck)
+                    {
+                        entity.IsCheck = false;
+                    }
+                    else
+                    {
+                        entity.IsCheck = true;
+                    }
+                }
+
+                var isCheckPublishers =
+                    _itemCheckedModels.Where(m => m.IsCheck).GroupBy(m => m.ItemName).Select(m => m.Key);
+                var booksByPublisher = books.Where(b => isCheckPublishers.Any(m => m == b.Publisher));
+
                 TempData["BooksByPublisher"] = booksByPublisher;
+                TempData["Publisher"] = _itemCheckedModels;
             }
             return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { publisher = publisher }));
         }

@@ -1,4 +1,6 @@
-﻿@using WebScraping.Entity
+﻿@using System.Collections
+@using WebScraping.Entity
+@using WebScraping.WebUI.Models
 @using WebScraping.WebUI.ViewModel
 @model ItemViewModel
 
@@ -75,8 +77,12 @@
                             }
                             var maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
                             var minPrice = Model.Books.Min(b => double.Parse(b.Price));
-                            var publishers = ViewBag.Publishers;
                             int n = 1;
+                            List<ItemCheckedModel> p = null;
+                            if (TempData["Publisher"] != null)
+                            {
+                                p = (List<ItemCheckedModel>)TempData["Publisher"];
+                            }
                         }
                         <div class="filter-content collapse" id="collapse_aside2" style="">
                             <div class="card-body">
@@ -112,23 +118,23 @@
                             <h6 class="title d-inline">Yayınevleri </h6>
                         </a>
                     </header>
-                    <form action="~/Home/GetBooksByPublisher" method="POST">
-                        <div class="filter-content collapse" id="collapse_aside3" style="">
-                            <div class="card-body" id="divChkPublisher">
+                    <div class="filter-content collapse" id="collapse_aside3" style="">
+                        <div class="card-body" id="divChkPublisher">
 
-                                @foreach (var publisher in publishers)
-                                {
-                                    <input type="text" name="publisher" id="publisher" value="@publisher"/>
-
-                                    <label class="checkbox-btn">
-                                        <input type="checkbox" name="chkPublisher" id="chkPublisher" onclick="if (this.checked) { this.form.submit() }"> <span class="btn btn-light"> @publisher </span>
-                                    </label>
-                                    n++;
-                                }
-
-                            </div>
+                            @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
+                            {
+                            <form action="~/Home/GetBooksByPublisher" method="POST">
+                                <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                                <input type="hidden" name="publisherId" value="@publisher.ItemId" />
+                                <label class="checkbox-btn">
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
+                                </label>
+                            </form>
+                            }
                         </div>
-                    </form>
+
+                    </div>
+
                 </article>
                 <article class="filter-group">
                     <header class="card-header">
@@ -199,7 +205,8 @@
         </div>
     </div>
     @section scripts
-{
+    {
+
         <script>
             function sliderChange(val) {
                 document.getElementById('minPrice').value = parseInt(@minPrice);
@@ -208,7 +215,10 @@
             document.getElementById('rangeSlider').value = 2;
         </script>
 
+
     }
+
+
 
 
 
