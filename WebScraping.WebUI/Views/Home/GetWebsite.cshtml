@@ -78,11 +78,6 @@
                             var maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
                             var minPrice = Model.Books.Min(b => double.Parse(b.Price));
                             int n = 1;
-                            List<ItemCheckedModel> p = null;
-                            if (TempData["Publisher"] != null)
-                            {
-                                p = (List<ItemCheckedModel>)TempData["Publisher"];
-                            }
                         }
                         <div class="filter-content collapse" id="collapse_aside2" style="">
                             <div class="card-body">
@@ -123,16 +118,15 @@
 
                             @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
                             {
-                            <form action="~/Home/GetBooksByPublisher" method="POST">
-                                <input type="hidden" name="publisher" value="@publisher.ItemName" />
-                                <input type="hidden" name="publisherId" value="@publisher.ItemId" />
-                                <label class="checkbox-btn">
-                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
-                                </label>
-                            </form>
+                                <form action="~/Home/GetBooksByPublisher" method="POST">
+                                    <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                                    <input type="hidden" name="publisherId" value="@publisher.ItemId" />
+                                    <label class="checkbox-btn">
+                                        <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
+                                    </label>
+                                </form>
                             }
                         </div>
-
                     </div>
 
                 </article>
@@ -170,7 +164,7 @@
         </div>
         @{
             var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
-            var booksByPublisher = (IEnumerable<Book>)TempData["BooksByPublisher"];
+            var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
         }
         @* Dropdown ile seçilince karşımıza çıkan ürünler*@
         <div class="container">
@@ -181,7 +175,7 @@
                 <div class="row">
                     @if (booksByPublisher != null)
                     {
-                        @Html.Partial("_BookPartial", booksByPublisher)
+                        @Html.Partial("_BookPartial", booksByPublisher.PaginatedBooks())
                     }
                     else
                     {
@@ -194,7 +188,7 @@
                     {
                         <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
 
-                            <a class="page-link" href="@Url.Action("GetWebsite", new {ViewBag.Publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
+                            <a class="page-link" href="@Url.Action("GetWebsite","Home", new  {ViewBag.RouteValueDictionary, ViewBag.minPrice , ViewBag.maxPrice, page = i})">@i</a>
 
                         </li>
                     }

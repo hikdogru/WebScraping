@@ -341,7 +341,7 @@ namespace WebScraping.WebUI.Controllers
             var node = doc.DocumentNode.SelectNodes(xpath);
             return node;
         }
-        public ActionResult GetWebsite(int? page = 1, int minPrice = 0, int maxPrice = 0, string publisher = "")
+        public ActionResult GetWebsite(Dictionary<string, string> routes, int? page = 1, int minPrice = 0, int maxPrice = 0)
         {
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
@@ -353,30 +353,42 @@ namespace WebScraping.WebUI.Controllers
                 var filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice).AsQueryable();
                 itemViewModel.Books = filteredItems;
             }
-            if (publisher != null)
+
+            //var routeValues = (RouteValueDictionary)TempData["RouteValueDictionary"];
+            //if (routeValues != null)
+            //{
+            //    var booksByPublisher = books.Where(b => routeValues.Values.Any(p => p.ToString() == b.Publisher));
+            //    itemViewModel.Books = booksByPublisher;
+            //    TempData["RouteValueDictionary"] = routeValues;
+            //}
+
+            if (routes != null)
             {
-                var booksByPublisher = books.Where(b => b.Publisher.Contains(publisher));
+                var booksByPublisher = books.Where(b => routes.Values.Any(p => p.ToString() == b.Publisher));
                 itemViewModel.Books = booksByPublisher;
-                ViewBag.Publisher = publisher;
+                //ViewBag.Publisher = publishers;
             }
+            itemViewModel.Books = books;
+            //else
+            //{
+            //    itemViewModel.Books = books;
+            //}
 
-            else
+            if (_itemCheckedModels.Count == 0)
             {
-                itemViewModel.Books = books;
+                var publisherList = books.GroupBy(b => b.Publisher).Select(b => b.Key).Distinct();
+                int itemId = 1;
+                foreach (var publisherName in publisherList)
+                {
+                    var itemCheckedModel = new ItemCheckedModel();
+                    itemCheckedModel.IsCheck = false;
+                    itemCheckedModel.ItemName = publisherName;
+                    itemCheckedModel.ItemId = itemId;
+                    _itemCheckedModels.Add(itemCheckedModel);
+                    itemId++;
+                }
             }
 
-            var publishers = books.GroupBy(b => b.Publisher).Select(b => b.Key);
-
-            int itemId = 1;
-            foreach (var publisherName in publishers)
-            {
-                var itemCheckedModel = new ItemCheckedModel();
-                itemCheckedModel.IsCheck = false;
-                itemCheckedModel.ItemName = publisherName;
-                itemCheckedModel.ItemId = itemId;
-                _itemCheckedModels.Add(itemCheckedModel);
-                itemId++;
-            }
 
             // checkbox publishers value
             TempData["Publishers"] = _itemCheckedModels;
@@ -490,9 +502,10 @@ namespace WebScraping.WebUI.Controllers
         [HttpPost]
         public ActionResult GetBooksByPublisher(string publisher, int? publisherId)
         {
+            IEnumerable<Book> booksByPublisher;
+            RouteValueDictionary routeValues = new RouteValueDictionary();
             if (publisher != null)
             {
-
                 var entity = _itemCheckedModels.Where(m => m.ItemId == publisherId && m.ItemName == publisher).FirstOrDefault();
                 if (entity != null)
                 {
@@ -508,12 +521,18 @@ namespace WebScraping.WebUI.Controllers
 
                 var isCheckPublishers =
                     _itemCheckedModels.Where(m => m.IsCheck).GroupBy(m => m.ItemName).Select(m => m.Key);
-                var booksByPublisher = books.Where(b => isCheckPublishers.Any(m => m == b.Publisher));
+                booksByPublisher = books.Where(b => isCheckPublishers.Any(m => m == b.Publisher));
+                var itemViewModel = new ItemViewModel() { BookPerPage = 24, Books = booksByPublisher, CurrentPage = 1 };
+                TempData["BooksByPublisher"] = itemViewModel;
+                for (int i = 1; i <= isCheckPublishers.Count(); i++)
+                {
+                    routeValues["publisher[" + i + "]"] = isCheckPublishers.ToList()[i - 1];
+                }
 
-                TempData["BooksByPublisher"] = booksByPublisher;
-                TempData["Publisher"] = _itemCheckedModels;
+                //TempData["RouteValueDictionary"] = routeValues;
+                ViewBag.RouteValueDictionary = routeValues;
             }
-            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { publisher = publisher }));
+            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(routeValues));
         }
         // Tl ekini kaldırıyor.
         public static int ReplaceString(string price)
