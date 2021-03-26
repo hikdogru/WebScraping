@@ -1,6 +1,4 @@
-﻿@using System.Collections
-@using WebScraping.Entity
-@using WebScraping.WebUI.Models
+﻿@using WebScraping.WebUI.Models
 @using WebScraping.WebUI.ViewModel
 @model ItemViewModel
 
@@ -126,6 +124,8 @@
                                     </label>
                                 </form>
                             }
+
+
                         </div>
                     </div>
 
@@ -165,6 +165,17 @@
         @{
             var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
             var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
+            var routes = TempData["RouteValueDictionary"] as RouteValueDictionary;
+            string url = "";
+            if (routes != null)
+            {
+                for (int i = 1; i <= routes.Count; i++)
+                {
+                    string routeValues = routes["publisher[" + i + "]"].ToString();
+                    routeValues = routeValues.Replace(" ", "-");
+                    url += routeValues + "&";
+                }
+            }
         }
         @* Dropdown ile seçilince karşımıza çıkan ürünler*@
         <div class="container">
@@ -187,9 +198,7 @@
                     @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
                     {
                         <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-
-                            <a class="page-link" href="@Url.Action("GetWebsite","Home", new  {ViewBag.RouteValueDictionary, ViewBag.minPrice , ViewBag.maxPrice, page = i})">@i</a>
-
+                            <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new  {publisher =  url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
                         </li>
                     }
                 </ul>
@@ -208,8 +217,7 @@
             }
             document.getElementById('rangeSlider').value = 2;
         </script>
-
-
+       
     }
 
 

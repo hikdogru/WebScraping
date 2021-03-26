@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -23,6 +24,7 @@ namespace WebScraping.WebUI.Controllers
         private List<string> _amazonBookDetails;
         private List<HtmlNodeCollection> BookDetailsNode = new List<HtmlNodeCollection>();
         private List<string> BookDetailUrl = new List<string>();
+        private static RouteValueDictionary _routeValues;
         int pageSize = 20;
         Dictionary<string, string> _booksLogoUrl = new Dictionary<string, string>()
         {
@@ -341,8 +343,9 @@ namespace WebScraping.WebUI.Controllers
             var node = doc.DocumentNode.SelectNodes(xpath);
             return node;
         }
-        public ActionResult GetWebsite(Dictionary<string, string> routes, int? page = 1, int minPrice = 0, int maxPrice = 0)
+        public ActionResult GetWebsite(int? page = 1, int minPrice = 0, int maxPrice = 0)
         {
+            IEnumerable<Book> filteredItems = null;
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
             itemViewModel.CurrentPage = (int)page;
@@ -350,29 +353,22 @@ namespace WebScraping.WebUI.Controllers
             {
                 ViewBag.minPrice = minPrice;
                 ViewBag.maxPrice = maxPrice;
-                var filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice).AsQueryable();
+                filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
                 itemViewModel.Books = filteredItems;
             }
 
-            //var routeValues = (RouteValueDictionary)TempData["RouteValueDictionary"];
-            //if (routeValues != null)
-            //{
-            //    var booksByPublisher = books.Where(b => routeValues.Values.Any(p => p.ToString() == b.Publisher));
-            //    itemViewModel.Books = booksByPublisher;
-            //    TempData["RouteValueDictionary"] = routeValues;
-            //}
 
-            if (routes != null)
+            if (_routeValues != null)
             {
-                var booksByPublisher = books.Where(b => routes.Values.Any(p => p.ToString() == b.Publisher));
-                itemViewModel.Books = booksByPublisher;
-                //ViewBag.Publisher = publishers;
+                filteredItems = filteredItems.Where(b => _routeValues.Values.Any(p => p.ToString() == b.Publisher));
+                itemViewModel.Books = filteredItems;
+                TempData["RouteValueDictionary"] = _routeValues;
             }
-            itemViewModel.Books = books;
-            //else
-            //{
-            //    itemViewModel.Books = books;
-            //}
+
+            else
+            {
+                itemViewModel.Books = books;
+            }
 
             if (_itemCheckedModels.Count == 0)
             {
@@ -435,12 +431,14 @@ namespace WebScraping.WebUI.Controllers
         [HttpPost]
         public ActionResult GetFilteredItems(int? minPrice, int? maxPrice)
         {
+            string url = "";
             IEnumerable<Book> filteredItems;
             for (int i = 0; i < books.Count; i++)
             {
                 books[i].Price = books[i].Price.Replace("TL", "");
                 books[i].Price = books[i].Price.Replace(",", ".");
             }
+
 
             if (minPrice == maxPrice)
             {
@@ -451,6 +449,18 @@ namespace WebScraping.WebUI.Controllers
                 filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
             }
 
+            if (_routeValues != null)
+            {
+                filteredItems = filteredItems.Where(b => _routeValues.Values.Any(p => p.ToString() == b.Publisher));
+                TempData["RouteValueDictionary"] = _routeValues;
+                for (int i = 1; i <= _routeValues.Count; i++)
+                {
+                    string routeValues = _routeValues["publisher[" + i + "]"].ToString();
+                    routeValues = routeValues.Replace(" ", "-");
+                    url += routeValues + "&";
+                }
+            }
+
             var itemViewModel = new ItemViewModel()
             {
                 BookPerPage = 24,
@@ -459,7 +469,9 @@ namespace WebScraping.WebUI.Controllers
             };
 
             TempData["ItemViewModel"] = itemViewModel;
-            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { minPrice = minPrice, maxPrice = maxPrice }));
+            TempData["minPrice"] = minPrice;
+            TempData["maxPrice"] = maxPrice;
+            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { publisher = url, minPrice = minPrice, maxPrice = maxPrice }));
         }
 
         [HttpPost]
@@ -503,7 +515,15 @@ namespace WebScraping.WebUI.Controllers
         public ActionResult GetBooksByPublisher(string publisher, int? publisherId)
         {
             IEnumerable<Book> booksByPublisher;
-            RouteValueDictionary routeValues = new RouteValueDictionary();
+            int minPrice = 0;
+            int maxPrice = 0;
+            string url="";
+            if (TempData["minPrice"] != null && TempData["maxPrice"] != null)
+            {
+                minPrice = int.Parse(TempData["minPrice"].ToString());
+                maxPrice = int.Parse(TempData["maxPrice"].ToString());
+            }
+
             if (publisher != null)
             {
                 var entity = _itemCheckedModels.Where(m => m.ItemId == publisherId && m.ItemName == publisher).FirstOrDefault();
@@ -522,17 +542,27 @@ namespace WebScraping.WebUI.Controllers
                 var isCheckPublishers =
                     _itemCheckedModels.Where(m => m.IsCheck).GroupBy(m => m.ItemName).Select(m => m.Key);
                 booksByPublisher = books.Where(b => isCheckPublishers.Any(m => m == b.Publisher));
+                if (minPrice != 0 && maxPrice != 0)
+                {
+                    booksByPublisher = booksByPublisher.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+                }
                 var itemViewModel = new ItemViewModel() { BookPerPage = 24, Books = booksByPublisher, CurrentPage = 1 };
                 TempData["BooksByPublisher"] = itemViewModel;
+                _routeValues = new RouteValueDictionary();
                 for (int i = 1; i <= isCheckPublishers.Count(); i++)
                 {
-                    routeValues["publisher[" + i + "]"] = isCheckPublishers.ToList()[i - 1];
+                    _routeValues["publisher[" + i + "]"] = isCheckPublishers.ToList()[i - 1];
                 }
 
-                //TempData["RouteValueDictionary"] = routeValues;
-                ViewBag.RouteValueDictionary = routeValues;
+                for (int i = 1; i <= _routeValues.Count; i++)
+                {
+                    string routeValues = _routeValues["publisher[" + i + "]"].ToString();
+                    routeValues = routeValues.Replace(" ", "-");
+                    url += routeValues + "&";
+                }
+                TempData["RouteValueDictionary"] = _routeValues;
             }
-            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(routeValues));
+            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { publisher = url, minPrice = minPrice, maxPrice = maxPrice }));
         }
         // Tl ekini kaldırıyor.
         public static int ReplaceString(string price)
