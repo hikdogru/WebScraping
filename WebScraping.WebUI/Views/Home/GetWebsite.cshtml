@@ -20,17 +20,7 @@
                 margin-right: auto;
             }
 
-            .sidenav {
-                height: 100%;
-                width: 320px;
-                position: fixed;
-                z-index: 1;
-                top: 0;
-                left: 0;
-                background-color: antiquewhite;
-                overflow-x: hidden;
-                padding-top: 20px;
-            }
+
 
             input[type="range"] {
                 width: 55%;
@@ -41,8 +31,8 @@
 </head>
 <body>
     <div class="row">
-        <div class="col-md-4 sidenav">
-            <div class="card ">
+        <div class="col-md-4 sidenav" id="sideNav">
+            <div class="card" style="margin-top: 35%;">
                 <article class="filter-group">
                     <header class="card-header">
                         <a href="#" data-toggle="collapse" data-target="#collapse_aside1"
@@ -195,14 +185,20 @@
                 </div>
 
                 <ul class="pagination">
+
                     @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
                     {
+
                         <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-                            <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new  {publisher = url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
+                            <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new {publisher = url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
                         </li>
+
                     }
+
                 </ul>
+
             }
+
 
 
         </div>

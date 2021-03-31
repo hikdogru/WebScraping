@@ -24,12 +24,12 @@
 @foreach (var book in Model)
 {
 
-    <div class="col-md-2 d-flex align-items-stretch mb-1">
+    <div class="col-md-2 col-sm-4 col-xl-6 d-flex align-items-stretch mb-1">
         <div class="card border-3" style="width: 100%;" >
             <div class="image">
                 <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
             </div>
-            <div class="card-body">
+            <div class="card-body text-center">
                 <h5 class="card-title" style="color: #ea8987;">@(book.Name.Length > 20 ? book.Name.Substring(0, 20) + "..." : book.Name)</h5>
                 <h5 class="card-title" style="color: #f58322;font-size: 90%;">@(book.Author.Length > 20 ? book.Author.Substring(0, 20) + "..." : book.Author)</h5>
 
