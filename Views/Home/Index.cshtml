@@ -1,0 +1,258 @@
+﻿@using WebScraping.Entity
+@model List<Book>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <style>
+        input {
+            max-width: 400px !important;
+        }
+
+        .image {
+            display: block;
+            margin-top: 5px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        img.img {
+            max-width: 150px;
+            max-height: 225px;
+            position: relative;
+            vertical-align: middle;
+            left: 50%;
+            transform: translate(-50%);
+            height: 200px;
+            width: 125px;
+            object-fit: cover;
+        }
+
+        img.logo {
+            max-width: 150px;
+            max-height: 225px;
+            left: 50%;
+            width: 100px;
+            object-fit: cover;
+        }
+
+        div#bookCard .card, div#bookOtherPublisherCard .card {
+            box-shadow: 5px 10px 12px 12px rgb(120 43 45 / 10%), 0 6px 20px 0 rgb(43 45 56 / 10%);
+        }
+
+        .center {
+            margin: auto;
+            width: 100%;
+            border: 0.1px solid antiquewhite;
+            padding: 10px;
+        }
+    </style>
+}
+<div class="row">
+
+    <div class="col-md-12">
+        @* Select website from dropdown   *@
+        @Html.Partial("_SelectWebsitePartial", Model)
+        <hr>
+        
+        @* Search area *@
+        <form action="/Home/Search" method="POST">
+            <div class="input-group">
+                <input type="text" class="form-control" name="query" id="textSearch" placeholder="Search" required>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr>
+
+@{
+    var viewDataOtherPublishers = (List<Book>)TempData["OtherPublishers"];
+    var viewDataBook = (List<Book>)TempData["Books"];
+    var viewDataItem = (List<Book>)TempData["Entities"];
+    var viewDataWebsiteBooks = (List<Book>)TempData["WebsiteBooks"];
+    var viewDataBooksLogo = (Dictionary<string, string>)TempData["BooksLogoUrl"];
+}
+@if (viewDataOtherPublishers != null)
+{
+
+    <div class="row">
+        @foreach (var publisher in viewDataOtherPublishers)
+        {
+
+            <div class="col-md-3">
+                <h2 class="text-center text-primary" id="bookName">@publisher.Name</h2>
+                <hr>
+
+                <div class="image">
+                    <img src="@publisher.Image" class="img" alt="Item Image" />
+                    <h3 class="text-center">@publisher.Publisher</h3>
+                </div>
+                <div class="text-center">
+                    <form action="/Home/GetBooksByWebsitePrice" method="POST">
+                        <input type="hidden" id="bookName" name="bookName" value="@publisher.Name">
+                        <input type="hidden" id="bookPublisher" name="bookPublisher" value="@publisher.Publisher">
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: 150px;">Choose</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+}
+
+@if (viewDataItem != null)
+{
+    <div class="container">
+
+        <h2 class="text-center text-primary" id="bookName">@viewDataItem[0].Name</h2>
+        <hr>
+
+        <div class="image">
+            <img src="@viewDataItem[0].Image" class="img" alt="Item Image" />
+            @*<h3 class="text-center">@viewDataItem[0].Publisher</h3>*@
+        </div>
+
+        <hr>
+
+
+        @foreach (var book in viewDataItem)
+        {
+            foreach (var logo in viewDataBooksLogo)
+            {
+                if (logo.Key.ToLower().Contains(book.WebsiteName.ToLower()))
+                {
+                    <div class="row center" style="width: 80%; background-color: antiquewhite;">
+                        <div class="col-md-3">
+                            <span class="site_logo">
+                                <img src="@logo.Value" class="logo">
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="urun_adi">
+                                <i class="fa fa-book" aria-hidden="true"></i> <h5>  @(book.Publisher) </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <h3>
+                                <span class="badge badge-pill badge-secondary ">
+                                    @Html.Raw(book.Price.Replace("TL", " <i class='fa fa-try' aria-hidden='true'></i>"))
+                                </span>
+                            </h3>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Siteye git
+                            </a>
+                        </div>
+                    </div>
+
+                }
+            }
+
+        }
+    </div>
+
+}
+
+else if (viewDataBook != null && viewDataOtherPublishers == null)
+{
+    <div class="image">
+        <img src="@viewDataBook[0].Image" class="card-img-top img" alt="Item Image">
+        <h3 class="text-center text-primary">@viewDataBook[0].Name</h3>
+    </div>
+    <div class="container">
+        <div class="row">
+            @foreach (var book in viewDataBook)
+            {
+
+                foreach (var logo in viewDataBooksLogo)
+                {
+                    if (logo.Key.ToLower().Contains(book.WebsiteName.ToLower()))
+                    {
+                        <div class="row center" style="width: 80%; background-color: antiquewhite;">
+                            <div class="col-md-3">
+                                <span class="site_logo">
+                                    <img src="@logo.Value" class="logo">
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="urun_adi">
+                                    <h5> <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher) </h5>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <h3>
+                                    <span class="badge badge-pill badge-secondary ">
+                                        @Html.Raw(book.Price.Replace("TL", " <i class='fa fa-try' aria-hidden='true'></i>"))
+                                    </span>
+                                </h3>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                    <i class="fa fa-arrow-circle-right fa-lg" aria-hidden="true"></i> Siteye git
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+
+            }
+        </div>
+    </div>
+
+}
+
+
+
+
+
+
+
+@section scripts
+{
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://developer.snapappointments.com/bootstrap-select/search/main.js"></script>
+
+
+
+
+    <script>
+        $('.selectpicker').selectpicker();
+    </script>
+
+    @* Multiselect seçilen elemanın hidden elementine eklenmesi*@
+    <script>
+        let select = document.getElementById("selectWebsite");
+        let hidden = document.getElementById("hiddenWebsite");
+        var selected = [];
+        select.addEventListener("change",
+            function () {
+
+                for (var option of select.options) {
+                    if (option.selected) {
+                        selected.push(option.value);
+                    }
+                }
+                hidden.value = selected;
+                selected = [];
+            });
+    </script>
+
+
+}

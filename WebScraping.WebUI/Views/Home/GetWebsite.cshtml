@@ -40,7 +40,6 @@
 
 </head>
 <body>
-
     <div class="row">
         <div class="col-md-4 sidenav">
             <div class="card ">
@@ -54,7 +53,7 @@
                     </header>
                     <div class="filter-content collapse" id="collapse_aside1" style="">
                         <div class="card-body">
-                            <a href="#">@(Model.Books !=null ? Model.Books.ToList()[0].WebsiteName:"")</a>
+                            <a href="#">@(Model.Books.ToList().Count>0 ? Model.Books.ToList()[0].WebsiteName:"")</a>
                         </div>
                     </div>
                 </article>
@@ -73,8 +72,14 @@
                                 Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace("TL", "");
                                 Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace(",", ".");
                             }
-                            var maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
-                            var minPrice = Model.Books.Min(b => double.Parse(b.Price));
+                            double maxPrice = 0.0;
+                            double minPrice = 0.0;
+                            if (Model.Books.ToList().Count > 0)
+                            {
+                                maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
+                                minPrice = Model.Books.Min(b => double.Parse(b.Price));
+
+                            }
                             int n = 1;
                         }
                         <div class="filter-content collapse" id="collapse_aside2" style="">
@@ -114,7 +119,7 @@
                     <div class="filter-content collapse" id="collapse_aside3" style="">
                         <div class="card-body" id="divChkPublisher">
 
-                            @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
+                            @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
                             {
                                 <form action="~/Home/GetBooksByPublisher" method="POST">
                                     <input type="hidden" name="publisher" value="@publisher.ItemName" />
@@ -135,28 +140,22 @@
                         <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
                            data-abc="true" class="collapsed" aria-expanded="false">
                             <i class="icon-control fa fa-chevron-down"></i>
-                            <h6 class="title d-inline">Rating </h6>
+                            <h6 class="title d-inline">Yazarlar </h6>
                         </a>
                     </header>
                     <div class="filter-content collapse" id="collapse_aside4" style="">
                         <div class="card-body">
-                            <label class="custom-control">
-                                <input type="checkbox" checked=""
-                                       class="custom-control-input">
-                                <div class="custom-control-label">Better </div>
-                            </label> <label class="custom-control">
-                                <input type="checkbox" checked=""
-                                       class="custom-control-input">
-                                <div class="custom-control-label">Best </div>
-                            </label> <label class="custom-control">
-                                <input type="checkbox" checked=""
-                                       class="custom-control-input">
-                                <div class="custom-control-label">Good</div>
-                            </label> <label class="custom-control">
-                                <input type="checkbox" checked=""
-                                       class="custom-control-input">
-                                <div class="custom-control-label">Not good</div>
-                            </label>
+                            @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
+                            {
+                                <label class="custom-control">
+
+                                    <input type="hidden" name="publisher" value="@author.ItemName" />
+                                    <input type="hidden" name="publisherId" value="@author.ItemId" />
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck"
+                                           class="custom-control-input">
+                                    <div class="custom-control-label">@author.ItemName</div>
+                                </label>
+                            }
                         </div>
                     </div>
                 </article>
@@ -173,6 +172,7 @@
                 {
                     string routeValues = routes["publisher[" + i + "]"].ToString();
                     routeValues = routeValues.Replace(" ", "-");
+                    // url sonuna & işareti gelmesin diye kontrol ettik
                     url += routeValues + "&";
                 }
             }
@@ -198,7 +198,7 @@
                     @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
                     {
                         <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-                            <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new  {publisher =  url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
+                            <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new  {publisher = url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
                         </li>
                     }
                 </ul>
@@ -217,7 +217,7 @@
             }
             document.getElementById('rangeSlider').value = 2;
         </script>
-       
+
     }
 
 

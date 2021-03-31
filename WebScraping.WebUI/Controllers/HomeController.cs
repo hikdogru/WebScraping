@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using HtmlAgilityPack;
+using Microsoft.Ajax.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -7,15 +8,12 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using HtmlAgilityPack;
-using Microsoft.Ajax.Utilities;
 using WebScraping.Entity;
 using WebScraping.WebUI.Models;
 using WebScraping.WebUI.ViewModel;
 
 namespace WebScraping.WebUI.Controllers
 {
-
     public class HomeController : Controller
     {
         private static List<Book> _books = new List<Book>();
@@ -26,18 +24,22 @@ namespace WebScraping.WebUI.Controllers
         private List<string> BookDetailUrl = new List<string>();
         private static RouteValueDictionary _routeValues;
         int pageSize = 20;
+
         Dictionary<string, string> _booksLogoUrl = new Dictionary<string, string>()
         {
-                {"Bkm Kitap","http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
-                {"Amazon", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1920px-Amazon_logo.svg.png"},
-                {"Kidega","https://cdn.kidega.com/assets/web/img/kidega-logo.png"},
-                {"Kitap16","https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png"},
-                {"D&R","https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
-                {"İlknokta","https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg"},
-                {"Eganba","https://www.eganba.com/wwwroot/images/eganba-logo.png"},
-                {"Kitapseç","https://cdn.kitapsec.com//temalar/KitapSec2017/img/logo.jpg"},
-                {"Idefix","https://fragtist.com/wp-content/uploads/2017/04/fragtist-IDEFIX-750x349.gif"},
-                {"Fidan Kitap","https://www.fidankitap.com/u/fidankitap/fidan-kitap-logo-9-1576766279.png"}
+            {"Bkm Kitap", "http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
+            {
+                "Amazon",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1920px-Amazon_logo.svg.png"
+            },
+            {"Kidega", "https://cdn.kidega.com/assets/web/img/kidega-logo.png"},
+            {"Kitap16", "https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png"},
+            {"D&R", "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
+            {"İlknokta", "https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg"},
+            {"Eganba", "https://www.eganba.com/wwwroot/images/eganba-logo.png"},
+            {"Kitapseç", "https://cdn.kitapsec.com//temalar/KitapSec2017/img/logo.jpg"},
+            {"Idefix", "https://fragtist.com/wp-content/uploads/2017/04/fragtist-IDEFIX-750x349.gif"},
+            {"Fidan Kitap", "https://www.fidankitap.com/u/fidankitap/fidan-kitap-logo-9-1576766279.png"}
         };
 
         public ActionResult Index()
@@ -47,9 +49,9 @@ namespace WebScraping.WebUI.Controllers
                 Book();
             }
 
-
             return View(_books);
         }
+
         private void Book()
         {
             int n = 100;
@@ -87,7 +89,6 @@ namespace WebScraping.WebUI.Controllers
             };
             foreach (var url in websitesUrl)
             {
-
                 //if (url.Contains("amazon"))
                 //{
                 //    var bookNameNode = doc.DocumentNode.SelectNodes("//span/div/span/a/div");
@@ -112,6 +113,7 @@ namespace WebScraping.WebUI.Controllers
                     var bookNode = new BookNode()
                     {
                         Name = GetSelectNodes("//a[@class='fl col-12 text-description detailLink']", url),
+                        Author = GetSelectNodes("//a[@class='fl col-12 text-title']", url),
                         Price = GetSelectNodes("//div[@class='col col-12 currentPrice']", url),
                         Image = GetSelectNodes("//span[@class='imgInner']/img", url),
                         Publisher = GetSelectNodes("//a[@class='col col-12 text-title mt']", url),
@@ -121,8 +123,10 @@ namespace WebScraping.WebUI.Controllers
                     };
                     foreach (var node in bookNode.Detail)
                     {
-                        BookDetailUrl.Add("https://www.bkmkitap.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                        BookDetailUrl.Add("https://www.bkmkitap.com" +
+                                          HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
                     }
+
                     BookScraping(bookNode, "https://www.bkmkitap.com");
                 }
 
@@ -237,7 +241,6 @@ namespace WebScraping.WebUI.Controllers
                 //    BookDetailUrl.Clear();
                 //}
             }
-
         }
         //private void BookScraping(HtmlNodeCollection bookNameNode, HtmlNodeCollection bookPriceNode, HtmlNodeCollection bookPublisherNode,
         //    HtmlNodeCollection bookImageNode, string websiteName, int n)
@@ -315,8 +318,9 @@ namespace WebScraping.WebUI.Controllers
         {
             for (int i = 0; i < bookNode.Publisher.Count; i++)
             {
-                var bookName = WebUtility.HtmlDecode(bookNode.Name[i].InnerText.Replace("\n", "")).Trim();
-                var bookPrice = bookNode.Price[i].InnerText.Replace("\n", "")
+                string bookName = WebUtility.HtmlDecode(bookNode.Name[i].InnerText.Replace("\n", "")).Trim();
+                string author = WebUtility.HtmlDecode(bookNode.Author[i].InnerText);
+                string bookPrice = bookNode.Price[i].InnerText.Replace("\n", "")
                     .Replace("TL", " TL")
                     .Replace("₺", "TL")
                     .Replace("\r", "")
@@ -324,10 +328,16 @@ namespace WebScraping.WebUI.Controllers
                     .Replace(" ", "TL")
                     .Trim();
                 string publisher = WebUtility.HtmlDecode(bookNode.Publisher[i].InnerText);
-                var image = WebUtility.HtmlDecode(bookNode.Image[i].GetAttributeValue("data-src", ""));
+                string image = WebUtility.HtmlDecode(bookNode.Image[i].GetAttributeValue("data-src", ""));
                 string website = bookNode.WebsiteName;
-                string bookDetailUrl = websiteUrl + HttpUtility.UrlDecode(bookNode.Detail[i].GetAttributeValue("href", string.Empty));
-                var book = new Book() { Id = i + 1, Name = bookName, Price = bookPrice, Publisher = publisher, WebsiteName = website, Image = image, BookDetailUrl = bookDetailUrl };
+                string bookDetailUrl = websiteUrl +
+                                       HttpUtility.UrlDecode(bookNode.Detail[i]
+                                           .GetAttributeValue("href", string.Empty));
+                var book = new Book()
+                {
+                    Id = i + 1, Name = bookName, Author = author, Price = bookPrice, Publisher = publisher,
+                    WebsiteName = website, Image = image, BookDetailUrl = bookDetailUrl
+                };
                 _books.Add(book);
                 if (i == bookNode.CountItem)
                 {
@@ -343,59 +353,77 @@ namespace WebScraping.WebUI.Controllers
             var node = doc.DocumentNode.SelectNodes(xpath);
             return node;
         }
+
+        
         public ActionResult GetWebsite(int? page = 1, int minPrice = 0, int maxPrice = 0)
         {
             IEnumerable<Book> filteredItems = null;
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
-            itemViewModel.CurrentPage = (int)page;
+            itemViewModel.CurrentPage = (int) page;
+            itemViewModel.Books = books;
             if (minPrice != 0 && maxPrice != 0)
             {
                 ViewBag.minPrice = minPrice;
                 ViewBag.maxPrice = maxPrice;
-                filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+                filteredItems = books.Where(b =>
+                    double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
                 itemViewModel.Books = filteredItems;
             }
 
-
             if (_routeValues != null)
             {
-                filteredItems = filteredItems.Where(b => _routeValues.Values.Any(p => p.ToString() == b.Publisher));
+                filteredItems = (filteredItems != null ? filteredItems : books).Where(b =>
+                    _routeValues.Values.Any(p => p.ToString() == b.Publisher));
                 itemViewModel.Books = filteredItems;
                 TempData["RouteValueDictionary"] = _routeValues;
             }
 
-            else
-            {
-                itemViewModel.Books = books;
-            }
+            GetItemsByChecked();
 
+
+            // checkbox publishers value
+            TempData["Publishers"] = _itemCheckedModels.Where(m=>m.ItemEntityName=="Publisher");
+            // checkbox authors value
+            TempData["Authors"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
+
+            return View(itemViewModel);
+        }
+
+        private static void GetItemsByChecked()
+        {
             if (_itemCheckedModels.Count == 0)
             {
-                var publisherList = books.GroupBy(b => b.Publisher).Select(b => b.Key).Distinct();
+                var publishers = books.GroupBy(b => b.Publisher).Select(b => b.Key).Distinct();
+                var authors = books.GroupBy(b => b.Author).Select(b => b.Key).Distinct();
                 int itemId = 1;
-                foreach (var publisherName in publisherList)
+                foreach (var publisherName in publishers)
                 {
                     var itemCheckedModel = new ItemCheckedModel();
+                    itemCheckedModel.ItemEntityName = "Publisher";
                     itemCheckedModel.IsCheck = false;
                     itemCheckedModel.ItemName = publisherName;
                     itemCheckedModel.ItemId = itemId;
                     _itemCheckedModels.Add(itemCheckedModel);
                     itemId++;
                 }
+
+                foreach (var author in authors)
+                {
+                    var itemCheckedModel = new ItemCheckedModel();
+                    itemCheckedModel.ItemEntityName = "Author";
+                    itemCheckedModel.IsCheck = false;
+                    itemCheckedModel.ItemName = author;
+                    itemCheckedModel.ItemId = itemId;
+                    _itemCheckedModels.Add(itemCheckedModel);
+                    itemId++;
+                }
             }
-
-
-            // checkbox publishers value
-            TempData["Publishers"] = _itemCheckedModels;
-
-            return View(itemViewModel);
         }
 
         [HttpPost]
         public ActionResult GetWebsite(string website, int page = 1)
         {
-
             books = new List<Book>();
             List<string> websites = website.Split(',').ToList();
             IEnumerable<Book> distinct;
@@ -424,7 +452,10 @@ namespace WebScraping.WebUI.Controllers
             };
 
             TempData["BooksView"] = booksView;
-            ViewBag.Publishers = books.GroupBy(b => b.Publisher).Select(b => b.Key);
+            GetItemsByChecked();
+            ViewBag.Publishers = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
+            ViewBag.Authors = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
+
             return View(booksView);
         }
 
@@ -446,7 +477,8 @@ namespace WebScraping.WebUI.Controllers
             }
             else
             {
-                filteredItems = books.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+                filteredItems = books.Where(b =>
+                    double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
             }
 
             if (_routeValues != null)
@@ -471,18 +503,18 @@ namespace WebScraping.WebUI.Controllers
             TempData["ItemViewModel"] = itemViewModel;
             TempData["minPrice"] = minPrice;
             TempData["maxPrice"] = maxPrice;
-            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { publisher = url, minPrice = minPrice, maxPrice = maxPrice }));
+            return RedirectToAction("GetWebsite", "Home",
+                new RouteValueDictionary(new {url, minPrice = minPrice, maxPrice = maxPrice}));
         }
 
         [HttpPost]
         public ActionResult Search(string query)
         {
-
             if (!String.IsNullOrEmpty(query))
             {
                 var otherPublishers = _books.Where(b => b.Name.ToUpper()
                         .Contains(query.ToUpper()) && b.Publisher != "")
-                    .GroupBy(b => new { b.Publisher, b.Name })
+                    .GroupBy(b => new {b.Publisher, b.Name})
                     .Select(b => b.FirstOrDefault())
                     .OrderBy(b => ReplaceString(b.Price)).ToList();
 
@@ -496,28 +528,29 @@ namespace WebScraping.WebUI.Controllers
                     .OrderBy(b => ReplaceString(b.Price)).DistinctBy(b => b.Id).ToList();
                 TempData["Books"] = distinct;
                 TempData["BooksLogoUrl"] = _booksLogoUrl;
-
             }
 
             return RedirectToAction("Index");
         }
+
         [HttpPost]
         public ActionResult GetBooksByWebsitePrice(string bookName, string bookPublisher)
         {
             var entities = _books.Where(b => b.Name == bookName && b.Publisher.Contains(bookPublisher))
-                                                .GroupBy(b => b.Website)
-                                                .Select(b => b.FirstOrDefault());
+                .GroupBy(b => b.Website)
+                .Select(b => b.FirstOrDefault());
             TempData["Entities"] = entities.ToList();
             TempData["BooksLogoUrl"] = _booksLogoUrl;
             return RedirectToAction("Index");
         }
+
         [HttpPost]
         public ActionResult GetBooksByPublisher(string publisher, int? publisherId)
         {
             IEnumerable<Book> booksByPublisher;
             int minPrice = 0;
             int maxPrice = 0;
-            string url="";
+            string url = "";
             if (TempData["minPrice"] != null && TempData["maxPrice"] != null)
             {
                 minPrice = int.Parse(TempData["minPrice"].ToString());
@@ -526,7 +559,8 @@ namespace WebScraping.WebUI.Controllers
 
             if (publisher != null)
             {
-                var entity = _itemCheckedModels.Where(m => m.ItemId == publisherId && m.ItemName == publisher).FirstOrDefault();
+                var entity = _itemCheckedModels.Where(m => m.ItemId == publisherId && m.ItemName == publisher)
+                    .FirstOrDefault();
                 if (entity != null)
                 {
                     if (entity.IsCheck)
@@ -544,10 +578,12 @@ namespace WebScraping.WebUI.Controllers
                 booksByPublisher = books.Where(b => isCheckPublishers.Any(m => m == b.Publisher));
                 if (minPrice != 0 && maxPrice != 0)
                 {
-                    booksByPublisher = booksByPublisher.Where(b => double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+                    booksByPublisher = booksByPublisher.Where(b =>
+                        double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
                 }
-                var itemViewModel = new ItemViewModel() { BookPerPage = 24, Books = booksByPublisher, CurrentPage = 1 };
-                TempData["BooksByPublisher"] = itemViewModel;
+
+                var itemViewModel = new ItemViewModel() {BookPerPage = 24, Books = booksByPublisher, CurrentPage = 1};
+                TempData["ItemViewModel"] = itemViewModel;
                 _routeValues = new RouteValueDictionary();
                 for (int i = 1; i <= isCheckPublishers.Count(); i++)
                 {
@@ -558,18 +594,21 @@ namespace WebScraping.WebUI.Controllers
                 {
                     string routeValues = _routeValues["publisher[" + i + "]"].ToString();
                     routeValues = routeValues.Replace(" ", "-");
-                    url += routeValues + "&";
+                    url += "publisher" + i + "=" + routeValues + (i != _routeValues.Count ? "-" : "");
                 }
+
                 TempData["RouteValueDictionary"] = _routeValues;
             }
-            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { publisher = url, minPrice = minPrice, maxPrice = maxPrice }));
+
+            return RedirectToAction("GetWebsite", "Home",
+                new RouteValueDictionary(new {url, minPrice = minPrice, maxPrice = maxPrice}));
         }
+
         // Tl ekini kaldırıyor.
         public static int ReplaceString(string price)
         {
             string bookPrice = price.Replace("TL", "");
-            return (int)float.Parse(bookPrice);
-
+            return (int) float.Parse(bookPrice);
         }
 
         public void GetBookPublisher(List<string> urls, string websiteName)
@@ -590,7 +629,6 @@ namespace WebScraping.WebUI.Controllers
                             "//div[@id='detailBullets_feature_div']/ul/li[1]/span[@class='a-list-item']/span[2]"));
                     }
                 }
-
             }
 
 
@@ -601,9 +639,6 @@ namespace WebScraping.WebUI.Controllers
             //    BookDetailsNode.Add(document.DocumentNode.SelectNodes(
             //        "//div[@id='detailBullets_feature_div']/ul/li[1]/span[@class='a-list-item']/span[2]"));
             //}
-
-
-
         }
 
         public ActionResult About()

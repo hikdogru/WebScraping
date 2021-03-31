@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using WebScraping.Entity;
-using WebScraping.WebUI.Models;
 
 
 namespace WebScraping.WebUI.ViewModel

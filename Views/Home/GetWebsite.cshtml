@@ -1,0 +1,235 @@
+﻿@using WebScraping.WebUI.Models
+@using WebScraping.WebUI.ViewModel
+@model ItemViewModel
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>title</title>
+
+    @section styles
+    {
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            ul {
+                width: 25%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .sidenav {
+                height: 100%;
+                width: 320px;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                background-color: antiquewhite;
+                overflow-x: hidden;
+                padding-top: 20px;
+            }
+
+            input[type="range"] {
+                width: 55%;
+            }
+        </style>
+    }
+
+</head>
+<body>
+
+    <div class="row">
+        <div class="col-md-4 sidenav">
+            <div class="card ">
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside1"
+                           data-abc="true" aria-expanded="false" class="collapsed">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title d-inline">Website </h6>
+                        </a>
+                    </header>
+                    <div class="filter-content collapse" id="collapse_aside1" style="">
+                        <div class="card-body">
+                            <a href="#">@(Model.Books.ToList().Count>0 ? Model.Books.ToList()[0].WebsiteName:"")</a>
+                        </div>
+                    </div>
+                </article>
+                <form action="~/Home/GetFilteredItems" method="POST">
+                    <article class="filter-group">
+                        <header class="card-header">
+                            <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
+                               data-abc="true" aria-expanded="false" class="collapsed">
+                                <i class="icon-control fa fa-chevron-down"></i>
+                                <h6 class="title d-inline">Fiyat </h6>
+                            </a>
+                        </header>
+                        @{
+                            for (int i = 0; i < Model.Books.ToList().Count; i++)
+                            {
+                                Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace("TL", "");
+                                Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace(",", ".");
+                            }
+                            double maxPrice = 0.0;
+                            double minPrice = 0.0;
+                            if (Model.Books.ToList().Count > 0)
+                            {
+                                maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
+                                minPrice = Model.Books.Min(b => double.Parse(b.Price));
+
+                            }
+                            int n = 1;
+                        }
+                        <div class="filter-content collapse" id="collapse_aside2" style="">
+                            <div class="card-body">
+                                @minPrice <i class='fa fa-try' aria-hidden='true'></i>
+                                <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="range" id="rangeSlider" oninput="sliderChange(this.value)">
+                                @maxPrice <i class='fa fa-try' aria-hidden='true'></i>
+                                <hr>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Min</label>
+                                        <input class="form-control"
+                                               placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPrice">
+                                    </div>
+                                    <div class="form-group text-right col-md-6">
+                                        <label>Max</label>
+                                        <input class="form-control"
+                                               placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPrice">
+                                    </div>
+                                </div>
+                                <button type="submit" class="highlight-button btn btn-medium button xs-margin-bottom-five"
+                                        data-abc="true">
+                                    Uygula
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </form>
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
+                           data-abc="true" aria-expanded="false" class="collapsed">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title d-inline">Yayınevleri </h6>
+                        </a>
+                    </header>
+                    <div class="filter-content collapse" id="collapse_aside3" style="">
+                        <div class="card-body" id="divChkPublisher">
+
+                            @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
+                            {
+                                <form action="~/Home/GetBooksByPublisher" method="POST">
+                                    <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                                    <input type="hidden" name="publisherId" value="@publisher.ItemId" />
+                                    <label class="checkbox-btn">
+                                        <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
+                                    </label>
+                                </form>
+                            }
+
+
+                        </div>
+                    </div>
+
+                </article>
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
+                           data-abc="true" class="collapsed" aria-expanded="false">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title d-inline">Rating </h6>
+                        </a>
+                    </header>
+                    <div class="filter-content collapse" id="collapse_aside4" style="">
+                        <div class="card-body">
+                            <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Better </div>
+                            </label> <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Best </div>
+                            </label> <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Good</div>
+                            </label> <label class="custom-control">
+                                <input type="checkbox" checked=""
+                                       class="custom-control-input">
+                                <div class="custom-control-label">Not good</div>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+        @{
+            var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
+            var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
+            var routes = TempData["RouteValueDictionary"] as RouteValueDictionary;
+            string url = "";
+            if (routes != null)
+            {
+                for (int i = 1; i <= routes.Count; i++)
+                {
+                    string routeValues = routes["publisher[" + i + "]"].ToString();
+                    routeValues = routeValues.Replace(" ", "-");
+                    // url sonuna & işareti gelmesin diye kontrol ettik
+                    url += routeValues + "&";
+                }
+            }
+        }
+        @* Dropdown ile seçilince karşımıza çıkan ürünler*@
+        <div class="container">
+            @if (Model.Books.Count() > 0)
+            {
+                <p class="text-center h2">@Model.Books.ToList()[0].WebsiteName Çok Satanlar</p>
+                <hr>
+                <div class="row">
+                    @if (booksByPublisher != null)
+                    {
+                        @Html.Partial("_BookPartial", booksByPublisher.PaginatedBooks())
+                    }
+                    else
+                    {
+                        @Html.Partial("_BookPartial", itemViewModel == null ? Model.PaginatedBooks() : itemViewModel.PaginatedBooks())
+                    }
+                </div>
+
+                <ul class="pagination">
+                    @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
+                    {
+                        <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
+                            <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new  {publisher = url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
+                        </li>
+                    }
+                </ul>
+            }
+
+
+        </div>
+    </div>
+    @section scripts
+    {
+
+        <script>
+            function sliderChange(val) {
+                document.getElementById('minPrice').value = parseInt(@minPrice);
+                document.getElementById('maxPrice').value = parseInt(val);
+            }
+            document.getElementById('rangeSlider').value = 2;
+        </script>
+
+    }
+
+
+
+
+
+</body>
+</html>

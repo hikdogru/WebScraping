@@ -1,0 +1,80 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+input {
+    max-width: 400px !important;
+}
+
+.image {
+    display: block;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img.img {
+    max-width: 150px;
+    max-height: 225px;
+    position: relative;
+    vertical-align: middle;
+    left: 50%;
+    transform: translate(-50%);
+    height: 200px;
+    width: 125px;
+    object-fit: cover;
+}
+
+img.logo {
+    max-width: 150px;
+    max-height: 225px;
+    left: 50%;
+    width: 100px;
+    object-fit: cover;
+}
+
+div#bookCard .card, div#bookOtherPublisherCard .card {
+    box-shadow: 5px 10px 12px 12px rgb(120 43 45 / 10%), 0 6px 20px 0 rgb(43 45 56 / 10%);
+}
+
+.center {
+    margin: auto;
+    width: 100%;
+    border: 0.1px solid antiquewhite;
+    padding: 10px;
+}
+
+.image {
+    padding: 10px;
+    transition: transform .2s;
+    width: 150px;
+    height: 225px;
+    margin: 0 auto;
+}
+
+    .image:hover {
+        -ms-transform: scale(1.5); /* IE 9 */
+        -webkit-transform: scale(1.5); /* Safari 3-8 */
+        transform: scale(1.5);
+    }
