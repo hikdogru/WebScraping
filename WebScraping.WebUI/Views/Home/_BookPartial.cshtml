@@ -1,22 +1,7 @@
 ﻿@model IEnumerable<WebScraping.Entity.Book>
 @section styles
 {
-    <style>
-        .sidenav {
-            height: 100%;
-            width: 160px;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            padding-top: 20px;
-        }
-        
-       
-       
-    </style>
+ 
 }
 
         
@@ -24,8 +9,8 @@
 @foreach (var book in Model)
 {
 
-    <div class="col-md-2 col-sm-4 col-xl-6 d-flex align-items-stretch mb-1">
-        <div class="card border-3" style="width: 100%;" >
+    <div class="col-lg-3 col-md-6 col-sm-10 offset-md-0 offset-sm-1">
+        <div class="card border-3" style="width: 100%;">
             <div class="image">
                 <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
             </div>

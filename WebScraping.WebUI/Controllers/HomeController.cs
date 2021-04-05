@@ -52,6 +52,11 @@ namespace WebScraping.WebUI.Controllers
             return View(_books);
         }
 
+        public ActionResult GetWebsite1()
+        {
+            return View(_books);
+        }
+
         private void Book()
         {
             int n = 100;

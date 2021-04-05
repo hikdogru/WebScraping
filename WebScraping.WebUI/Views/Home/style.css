@@ -1,102 +1,43 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
-}
-
-/* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
-}
-
-/* Set width on the form input elements since they're 100% wide by default */
-select,
-textarea {
-    max-width: 280px;
-}
-
-input {
-    max-width: 400px !important;
-}
-
-input:focus {
-    outline: none !important;
-    border: 1px solid red;
-    box-shadow: 0 0 10px #719ECE;
-}
-
-.image {
-    display: block;
-    margin-top: 5px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-img.img {
-    max-width: 150px;
-    max-height: 225px;
-    position: relative;
-    vertical-align: middle;
-    left: 50%;
-    transform: translate(-50%);
-    height: 200px;
-    width: 125px;
-    object-fit: cover;
-}
-
-img.logo {
-    max-width: 150px;
-    max-height: 225px;
-    left: 50%;
-    width: 100px;
-    object-fit: cover;
-}
-
-div#bookCard .card, div#bookOtherPublisherCard .card {
-    box-shadow: 5px 10px 12px 12px rgb(120 43 45 / 10%), 0 6px 20px 0 rgb(43 45 56 / 10%);
-}
-
-.center {
-    margin: auto;
-    width: 100%;
-    border: 0.1px solid antiquewhite;
-    padding: 10px;
-}
-
-.image {
-    padding: 10px;
-    transition: transform .2s;
-    width: 150px;
-    height: 225px;
-    margin: 0 auto;
-}
-
-    .image:hover {
-        -ms-transform: scale(1.5); /* IE 9 */
-        -webkit-transform: scale(1.5); /* Safari 3-8 */
-        transform: scale(1.5);
-    }
-
-
-/*--------------------------*/
-
-* {
+﻿* {
     box-sizing: border-box
 }
 
+#search {
+    outline: none;
+    border: none;
+    display: inline-block
+}
+
+#burgundy {
+    color: rgb(153, 40, 59)
+}
+
+#orange,
+select,
+.btn {
+    color: orange
+}
+
+.fa-search {
+    font-size: 20px;
+    padding: 10px;
+    margin-bottom: 3px;
+    padding-right: 20px
+}
+
+.search-nav-item {
+    height: 40px
+}
 
 nav {
     padding: 0px 100px
 }
 
-
+.fa-user-o,
+.fa-shopping-cart {
+    font-size: 20px;
+    padding: 4px
+}
 
 .form-group {
     margin-bottom: 5px
@@ -120,12 +61,14 @@ h6 {
 }
 
 .btn {
+    border: 1px solid orange;
     border-radius: 10px;
+    background-color: #fff
 }
 
     .btn:hover {
         color: #fff;
-        background-color: cornflowerblue
+        background-color: orange
     }
 
 .card-body {
@@ -137,56 +80,38 @@ h6 {
     height: 25px
 }
 
-
-
-@media(min-width:1200px) {
-   
-
-    .text {
-        display: none
-    }
-
-    
-
-    #sidebar {
-        width: 30%;
-        padding: 20px;
-        float: left
-    }
-
-    #products {
-        width: 70%;
-        padding: 10px;
-        margin: 0;
-        float: right
-    }
-
-    .card {
-        width: 400px;
-        height: 430px;
-    }
-
-    .card-img-top {
-        width: 295px;
-        height: 400px;
-        border-radius: 10px
-    }
-
-    del {
-        padding-right: 2px
-    }
-
-    .filter,
-    #mobile-filter {
-        display: none
-    }
+.discount {
+    border: 1px solid orange;
+    border-radius: 5px;
+    width: 65px;
+    position: absolute;
+    top: 2%
 }
 
-@media(min-width:992px) and (max-width:1199px) {
-    
+@media(min-width:1200px) {
+    #search {
+        width: 300px;
+        padding: 5px;
+        padding-left: 20px
+    }
+
+    .search-nav-item {
+        margin-left: 400px;
+        width: 350px
+    }
+
+    .fa-user-o {
+        margin-left: 300px
+    }
 
     .text {
         display: none
+    }
+
+    .fa-user-o,
+    .fa-shopping-cart {
+        font-size: 20px;
+        padding-left: 20px
     }
 
     #sidebar {
@@ -204,7 +129,62 @@ h6 {
 
     .card {
         width: 300px;
-        height: 430px;
+        height: 330px;
+        border: none
+    }
+
+    .card-img-top {
+        width: 295px;
+        height: 200px;
+        border-radius: 10px
+    }
+
+    del {
+        padding-right: 2px
+    }
+
+    .filter,
+    #mobile-filter {
+        display: none
+    }
+}
+
+@media(min-width:992px) and (max-width:1199px) {
+    #search {
+        width: 300px;
+        padding: 5px;
+        padding-left: 20px
+    }
+
+    .search-nav-item {
+        margin-left: 200px;
+        width: 350px
+    }
+
+    .fa-user-o {
+        margin-left: 160px
+    }
+
+    .text {
+        display: none
+    }
+
+    #sidebar {
+        width: 30%;
+        padding: 20px;
+        float: left
+    }
+
+    #products {
+        width: 70%;
+        padding: 10px;
+        margin: 0;
+        float: right
+    }
+
+    .card {
+        width: 200px;
+        height: 330px;
         border: none
     }
 
@@ -281,7 +261,16 @@ h6 {
         display: none
     }
 
-    
+    .search-nav-item {
+        margin-left: 35px;
+        width: 270px
+    }
+
+    #search {
+        width: 240px;
+        padding: 5px;
+        padding-left: 20px
+    }
 
     .fa-search {
         padding: 3px;
@@ -321,7 +310,23 @@ h6 {
 }
 
 @media(max-width:575px) {
-   
+    .search-nav-item {
+        margin: 0;
+        width: 100%;
+        margin-top: 10px
+    }
+
+    #search {
+        width: 80%;
+        padding-left: 10px;
+        margin-top: 10px;
+        padding-right: 10px
+    }
+
+    .fa-search {
+        padding: 10px;
+        font-size: 18px
+    }
 
     #sidebar {
         display: none
@@ -338,3 +343,5 @@ h6 {
         margin-top: 2%
     }
 }
+
+</style >

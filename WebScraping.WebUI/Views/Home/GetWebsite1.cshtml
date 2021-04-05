@@ -1,0 +1,110 @@
+﻿@using WebScraping.Entity
+@model List<Book>
+@{ Layout = null; }
+
+<!doctype html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Snippet - BBBootstrap</title>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet'>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <style>
+       
+    </style>
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script type='text/javascript' src='https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js'></script>
+</head>
+<body>
+    <!-- Navbar section -->
+    
+    <div class="filter">
+        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
+    </div>
+    <div id="mobile-filter">
+        
+        <div class="py-2 border-bottom ml-3">
+            <h6 class="font-weight-bold">Categories</h6>
+            <div id="orange"><span class="fa fa-minus"></span></div>
+            <form>
+                <div class="form-group"> <input type="checkbox" id="artisan"> <label for="artisan">Fresh Artisan Breads</label> </div>
+                <div class="form-group"> <input type="checkbox" id="breakfast"> <label for="breakfast">Breakfast Breads</label> </div>
+                <div class="form-group"> <input type="checkbox" id="healthy"> <label for="healthy">Healthy Breads</label> </div>
+            </form>
+        </div>
+        <div class="py-2 border-bottom ml-3">
+            <h6 class="font-weight-bold">Accompainments</h6>
+            <div id="orange"><span class="fa fa-minus"></span></div>
+            <form>
+                <div class="form-group"> <input type="checkbox" id="tea"> <label for="tea">Tea Cakes</label> </div>
+                <div class="form-group"> <input type="checkbox" id="cookies"> <label for="cookies">Cookies</label> </div>
+                <div class="form-group"> <input type="checkbox" id="pastries"> <label for="pastries">Pastries</label> </div>
+                <div class="form-group"> <input type="checkbox" id="dough"> <label for="dough">Cookie Dough</label> </div>
+                <div class="form-group"> <input type="checkbox" id="choco"> <label for="choco">Chocolates</label> </div>
+            </form>
+        </div>
+        <div class="py-2 ml-3">
+            <h6 class="font-weight-bold">Top Offers</h6>
+            <div id="orange"><span class="fa fa-minus"></span></div>
+            <form>
+                <div class="form-group"> <input type="checkbox" id="25off"> <label for="25">25% off</label> </div>
+                <div class="form-group"> <input type="checkbox" id="5off"> <label for="5off" id="off">5% off on artisan breads</label> </div>
+            </form>
+        </div>
+    </div>
+    <!-- Sidebar filter section -->
+    <section id="sidebar">
+        
+        <div class="py-2 border-bottom ml-3">
+            <h6 class="font-weight-bold">Categories</h6>
+            <div id="orange"><span class="fa fa-minus"></span></div>
+            <form>
+                <div class="form-group"> <input type="checkbox" id="artisan"> <label for="artisan">Fresh Artisan Breads</label> </div>
+                <div class="form-group"> <input type="checkbox" id="breakfast"> <label for="breakfast">Breakfast Breads</label> </div>
+                <div class="form-group"> <input type="checkbox" id="healthy"> <label for="healthy">Healthy Breads</label> </div>
+            </form>
+        </div>
+        <div class="py-2 border-bottom ml-3">
+            <h6 class="font-weight-bold">Accompainments</h6>
+            <div id="orange"><span class="fa fa-minus"></span></div>
+            <form>
+                <div class="form-group"> <input type="checkbox" id="tea"> <label for="tea">Tea Cakes</label> </div>
+                <div class="form-group"> <input type="checkbox" id="cookies"> <label for="cookies">Cookies</label> </div>
+                <div class="form-group"> <input type="checkbox" id="pastries"> <label for="pastries">Pastries</label> </div>
+                <div class="form-group"> <input type="checkbox" id="dough"> <label for="dough">Cookie Dough</label> </div>
+                <div class="form-group"> <input type="checkbox" id="choco"> <label for="choco">Chocolates</label> </div>
+            </form>
+        </div>
+        <div class="py-2 ml-3">
+            <h6 class="font-weight-bold">Top Offers</h6>
+            <div id="orange"><span class="fa fa-minus"></span></div>
+            <form>
+                <div class="form-group"> <input type="checkbox" id="25off"> <label for="25">25% off</label> </div>
+                <div class="form-group"> <input type="checkbox" id="5off"> <label for="5off" id="off">5% off on artisan breads</label> </div>
+            </form>
+        </div>
+    </section>
+    <!-- products section -->
+    <section id="products">
+        <div class="container">
+            <div class="d-flex flex-row">
+                <div class="text-muted m-2" id="res">Showing 44 results</div>
+                <div class="ml-auto mr-lg-4">
+                    <div id="sorting" class="border rounded p-1 m-1">
+                        <span class="text-muted">Sort by</span> <select name="sort" id="sort">
+                            <option value="popularity"><b>Popularity</b></option>
+                            <option value="prcie"><b>Price</b></option>
+                            <option value="rating"><b>Rating</b></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                @Html.Partial("_BookPartial", Model)
+            </div>
+        </div>
+    </section>
+</body>
+</html>
