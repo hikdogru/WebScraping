@@ -16,10 +16,7 @@
         <style>
             ul {
                 margin-left: 50%;
-                
             }
-
-
 
             input[type="range"] {
                 width: 50%;
@@ -319,14 +316,14 @@
                     </a>
                 </header>
                 <div class="filter-content collapse show" id="collapse_aside3">
-                   
-                        <input type="text" placeholder="Yayınevi ara" id="searchInput">
-                        <div class="card-body overflow-auto" id="publisherDiv" style="height: 600px;">
-                        @foreach (var publisher in (IEnumerable<ItemCheckedModel>) TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>) ViewBag.Publishers : (IEnumerable<ItemCheckedModel>) TempData["Publishers"])
+
+                    <input type="text" placeholder="Yayınevi ara" id="searchInput">
+                    <div class="card-body overflow-auto" id="publisherDiv" style="height: 600px;">
+                        @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
                         {
                             <form action="~/Home/GetBooksByPublisher" method="POST">
-                                <input type="hidden" name="publisher" value="@publisher.ItemName"/>
-                                <input type="hidden" name="publisherId" value="@publisher.ItemId"/>
+                                <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                                <input type="hidden" name="publisherId" value="@publisher.ItemId" />
                                 <label class="checkbox-btn">
                                     <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
                                 </label>
@@ -353,14 +350,15 @@
                     <div class="card-body overflow-auto" style="height: 500px;" id="authorDiv">
                         @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
                         {
-                            <label class="custom-control">
 
-                                <input type="hidden" name="publisher" value="@author.ItemName" />
-                                <input type="hidden" name="publisherId" value="@author.ItemId" />
-                                <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck"
-                                       class="custom-control-input">
-                                <div class="custom-control-label">@author.ItemName</div>
-                            </label>
+                            <form action="/Home/GetBooksByAuthor" method="GET">
+                                <input type="hidden" name="author" value="@author.ItemName" />
+                                <input type="hidden" name="authorId" value="@author.ItemId" />
+                                <label class="checkbox-btn">
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }">
+                                    <span class="btn btn-light">@author.ItemName</span>
+                                </label>
+                            </form>
                         }
                     </div>
                 </div>
@@ -370,16 +368,30 @@
     @{
         var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
         var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
+        string queryString = Request.QueryString.ToString();
         var routes = TempData["RouteValueDictionary"] as RouteValueDictionary;
         string url = "";
         if (routes != null)
         {
             for (int i = 1; i <= routes.Count; i++)
             {
-                string routeValues = routes["publisher[" + i + "]"].ToString();
-                routeValues = routeValues.Replace(" ", "-");
-                // url sonuna & işareti gelmesin diye kontrol ettik
-                url += routeValues + "&";
+                if (routes.Keys.Contains("publisher"))
+                {
+                    string routeValues = routes["publisher[" + i + "]"].ToString();
+                    routeValues = routeValues.Replace(" ", "-");
+                    // url sonuna & işareti gelmesin diye kontrol ettik
+                    url += routeValues + "&";
+
+                }
+
+                if (routes.Keys.Contains("author"))
+                {
+                    string routeValues = routes["author[" + i + "]"].ToString();
+                    routeValues = routeValues.Replace(" ", "-");
+                    // url sonuna & işareti gelmesin diye kontrol ettik
+                    url += routeValues + "&";
+                }
+
             }
         }
     }
@@ -407,7 +419,7 @@
             {
 
                 <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-                    <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new {publisher = url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
+                    <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new {queryString, publisher = url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
                 </li>
 
             }
