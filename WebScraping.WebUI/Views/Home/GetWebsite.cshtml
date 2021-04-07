@@ -28,6 +28,18 @@
                 border: 1px solid #ccc;
                 padding: 2px 0 2px 9px;
             }
+
+            .preload {
+                display: none;
+            }
+
+            .preload {
+                width: 100px;
+                height: 100px;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+            }
         </style>
     }
 
@@ -318,16 +330,29 @@
                 <div class="filter-content collapse show" id="collapse_aside3">
 
                     <input type="text" placeholder="Yayınevi ara" id="searchInput">
-                    <div class="card-body overflow-auto" id="publisherDiv" style="height: 600px;">
+                    <div class="card-body overflow-auto" id="publisherDiv" style="height: 500px;">
+                        @{
+                            int publisherId = Convert.ToInt16(Request.QueryString["publisher"]);
+                            int authorId = Convert.ToInt16(Request.QueryString["author"]);
+                        }
                         @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
                         {
-                            <form action="~/Home/GetBooksByPublisher" method="POST">
-                                <input type="hidden" name="publisher" value="@publisher.ItemName" />
-                                <input type="hidden" name="publisherId" value="@publisher.ItemId" />
-                                <label class="checkbox-btn">
-                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
-                                </label>
-                            </form>
+                            @*<form action="~/Home/GetBooksByPublisher" method="POST">*@
+                            <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                            <input type="hidden" name="publisherId" value="@publisher.ItemId" />
+                            <label class="checkbox-btn">
+                                @if (publisher.ItemId == publisherId)
+                                {
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" @*checked="@publisher.IsCheck"*@ checked="checked" onclick="getProduct()" value="@publisher.ItemId"> <span class="btn btn-light"> @publisher.ItemName </span>
+
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" onclick="getProduct()" value="@publisher.ItemId"> <span class="btn btn-light"> @publisher.ItemName </span>
+
+                                }
+                            </label>
+                            @*</form>*@
                         }
 
 
@@ -351,14 +376,22 @@
                         @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
                         {
 
-                            <form action="/Home/GetBooksByAuthor" method="GET">
-                                <input type="hidden" name="author" value="@author.ItemName" />
-                                <input type="hidden" name="authorId" value="@author.ItemId" />
-                                <label class="checkbox-btn">
-                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }">
+                            @*<form action="/Home/GetBooksByAuthor" method="GET">*@
+                            <input type="hidden" name="author" value="@author.ItemName" />
+                            <input type="hidden" name="authorId" value="@author.ItemId" />
+                            <label class="checkbox-btn">
+                                @if (author.ItemId == authorId)
+                                {
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" class="chkAuthor" @*checked="@author.IsCheck"*@ checked="checked" onclick="getProduct()" value="@author.ItemId">
                                     <span class="btn btn-light">@author.ItemName</span>
-                                </label>
-                            </form>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" class="chkAuthor" onclick="getProduct()" value="@author.ItemId">
+                                    <span class="btn btn-light">@author.ItemName</span>
+                                }
+                            </label>
+                            @*</form>*@
                         }
                     </div>
                 </div>
@@ -368,41 +401,19 @@
     @{
         var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
         var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
-        string queryString = Request.QueryString.ToString();
-        var routes = TempData["RouteValueDictionary"] as RouteValueDictionary;
-        string url = "";
-        if (routes != null)
-        {
-            for (int i = 1; i <= routes.Count; i++)
-            {
-                if (routes.Keys.Contains("publisher"))
-                {
-                    string routeValues = routes["publisher[" + i + "]"].ToString();
-                    routeValues = routeValues.Replace(" ", "-");
-                    // url sonuna & işareti gelmesin diye kontrol ettik
-                    url += routeValues + "&";
 
-                }
 
-                if (routes.Keys.Contains("author"))
-                {
-                    string routeValues = routes["author[" + i + "]"].ToString();
-                    routeValues = routeValues.Replace(" ", "-");
-                    // url sonuna & işareti gelmesin diye kontrol ettik
-                    url += routeValues + "&";
-                }
-
-            }
-        }
     }
 
-
+    <div class="preload">
+        <img src="https://hackernoon.com/images/0*4Gzjgh9Y7Gu8KEtZ.gif" />
+    </div>
     @* Dropdown ile seçilince karşımıza çıkan ürünler*@
     @if (Model.Books.Count() > 0)
     {
         <p class="text-center h2">@Model.Books.ToList()[0].WebsiteName Çok Satanlar</p>
         <hr>
-        <div class="row mb-3">
+        <div class="row mb-3" id="product">
             @if (booksByPublisher != null)
             {
                 @Html.Partial("_BookPartial", booksByPublisher.PaginatedBooks())
@@ -419,7 +430,7 @@
             {
 
                 <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-                    <a class="page-link" href="@if (routes != null) {@Url.Action("GetWebsite", "Home", new {queryString, publisher = url, ViewBag.minPrice, ViewBag.maxPrice, page = i}) }">@i</a>
+                    <a class="page-link" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author,ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
                 </li>
 
             }
@@ -439,6 +450,7 @@
             document.getElementById('rangeSlider').value = 2;
         </script>
 
+        @* Live Search*@
         <script>
             jQuery("#searchInput").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
@@ -453,6 +465,69 @@
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                 });
             });
+        </script>
+
+        <script>
+
+    var minPrice;
+    var maxPrice;
+    function getProduct() {
+            var publishers = [];
+            var authors = [];
+        $('.chkPublisher:checkbox:checked').each(function () {
+            publishers.push($(this).attr("value"));
+        });
+
+        $('.chkAuthor:checkbox:checked').each(function () {
+            authors.push($(this).attr("value"));
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetWebsite1", "Home")',
+
+                traditional: true,
+                data: { publisher: publishers, minPrice: '@ViewBag.minPrice', maxPrice: '@ViewBag.maxPrice', author: authors},
+
+                success: function (result) {
+                    $(".preload").fadeIn(1000, function() {
+                        $("#product").html(result).fadeIn(750);
+                    });
+
+                    if (authors == 0)
+                    {
+                        if (minPrice==null && maxPrice==null)
+                        {
+                            history.pushState("", " ", '?' + 'publisher=' + publishers);
+                        }
+                        else
+                        {
+                            history.pushState("", " ", '?' + 'publisher=' + publishers + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
+
+                        }
+
+                    }
+                    else
+                    {
+                        if (minPrice==null && maxPrice==null)
+                        {
+                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors);
+                        }
+                        else
+                        {
+                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
+                        }
+
+                    }
+                },
+                error: function () {
+                    alert('Error.');
+                }
+            }).done(function () {
+                $("#thisButton").show();
+                $(".preload").fadeOut(750);
+            });
+        };
         </script>
     }
 

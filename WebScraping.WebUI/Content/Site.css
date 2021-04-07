@@ -162,7 +162,7 @@ h6 {
 
     .card {
         width: 400px;
-        height: 430px;
+        
     }
 
     .card-img-top {
@@ -312,7 +312,7 @@ h6 {
     #res {
         font-size: 14px
     }
-
+    
     .filter,
     #mobile-filter {
         display: none
