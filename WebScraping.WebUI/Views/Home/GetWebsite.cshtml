@@ -34,11 +34,22 @@
             }
 
             .preload {
-                width: 100px;
-                height: 100px;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
                 position: fixed;
-                top: 50%;
-                left: 50%;
+                opacity: 0.6;
+                background-color: #fff;
+                z-index: 99;
+                text-align: center;
+            }
+
+            .preload-img {
+                position: absolute;
+                top: 20%;
+                left: 40%;
+                z-index: 100;
             }
         </style>
     }
@@ -198,9 +209,11 @@
                     }
                     <div class="collapse show" id="collapse_aside2">
                         <div class="card-body">
-                            @minPrice <i class='fa fa-try' aria-hidden='true'></i>
+                            @minPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
                             <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="rangeSliderMobileFilter" id="rangeSliderMobileFilter" oninput="sliderChange(this.value)">
-                            @maxPrice <i class='fa fa-try' aria-hidden='true'></i>
+                            @maxPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
                             <hr>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
@@ -294,9 +307,11 @@
 
                     <div class="filter-content collapse show" id="collapse_aside2" style="">
                         <div class="card-body">
-                            @minPrice <i class='fa fa-try' aria-hidden='true'></i>
+                            @minPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
                             <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="range" id="rangeSlider" oninput="sliderChange(this.value)">
-                            @maxPrice <i class='fa fa-try' aria-hidden='true'></i>
+                            @maxPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
                             <hr>
                             <div class="form-row">
                                 <div class="form-group col-md-6">
@@ -404,13 +419,16 @@
 
 
     }
+    
+@* Sayfalar yüklenirken gelen gif*@
+<div class="preload">
+    <img src="/Content/images/preloaders.gif" class="preload-img" />
+</div>
 
-    <div class="preload">
-        <img src="https://hackernoon.com/images/0*4Gzjgh9Y7Gu8KEtZ.gif" />
-    </div>
     @* Dropdown ile seçilince karşımıza çıkan ürünler*@
     @if (Model.Books.Count() > 0)
     {
+
         <p class="text-center h2">@Model.Books.ToList()[0].WebsiteName Çok Satanlar</p>
         <hr>
         <div class="row mb-3" id="product">
@@ -455,79 +473,71 @@
             jQuery("#searchInput").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
                 jQuery("#publisherDiv *").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
 
             jQuery("#authorInput").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
                 jQuery("#authorDiv *").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
         </script>
 
         <script>
+            var minPrice;
+            var maxPrice;
 
-    var minPrice;
-    var maxPrice;
-    function getProduct() {
-            var publishers = [];
-            var authors = [];
-        $('.chkPublisher:checkbox:checked').each(function () {
-            publishers.push($(this).attr("value"));
-        });
+            function getProduct() {
+                var publishers = [];
+                var authors = [];
+                $('.chkPublisher:checkbox:checked').each(function() {
+                    publishers.push($(this).attr("value"));
+                });
 
-        $('.chkAuthor:checkbox:checked').each(function () {
-            authors.push($(this).attr("value"));
-            });
+                $('.chkAuthor:checkbox:checked').each(function() {
+                    authors.push($(this).attr("value"));
+                });
 
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetWebsite1", "Home")',
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetWebsite1", "Home")',
 
-                traditional: true,
-                data: { publisher: publishers, minPrice: '@ViewBag.minPrice', maxPrice: '@ViewBag.maxPrice', author: authors},
+                    traditional: true,
+                    data: { publisher: publishers, minPrice: '@ViewBag.minPrice', maxPrice: '@ViewBag.maxPrice', author: authors },
 
-                success: function (result) {
-                    $(".preload").fadeIn(1000, function() {
-                        $("#product").html(result).fadeIn(750);
-                    });
+                    success: function(result) {
+                        $(".preload").fadeIn(1000,
+                            function() {
+                                $("#product").html(result).fadeIn(750);
+                            });
 
-                    if (authors == 0)
-                    {
-                        if (minPrice==null && maxPrice==null)
-                        {
-                            history.pushState("", " ", '?' + 'publisher=' + publishers);
+                        if (authors == 0) {
+                            if (minPrice == null && maxPrice == null) {
+                                history.pushState("", " ", `?publisher=${publishers}`);
+                            } else {
+                                history.pushState("", " ", `?publisher=${publishers}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+
+                            }
+
+                        } else {
+                            if (minPrice == null && maxPrice == null) {
+                                history.pushState("", "", `?publisher=${publishers}&author=${authors}`);
+                            } else {
+                                history.pushState("", "", `?publisher=${publishers}&author=${authors}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+                            }
+
                         }
-                        else
-                        {
-                            history.pushState("", " ", '?' + 'publisher=' + publishers + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
-
-                        }
-
+                    },
+                    error: function() {
+                        alert('Error.');
                     }
-                    else
-                    {
-                        if (minPrice==null && maxPrice==null)
-                        {
-                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors);
-                        }
-                        else
-                        {
-                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
-                        }
-
-                    }
-                },
-                error: function () {
-                    alert('Error.');
-                }
-            }).done(function () {
-                $("#thisButton").show();
-                $(".preload").fadeOut(750);
-            });
-        };
+                }).done(function() {
+                    $("#thisButton").show();
+                    $(".preload").fadeOut(750);
+                });
+            };
         </script>
     }
 

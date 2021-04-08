@@ -54,7 +54,20 @@ namespace WebScraping.WebUI.Controllers
 
         public PartialViewResult GetWebsite1(List<string> publisher, List<string> author, int? minPrice, int? maxPrice)
         {
-            return PartialView("/Views/Home/_BookPartial.cshtml",books.Where(b => b.Publisher.Contains("Banka")).ToList());
+            IEnumerable<Book> filteredItems = null;
+            if (publisher != null && publisher.Count > 0)
+            {
+                var entities = _itemCheckedModels.Where(m =>publisher.Any(p=>int.Parse(p) ==m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                filteredItems = books.Where(b => entities.Any(p => p == b.Publisher));
+                ViewBag.publisher = entities;
+            }
+
+            if (author != null && author.Count > 0)
+            {
+                filteredItems = filteredItems.Where(b => author.Any(a => a == b.Author));
+                
+            }
+            return PartialView("/Views/Home/_BookPartial.cshtml", filteredItems.ToList());
         }
 
         private void Book()
@@ -371,9 +384,9 @@ namespace WebScraping.WebUI.Controllers
             IEnumerable<Book> filteredItems = null;
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
-            itemViewModel.CurrentPage = (int) page;
+            itemViewModel.CurrentPage = (int)page;
             itemViewModel.Books = books;
-            ViewBag.author = author ?? " " ;
+            ViewBag.author = author ?? " ";
             ViewBag.publisher = publisher ?? " ";
             if (minPrice != 0 && maxPrice != 0)
             {
@@ -537,7 +550,7 @@ namespace WebScraping.WebUI.Controllers
             TempData["minPrice"] = minPrice;
             TempData["maxPrice"] = maxPrice;
             return RedirectToAction("GetWebsite", "Home",
-                new RouteValueDictionary(new {url, minPrice = minPrice, maxPrice = maxPrice}));
+                new RouteValueDictionary(new { url, minPrice = minPrice, maxPrice = maxPrice }));
         }
 
         [HttpPost]
@@ -547,7 +560,7 @@ namespace WebScraping.WebUI.Controllers
             {
                 var otherPublishers = _books.Where(b => b.Name.ToUpper()
                         .Contains(query.ToUpper()) && b.Publisher != "")
-                    .GroupBy(b => new {b.Publisher, b.Name})
+                    .GroupBy(b => new { b.Publisher, b.Name })
                     .Select(b => b.FirstOrDefault())
                     .OrderBy(b => ReplaceString(b.Price)).ToList();
 
@@ -617,7 +630,7 @@ namespace WebScraping.WebUI.Controllers
                         double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
                 }
 
-                var itemViewModel = new ItemViewModel() {BookPerPage = 24, Books = booksByPublisher, CurrentPage = 1};
+                var itemViewModel = new ItemViewModel() { BookPerPage = 24, Books = booksByPublisher, CurrentPage = 1 };
                 TempData["ItemViewModel"] = itemViewModel;
                 _routeValues = new RouteValueDictionary();
                 for (int i = 1; i <= checkedPublishers.Count(); i++)
@@ -637,7 +650,7 @@ namespace WebScraping.WebUI.Controllers
 
 
 
-            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new {publisher = publisher}));
+            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { publisher = publisher }));
             //return RedirectToAction("GetWebsite", "Home",
             //    new RouteValueDictionary(_routeValues));
         }
@@ -662,11 +675,11 @@ namespace WebScraping.WebUI.Controllers
             var checkedAuthors = _itemCheckedModels.Where(m => m.IsCheck && m.ItemEntityName == "Author")
                 .GroupBy(m => m.ItemName).Select(m => m.Key);
             var booksByAuthor = books.Where(b => checkedAuthors.Any(a => a == b.Author));
-            var itemViewModel = new ItemViewModel() {BookPerPage = 24, Books = booksByAuthor, CurrentPage = 1};
+            var itemViewModel = new ItemViewModel() { BookPerPage = 24, Books = booksByAuthor, CurrentPage = 1 };
             TempData["ItemViewModel"] = itemViewModel;
 
             //return Redirect("/Home/GetWebsite?" + url);
-            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new {author = author}));
+            return RedirectToAction("GetWebsite", "Home", new RouteValueDictionary(new { author = author }));
         }
 
 
@@ -674,7 +687,7 @@ namespace WebScraping.WebUI.Controllers
         public static int ReplaceString(string price)
         {
             string bookPrice = price.Replace("TL", "");
-            return (int) float.Parse(bookPrice);
+            return (int)float.Parse(bookPrice);
         }
 
         public void GetBookPublisher(List<string> urls, string websiteName)
