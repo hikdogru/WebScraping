@@ -1,37 +1,39 @@
-﻿@model IEnumerable<WebScraping.Entity.Book>
+﻿@*@using WebScraping.WebUI.ViewModel
+@model ItemViewModel*@
+@*@model IEnumerable<WebScraping.Entity.Book>*@
 @section styles
 {
- 
+
 }
 
-        
+
 
 @foreach (var book in Model)
 {
 
-    <div class="col-lg-3 col-md-6 col-sm-10 offset-md-0 offset-sm-1">
-        <div class="card border-3" style="width: 100%;">
-            <div class="image">
-                <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
-            </div>
-            <div class="card-body text-center">
-                <h5 class="card-title" style="color: #ea8987;">@(book.Name.Length > 20 ? book.Name.Substring(0, 20) + "..." : book.Name)</h5>
-                <h5 class="card-title" style="color: #f58322;font-size: 90%;">@(book.Author.Length > 20 ? book.Author.Substring(0, 20) + "..." : book.Author)</h5>
-
-                <p class="card-text">
-                    <h4>
-                        <span class="badge badge-pill" style="background-color: cornflowerblue;color: white">
-                            @book.Price <i class='fa fa-try' aria-hidden='true'></i>
-                        </span>
-                    </h4>
-                </p>
-                <p class="card-text">@book.Website</p>
-                <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> @book.Publisher</p>
-                <a href="@book.BookDetailUrl" class="btn btn-secondary" target="_blank">Ürüne git</a>
-            </div>
+<div class="col-lg-3 col-md-6 col-sm-10 offset-md-0 offset-sm-1">
+    <div class="card border-3" style="width: 100%;">
+        <div class="image">
+            <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
         </div>
+        <div class="card-body text-center">
+            <h5 class="card-title" style="color: #ea8987;">@(book.Name.Length > 20 ? book.Name.Substring(0, 20) + "..." : book.Name)</h5>
+            <h5 class="card-title" style="color: #f58322;font-size: 90%;">@(book.Author.Length > 20 ? book.Author.Substring(0, 20) + "..." : book.Author)</h5>
 
+            <p class="card-text">
+                <h4>
+                    <span class="badge badge-pill" style="background-color: cornflowerblue;color: white">
+                        @book.Price <i class='fa fa-try' aria-hidden='true'></i>
+                    </span>
+                </h4>
+            </p>
+            <p class="card-text">@book.Website</p>
+            <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> @book.Publisher</p>
+            <a href="@book.BookDetailUrl" class="btn btn-secondary" target="_blank">Ürüne git</a>
+        </div>
     </div>
+
+</div>
 
 
 

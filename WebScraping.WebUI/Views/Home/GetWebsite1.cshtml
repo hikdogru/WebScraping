@@ -1,111 +1,417 @@
-﻿@using WebScraping.Entity
-@model IEnumerable<Book>
-@{ Layout = null; }
+﻿@using WebScraping.WebUI.Models
+@using WebScraping.WebUI.ViewModel
+@model ItemViewModel
 
-<!doctype html>
+<!DOCTYPE html>
+
 <html>
 <head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Snippet - BBBootstrap</title>
-    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' rel='stylesheet'>
-    <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet'>
-    <link href="~/Content/Site.css" rel="stylesheet" />
-    <style>
-       
-    </style>
-    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-    <script type='text/javascript' src='https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js'></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>title</title>
+
+    @section styles
+    {
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            ul {
+                margin-left: 50%;
+            }
+
+            input[type="range"] {
+                width: 50%;
+            }
+
+            input[type="text"] {
+                width: 90%;
+                margin: .5rem 1rem;
+                border: 1px solid #ccc;
+                padding: 2px 0 2px 9px;
+            }
+
+            .preload {
+                display: none;
+            }
+
+            .preload {
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                position: fixed;
+                opacity: 0.6;
+                background-color: #fff;
+                z-index: 99;
+                text-align: center;
+            }
+
+            .preload-img {
+                position: absolute;
+                top: 20%;
+                left: 40%;
+                z-index: 100;
+            }
+        </style>
+    }
+
 </head>
 <body>
-    <!-- Navbar section -->
-    
+
     <div class="filter">
         <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
     </div>
     <div id="mobile-filter">
-        
-        <div class="py-2 border-bottom ml-3">
-            <h6 class="font-weight-bold">Categories</h6>
-            <div id="orange"><span class="fa fa-minus"></span></div>
-            <form>
-                <div class="form-group"> <input type="checkbox" id="artisan"> <label for="artisan">Fresh Artisan Breads</label> </div>
-                <div class="form-group"> <input type="checkbox" id="breakfast"> <label for="breakfast">Breakfast Breads</label> </div>
-                <div class="form-group"> <input type="checkbox" id="healthy"> <label for="healthy">Healthy Breads</label> </div>
+
+        <div class="py-5 border-bottom ml-3">
+            <form action="~/Home/GetFilteredItems" method="POST">
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
+                           data-abc="true" aria-expanded="true">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title d-inline">Fiyat </h6>
+                        </a>
+                    </header>
+                    @{
+                        for (int i = 0; i < Model.Books.ToList().Count; i++)
+                        {
+                            Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace("TL", "");
+                            Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace(",", ".");
+                        }
+                        double maxPrice = 0.0;
+                        double minPrice = 0.0;
+                        if (Model.Books.ToList().Count > 0)
+                        {
+                            maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
+                            minPrice = Model.Books.Min(b => double.Parse(b.Price));
+
+                        }
+                        int n = 1;
+                    }
+                    <div class="collapse show" id="collapse_aside2">
+                        <div class="card-body">
+                            @minPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
+                            <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="rangeSliderMobileFilter" id="rangeSliderMobileFilter" oninput="sliderChange(this.value)">
+                            @maxPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
+                            <hr>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Min</label>
+                                    <input class="form-control"
+                                           placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPriceMobileFilter">
+                                </div>
+                                <div class="form-group text-right col-md-6">
+                                    <label>Max</label>
+                                    <input class="form-control"
+                                           placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPriceMobileFilter">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-xl" style="width: 100%;">
+                                Uygula
+                            </button>
+                        </div>
+                    </div>
+                </article>
             </form>
         </div>
         <div class="py-2 border-bottom ml-3">
-            <h6 class="font-weight-bold">Accompainments</h6>
-            <div id="orange"><span class="fa fa-minus"></span></div>
-            <form>
-                <div class="form-group"> <input type="checkbox" id="tea"> <label for="tea">Tea Cakes</label> </div>
-                <div class="form-group"> <input type="checkbox" id="cookies"> <label for="cookies">Cookies</label> </div>
-                <div class="form-group"> <input type="checkbox" id="pastries"> <label for="pastries">Pastries</label> </div>
-                <div class="form-group"> <input type="checkbox" id="dough"> <label for="dough">Cookie Dough</label> </div>
-                <div class="form-group"> <input type="checkbox" id="choco"> <label for="choco">Chocolates</label> </div>
-            </form>
+            <article class="filter-group">
+                <header class="card-header">
+                    <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
+                       data-abc="true" class="collapsed" aria-expanded="false">
+                        <i class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title d-inline">Yayınevleri </h6>
+                    </a>
+                </header>
+                <div class="filter-content collapse" id="collapse_aside3" style="">
+                    <div class="card-body overflow-auto" style="height: 20rem;">
+
+                        @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
+                        {
+                            <form action="~/Home/GetBooksByPublisher" method="POST">
+                                <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                                <input type="hidden" name="publisherId" value="@publisher.ItemId" />
+                                <label class="checkbox-btn">
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
+                                </label>
+                            </form>
+                        }
+
+
+                    </div>
+                </div>
+
+            </article>
         </div>
         <div class="py-2 ml-3">
-            <h6 class="font-weight-bold">Top Offers</h6>
-            <div id="orange"><span class="fa fa-minus"></span></div>
-            <form>
-                <div class="form-group"> <input type="checkbox" id="25off"> <label for="25">25% off</label> </div>
-                <div class="form-group"> <input type="checkbox" id="5off"> <label for="5off" id="off">5% off on artisan breads</label> </div>
-            </form>
+            <article class="filter-group">
+                <header class="card-header">
+                    <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
+                       data-abc="true" class="collapsed" aria-expanded="false">
+                        <i class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title d-inline">Yazarlar </h6>
+                    </a>
+                </header>
+                <div class="filter-content collapse" id="collapse_aside4">
+                    <div class="card-body overflow-auto" style="height: 20rem;">
+                        @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
+                        {
+                            <label class="custom-control">
+
+                                <input type="hidden" name="publisher" value="@author.ItemName" />
+                                <input type="hidden" name="publisherId" value="@author.ItemId" />
+                                <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck"
+                                       class="custom-control-input">
+                                <div class="custom-control-label">@author.ItemName</div>
+                            </label>
+                        }
+                    </div>
+                </div>
+            </article>
         </div>
     </div>
     <!-- Sidebar filter section -->
     <section id="sidebar">
-        
-        <div class="py-2 border-bottom ml-3">
-            <h6 class="font-weight-bold">Categories</h6>
-            <div id="orange"><span class="fa fa-minus"></span></div>
-            <form>
-                <div class="form-group"> <input type="checkbox" id="artisan"> <label for="artisan">Fresh Artisan Breads</label> </div>
-                <div class="form-group"> <input type="checkbox" id="breakfast"> <label for="breakfast">Breakfast Breads</label> </div>
-                <div class="form-group"> <input type="checkbox" id="healthy"> <label for="healthy">Healthy Breads</label> </div>
+
+        <div class="py-5 border-bottom ml-3">
+            <form action="~/Home/GetFilteredItems" method="POST">
+                <article class="filter-group">
+                    <header class="card-header">
+                        <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
+                           data-abc="true" aria-expanded="True">
+                            <i class="icon-control fa fa-chevron-down"></i>
+                            <h6 class="title d-inline">Fiyat </h6>
+                        </a>
+                    </header>
+
+                    <div class="filter-content collapse show" id="collapse_aside2" style="">
+                        <div class="card-body">
+                            @minPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
+                            <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="range" id="rangeSlider" oninput="sliderChange(this.value)">
+                            @maxPrice
+                            <i class='fa fa-try' aria-hidden='true'></i>
+                            <hr>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Min</label>
+                                    <input class="form-control"
+                                           placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPrice">
+                                </div>
+                                <div class="form-group text-right col-md-6">
+                                    <label>Max</label>
+                                    <input class="form-control"
+                                           placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPrice">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-xl" style="width: 100%;">
+                                Uygula
+                            </button>
+                        </div>
+                    </div>
+                </article>
             </form>
         </div>
         <div class="py-2 border-bottom ml-3">
-            <h6 class="font-weight-bold">Accompainments</h6>
-            <div id="orange"><span class="fa fa-minus"></span></div>
-            <form>
-                <div class="form-group"> <input type="checkbox" id="tea"> <label for="tea">Tea Cakes</label> </div>
-                <div class="form-group"> <input type="checkbox" id="cookies"> <label for="cookies">Cookies</label> </div>
-                <div class="form-group"> <input type="checkbox" id="pastries"> <label for="pastries">Pastries</label> </div>
-                <div class="form-group"> <input type="checkbox" id="dough"> <label for="dough">Cookie Dough</label> </div>
-                <div class="form-group"> <input type="checkbox" id="choco"> <label for="choco">Chocolates</label> </div>
-            </form>
-        </div>
-        <div class="py-2 ml-3">
-            <h6 class="font-weight-bold">Top Offers</h6>
-            <div id="orange"><span class="fa fa-minus"></span></div>
-            <form>
-                <div class="form-group"> <input type="checkbox" id="25off"> <label for="25">25% off</label> </div>
-                <div class="form-group"> <input type="checkbox" id="5off"> <label for="5off" id="off">5% off on artisan breads</label> </div>
-            </form>
-        </div>
-    </section>
-    <!-- products section -->
-    <section id="products">
-        <div class="container">
-            <div class="d-flex flex-row">
-                <div class="text-muted m-2" id="res">Showing 44 results</div>
-                <div class="ml-auto mr-lg-4">
-                    <div id="sorting" class="border rounded p-1 m-1">
-                        <span class="text-muted">Sort by</span> <select name="sort" id="sort">
-                            <option value="popularity"><b>Popularity</b></option>
-                            <option value="prcie"><b>Price</b></option>
-                            <option value="rating"><b>Rating</b></option>
-                        </select>
+            <article class="filter-group">
+                <header class="card-header">
+                    <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
+                       data-abc="true" aria-expanded="True">
+                        <i class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title d-inline">Yayınevleri </h6>
+                    </a>
+                </header>
+                <div class="filter-content collapse show" id="collapse_aside3">
+
+                    <input type="text" placeholder="Yayınevi ara" id="searchInput">
+                    <div class="card-body overflow-auto" id="publisherDiv" style="height: 500px;">
+                        @{
+                            int publisherId = Convert.ToInt16(Request.QueryString["publisher"]);
+                            int authorId = Convert.ToInt16(Request.QueryString["author"]);
+                        }
+                        @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
+                        {
+                            @*<form action="~/Home/GetBooksByPublisher" method="POST">*@
+                            <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                            <input type="hidden" name="publisherId" value="@publisher.ItemId" />
+                            <label class="checkbox-btn">
+                                @if (publisher.ItemId == publisherId)
+                                {
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" @*checked="@publisher.IsCheck"*@ checked="checked" onclick="getProduct()" value="@publisher.ItemId"> <span class="btn btn-light"> @publisher.ItemName </span>
+
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" onclick="getProduct()" value="@publisher.ItemId"> <span class="btn btn-light"> @publisher.ItemName </span>
+
+                                }
+                            </label>
+                            @*</form>*@
+                        }
+
+
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                @Html.Partial("_BookPartial", Model)
-            </div>
+
+            </article>
         </div>
-        
+        <div class="py-2 ml-3">
+            <article class="filter-group">
+                <header class="card-header">
+                    <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
+                       data-abc="true" aria-expanded="True">
+                        <i class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title d-inline">Yazarlar </h6>
+                    </a>
+                </header>
+                <div class="filter-content collapse show" id="collapse_aside4" style="">
+                    <input type="text" name="authorInput" id="authorInput" placeholder="Yazar ara">
+                    <div class="card-body overflow-auto" style="height: 500px;" id="authorDiv">
+                        @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
+                        {
+
+                            @*<form action="/Home/GetBooksByAuthor" method="GET">*@
+                            <input type="hidden" name="author" value="@author.ItemName" />
+                            <input type="hidden" name="authorId" value="@author.ItemId" />
+                            <label class="checkbox-btn">
+                                @if (author.ItemId == authorId)
+                                {
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" @*checked="@author.IsCheck"*@ checked="checked" onclick="getProduct()" value="@author.ItemId">
+                                    <span class="btn btn-light">@author.ItemName</span>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" onclick="getProduct()" value="@author.ItemId">
+                                    <span class="btn btn-light">@author.ItemName</span>
+                                }
+                            </label>
+                            @*</form>*@
+                        }
+                    </div>
+                </div>
+            </article>
+        </div>
     </section>
+    @{
+        var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
+        var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
+
+
+    }
+    @if (Model.Books.Count() > 0)
+    {
+
+        <p class="text-center h2">@Model.Books.ToList()[0].WebsiteName Çok Satanlar</p>
+        <hr>
+        <div class="row mb-3" id="product">
+
+
+            @Html.Partial("_GetProduct", Model)
+
+        </div>
+
+
+    }
+    @* Sayfalar yüklenirken gelen gif*@
+    <div class="preload">
+        <img src="/Content/images/preloaders.gif" class="preload-img" />
+    </div>
+
+    @* Dropdown ile seçilince karşımıza çıkan ürünler*@
+
+
+    @section scripts
+    {
+
+        <script>
+            function sliderChange(val) {
+                document.getElementById('minPrice').value = parseInt(@minPrice);
+                document.getElementById('maxPrice').value = parseInt(val);
+            }
+            document.getElementById('rangeSlider').value = 2;
+        </script>
+
+        @* Live Search*@
+        <script>
+            jQuery("#searchInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                jQuery("#publisherDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            jQuery("#authorInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                jQuery("#authorDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        </script>
+
+        <script>
+            var minPrice;
+    var maxPrice;
+    function getProduct() {
+            var publishers = [];
+            var authors = [];
+        $('.chkPublisher:checkbox:checked').each(function () {
+            publishers.push($(this).attr("value"));
+        });
+
+        $('.chkAuthor:checkbox:checked').each(function () {
+            authors.push($(this).attr("value"));
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetWebsite1", "Home")',
+
+                traditional: true,
+                data: { publisher: publishers, minPrice: '@ViewBag.minPrice', maxPrice: '@ViewBag.maxPrice', author: authors},
+
+                success: function (result) {
+                    $(".preload").fadeIn(1000, function() {
+                        $("#product").html(result).fadeIn(750);
+                    });
+
+                    if (authors == 0)
+                    {
+                        if (minPrice==null && maxPrice==null)
+                        {
+                            history.pushState("", " ", '?' + 'publisher=' + publishers);
+                        }
+                        else
+                        {
+                            history.pushState("", " ", '?' + 'publisher=' + publishers + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
+
+                        }
+
+                    }
+                    else
+                    {
+                        if (minPrice==null && maxPrice==null)
+                        {
+                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors);
+                        }
+                        else
+                        {
+                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
+                        }
+
+                    }
+                },
+                error: function () {
+                    alert('Error.');
+                }
+            }).done(function () {
+                $("#thisButton").show();
+                $(".preload").fadeOut(750);
+            });
+        };
+        </script>
+    }
+
 </body>
 </html>

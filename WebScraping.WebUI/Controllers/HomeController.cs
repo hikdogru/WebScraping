@@ -20,10 +20,12 @@ namespace WebScraping.WebUI.Controllers
         private static List<Book> books;
         private static List<ItemCheckedModel> _itemCheckedModels = new List<ItemCheckedModel>();
         private List<string> _amazonBookDetails;
+        
         private List<HtmlNodeCollection> BookDetailsNode = new List<HtmlNodeCollection>();
         private List<string> BookDetailUrl = new List<string>();
         private static RouteValueDictionary _routeValues;
         int pageSize = 20;
+        private static int n = 1;
 
         Dictionary<string, string> _booksLogoUrl = new Dictionary<string, string>()
         {
@@ -52,22 +54,59 @@ namespace WebScraping.WebUI.Controllers
             return View(_books);
         }
 
-        public PartialViewResult GetWebsite1(List<string> publisher, List<string> author, int? minPrice, int? maxPrice)
+        public ActionResult GetWebsite1(List<string> publisher, List<string> author, /*string publisher, string author,*/ int? minPrice, int? maxPrice, int? page = 1)
         {
-            IEnumerable<Book> filteredItems = null;
+            var itemViewModel = new ItemViewModel();
+            itemViewModel.BookPerPage = 24;
+            itemViewModel.CurrentPage = (int)page;
+            IEnumerable<Book> filteredItems = books;
             if (publisher != null && publisher.Count > 0)
             {
-                var entities = _itemCheckedModels.Where(m =>publisher.Any(p=>int.Parse(p) ==m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
-                filteredItems = books.Where(b => entities.Any(p => p == b.Publisher));
-                ViewBag.publisher = entities;
+                if (publisher[0].IndexOf(",") >= 0)
+                {
+                    var publisherId = publisher[0].Split(',').ToList();
+                    var publishers = _itemCheckedModels.Where(m => publisherId.Any(p => int.Parse(p) == m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = books.Where(b => publishers.Any(p => p == b.Publisher));
+                }
+
+                else
+                {
+                    var entities = _itemCheckedModels.Where(m => publisher.Any(p => int.Parse(p) == m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = books.Where(b => entities.Any(p => p == b.Publisher));
+                }
+
+                publisher.ForEach(p => ViewBag.publisher += p + (publisher.Count > 1 ? "," : ""));
             }
 
             if (author != null && author.Count > 0)
             {
-                filteredItems = filteredItems.Where(b => author.Any(a => a == b.Author));
-                
+                if (author[0].IndexOf(",") >= 0)
+                {
+                    var authorId = author[0].Split(',').ToString();
+                }
+                var entities = _itemCheckedModels.Where(m => author.Any(a => int.Parse(a.Replace(",", "")) == m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                filteredItems = filteredItems.Where(b => entities.Any(a => a == b.Author));
+                author.ForEach(a => ViewBag.author += a + (author.Count > 1 ? "," : ""));
             }
-            return PartialView("/Views/Home/_BookPartial.cshtml", filteredItems.ToList());
+
+            //if (!String.IsNullOrEmpty(author))
+            //{
+            //    var entity = _itemCheckedModels.Where(m => m.ItemEntityName == "Author" && m.ItemId == int.Parse(author)).GroupBy(m=>m.ItemName).Select(b=>b.Key);
+            //    filteredItems = books.Where(b => entity.Any(p => p == b.Author));
+            //    ViewBag.author = author;
+            //}
+            //if (!String.IsNullOrEmpty(publisher))
+            //{
+            //    var entity = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher" && m.ItemId == int.Parse(publisher)).GroupBy(m => m.ItemName).Select(b => b.Key);
+            //    filteredItems = books.Where(b=> entity.Any(p => p == b.Publisher));
+            //    ViewBag.publisher = publisher;
+            //}
+
+            itemViewModel.Books = filteredItems;
+            //return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
+            return RedirectToAction("GetWebsite", "Home",
+                new RouteValueDictionary(new { publisher = ViewBag.publisher, author = ViewBag.author, page = page }));
+
         }
 
         private void Book()
@@ -379,61 +418,83 @@ namespace WebScraping.WebUI.Controllers
         }
 
 
-        public ActionResult GetWebsite(int? page = 1, int minPrice = 0, int maxPrice = 0, string author = "", string publisher = "")
+        public ActionResult GetWebsite(List<string> publisher, List<string> author, int? minPrice, int? maxPrice, int? page = 1)
         {
-            IEnumerable<Book> filteredItems = null;
+            //IEnumerable<Book> filteredItems = null;
+            //var itemViewModel = new ItemViewModel();
+            //itemViewModel.BookPerPage = 24;
+            //itemViewModel.CurrentPage = (int)page;
+            //itemViewModel.Books = books;
+            ////if (minPrice != 0 && maxPrice != 0)
+            ////{
+            ////    ViewBag.minPrice = minPrice;
+            ////    ViewBag.maxPrice = maxPrice;
+            ////    filteredItems = books.Where(b =>
+            ////        double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+            ////    itemViewModel.Books = filteredItems;
+            ////}
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
             itemViewModel.CurrentPage = (int)page;
-            itemViewModel.Books = books;
-            ViewBag.author = author ?? " ";
-            ViewBag.publisher = publisher ?? " ";
-            if (minPrice != 0 && maxPrice != 0)
+            IEnumerable<Book> filteredItems = books;
+            if (publisher != null && publisher.Count > 0)
             {
-                ViewBag.minPrice = minPrice;
-                ViewBag.maxPrice = maxPrice;
-                filteredItems = books.Where(b =>
-                    double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
-                itemViewModel.Books = filteredItems;
+                if (publisher[0].IndexOf(",") >= 0)
+                {
+                    var publisherId = publisher[0].Split(',').ToList();
+                    var publishers = _itemCheckedModels.Where(m => publisherId.Any(p => int.Parse(!String.IsNullOrEmpty(p) ? p : "0") == m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = filteredItems.Where(b => publishers.Any(p => p == b.Publisher));
+                    ViewBag.publisherId = publisherId;
+                }
+
+                else
+                {
+                    var entities = _itemCheckedModels.Where(m => publisher.Any(p => int.Parse(p.Replace(",", "")) == m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = filteredItems.Where(b => entities.Any(p => p == b.Publisher));
+                    ViewBag.publisherId = publisher;
+                }
+
+                publisher.ForEach(p => ViewBag.publisher += p + (publisher.Count > 1 ? "," : ""));
+                
             }
 
-            if (!String.IsNullOrEmpty(author))
+            if (author != null && author.Count > 0)
             {
-                var checkedAuthors = _itemCheckedModels.Where(m => m.IsCheck && m.ItemEntityName == "Author")
-                    .GroupBy(m => m.ItemName).Select(m => m.Key);
-                filteredItems = books.Where(b => checkedAuthors.Any(a => a == b.Author));
-                itemViewModel.Books = filteredItems;
+                if (author[0].IndexOf(",") >= 0)
+                {
+                    var authorId = author[0].Split(',').ToList();
+                    var authors = _itemCheckedModels.Where(m => authorId.Any(a => int.Parse(!String.IsNullOrEmpty(a) ? a : "0") == m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = filteredItems.Where(b => authors.Any(a => a == b.Author));
+                    ViewBag.authorId = authorId;
+                }
+                else
+                {
+                    var entities = _itemCheckedModels.Where(m => author.Any(a => int.Parse(a.Replace(",", "")) == m.ItemId)).GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = filteredItems.Where(b => entities.Any(a => a == b.Author));
+                    ViewBag.authorId = author;
+                }
+
+                author.ForEach(a => ViewBag.author += a + (author.Count > 1 ? "," : ""));
+                
+
             }
 
-            if (!String.IsNullOrEmpty(publisher))
-            {
-                var checkedPublishers = _itemCheckedModels.Where(m => m.IsCheck && m.ItemEntityName == "Publisher")
-                    .GroupBy(m => m.ItemName).Select(m => m.Key);
-                filteredItems = books.Where(b => checkedPublishers.Any(a => a == b.Publisher));
-                itemViewModel.Books = filteredItems;
-            }
-            if (_routeValues != null)
-            {
-                if (_routeValues.Keys.Contains("publisher"))
-                {
-                    filteredItems = (filteredItems != null ? filteredItems : books).Where(b =>
-                        _routeValues.Values.Any(p => p.ToString() == b.Publisher));
-                    itemViewModel.Books = filteredItems;
-                }
-                else if (_routeValues.Keys.Contains("author"))
-                {
-                    filteredItems = (filteredItems != null ? filteredItems : books).Where(b =>
-                        _routeValues.Values.Any(p => p.ToString() == b.Author));
-                    itemViewModel.Books = filteredItems;
-                }
-            }
+            itemViewModel.Books = filteredItems;
 
             GetItemsByChecked();
             // checkbox publishers value
             TempData["Publishers"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
             // checkbox authors value
             TempData["Authors"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
-            return View(itemViewModel);
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
+            }
+            else
+            {
+                return View(itemViewModel);
+            }
         }
 
         private static void GetItemsByChecked()

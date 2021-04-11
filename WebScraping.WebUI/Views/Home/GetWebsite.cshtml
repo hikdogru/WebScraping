@@ -347,8 +347,8 @@
                     <input type="text" placeholder="Yayınevi ara" id="searchInput">
                     <div class="card-body overflow-auto" id="publisherDiv" style="height: 500px;">
                         @{
-                            int publisherId = Convert.ToInt16(Request.QueryString["publisher"]);
-                            int authorId = Convert.ToInt16(Request.QueryString["author"]);
+                            var publisherIds = (List<string>) ViewBag.publisherId;
+                            var authorIds = (List<string>)ViewBag.authorId;
                         }
                         @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
                         {
@@ -356,14 +356,20 @@
                             <input type="hidden" name="publisher" value="@publisher.ItemName" />
                             <input type="hidden" name="publisherId" value="@publisher.ItemId" />
                             <label class="checkbox-btn">
-                                @if (publisher.ItemId == publisherId)
+                                @if (publisherIds != null)
                                 {
-                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" @*checked="@publisher.IsCheck"*@ checked="checked" onclick="getProduct()" value="@publisher.ItemId"> <span class="btn btn-light"> @publisher.ItemName </span>
+                                    if (publisherIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == publisher.ItemId))
+                                    {
+                                        <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" checked="checked" onclick="getProduct()" value="@publisher.ItemId">
+                                        <span class="btn btn-light"> @publisher.ItemName </span>
 
+                                    }
                                 }
+
                                 else
                                 {
-                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" onclick="getProduct()" value="@publisher.ItemId"> <span class="btn btn-light"> @publisher.ItemName </span>
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" onclick="getProduct()" value="@publisher.ItemId">
+                                    <span class="btn btn-light"> @publisher.ItemName </span>
 
                                 }
                             </label>
@@ -395,15 +401,19 @@
                             <input type="hidden" name="author" value="@author.ItemName" />
                             <input type="hidden" name="authorId" value="@author.ItemId" />
                             <label class="checkbox-btn">
-                                @if (author.ItemId == authorId)
+                                @if (authorIds != null)
                                 {
-                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" class="chkAuthor" @*checked="@author.IsCheck"*@ checked="checked" onclick="getProduct()" value="@author.ItemId">
-                                    <span class="btn btn-light">@author.ItemName</span>
+                                    if (authorIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == author.ItemId))
+                                    {
+                                        <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" @*checked="@author.IsCheck"*@ checked="checked" onclick="getProduct()" value="@author.ItemId">
+                                        <span class="btn btn-light">@author.ItemName</span>
+                                    }
                                 }
+                                
                                 else
                                 {
-                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" class="chkAuthor" onclick="getProduct()" value="@author.ItemId">
-                                    <span class="btn btn-light">@author.ItemName</span>
+                                <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" onclick="getProduct()" value="@author.ItemId">
+                                <span class="btn btn-light">@author.ItemName</span>
                                 }
                             </label>
                             @*</form>*@
@@ -415,47 +425,38 @@
     </section>
     @{
         var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
-        var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
-
-
+        //var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
     }
-    
-@* Sayfalar yüklenirken gelen gif*@
-<div class="preload">
-    <img src="/Content/images/preloaders.gif" class="preload-img" />
-</div>
-
-    @* Dropdown ile seçilince karşımıza çıkan ürünler*@
     @if (Model.Books.Count() > 0)
     {
+
 
         <p class="text-center h2">@Model.Books.ToList()[0].WebsiteName Çok Satanlar</p>
         <hr>
         <div class="row mb-3" id="product">
-            @if (booksByPublisher != null)
-            {
-                @Html.Partial("_BookPartial", booksByPublisher.PaginatedBooks())
-            }
-            else
-            {
-                @Html.Partial("_BookPartial", itemViewModel == null ? Model.PaginatedBooks() : itemViewModel.PaginatedBooks())
-            }
+            @Html.Partial("_GetProduct", itemViewModel == null ? Model : itemViewModel)
         </div>
 
-        <ul class="pagination">
+        @*<ul class="pagination">
 
-            @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
-            {
+                @for (int i = 1; i <= (itemViewModel == null ? Model.PageCount() : itemViewModel.PageCount()); i++)
+                {
 
-                <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-                    <a class="page-link" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author,ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
-                </li>
+                    <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
+                        <a class="page-link" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author,ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
+                    </li>
 
-            }
-
-        </ul>
+                }
+            </ul>*@
 
     }
+    @* Sayfalar yüklenirken gelen gif*@
+    <div class="preload">
+        <img src="/Content/images/preloaders.gif" class="preload-img" />
+    </div>
+
+    @* Dropdown ile seçilince karşımıza çıkan ürünler*@
+
 
     @section scripts
     {
@@ -487,57 +488,64 @@
 
         <script>
             var minPrice;
-            var maxPrice;
+    var maxPrice;
+    function getProduct() {
+            var publishers = [];
+            var authors = [];
+        $('.chkPublisher:checkbox:checked').each(function () {
+            publishers.push($(this).attr("value"));
+        });
 
-            function getProduct() {
-                var publishers = [];
-                var authors = [];
-                $('.chkPublisher:checkbox:checked').each(function() {
-                    publishers.push($(this).attr("value"));
-                });
+        $('.chkAuthor:checkbox:checked').each(function () {
+            authors.push($(this).attr("value"));
+            });
 
-                $('.chkAuthor:checkbox:checked').each(function() {
-                    authors.push($(this).attr("value"));
-                });
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetWebsite", "Home")',
 
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("GetWebsite1", "Home")',
+                traditional: true,
+                data: { publisher: publishers, minPrice: '@ViewBag.minPrice', maxPrice: '@ViewBag.maxPrice', author: authors},
 
-                    traditional: true,
-                    data: { publisher: publishers, minPrice: '@ViewBag.minPrice', maxPrice: '@ViewBag.maxPrice', author: authors },
+                success: function (result) {
+                    $(".preload").fadeIn(1000, function() {
+                       $("#product").html(result).fadeIn(750);
+                    });
 
-                    success: function(result) {
-                        $(".preload").fadeIn(1000,
-                            function() {
-                                $("#product").html(result).fadeIn(750);
-                            });
-
-                        if (authors == 0) {
-                            if (minPrice == null && maxPrice == null) {
-                                history.pushState("", " ", `?publisher=${publishers}`);
-                            } else {
-                                history.pushState("", " ", `?publisher=${publishers}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
-
-                            }
-
-                        } else {
-                            if (minPrice == null && maxPrice == null) {
-                                history.pushState("", "", `?publisher=${publishers}&author=${authors}`);
-                            } else {
-                                history.pushState("", "", `?publisher=${publishers}&author=${authors}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
-                            }
+                    if (authors == 0)
+                    {
+                        if (minPrice==null && maxPrice==null)
+                        {
+                            history.pushState("", " ", '?' + 'publisher=' + publishers);
+                        }
+                        else
+                        {
+                            history.pushState("", " ", '?' + 'publisher=' + publishers + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
 
                         }
-                    },
-                    error: function() {
-                        alert('Error.');
+
                     }
-                }).done(function() {
-                    $("#thisButton").show();
-                    $(".preload").fadeOut(750);
-                });
-            };
+                    else
+                    {
+                        if (minPrice==null && maxPrice==null)
+                        {
+                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors);
+                        }
+                        else
+                        {
+                            history.pushState("", "", '?' + 'publisher=' + publishers + '&' + 'author=' + authors + '&' + 'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
+                        }
+
+                    }
+                },
+                error: function () {
+                    alert('Error.');
+                }
+            }).done(function () {
+                $("#thisButton").show();
+                $(".preload").fadeOut(750);
+            });
+        };
         </script>
     }
 
