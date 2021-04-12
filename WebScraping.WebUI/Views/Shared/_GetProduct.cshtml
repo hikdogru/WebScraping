@@ -37,10 +37,9 @@
     @for (int i = 1; i <= Model.PageCount(); i++)
     {
 
-        <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-            <a class="page-link" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author , ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
-        </li>
-
+    <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
+        <a class="page-link" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author , ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
+    </li>
     }
 </ul>
 
