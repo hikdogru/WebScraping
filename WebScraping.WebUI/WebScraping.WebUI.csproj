@@ -293,6 +293,7 @@
     <Content Include="Views\Shared\_SelectWebsitePartial.cshtml" />
     <Content Include="Views\Home\GetWebsite1.cshtml" />
     <Content Include="Views\Shared\_GetProduct.cshtml" />
+    <Content Include="Views\Shared\_NavbarPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

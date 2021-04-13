@@ -15,7 +15,8 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <style>
             ul {
-                margin-left: 50%;
+                margin-left: 35%;
+                margin-top: 0.1rem;
             }
 
             input[type="range"] {
@@ -375,63 +376,64 @@
                 var minPrice = $('#minPrice').val();
                 var maxPrice = $("#maxPrice").val();
                 var publishers = [];
-            var authors = [];
-        $('.chkPublisher:checkbox:checked').each(function () {
-            publishers.push($(this).attr("value"));
-        });
+                var authors = [];
+                $('.chkPublisher:checkbox:checked').each(function () {
+                    publishers.push($(this).attr("value"));
+                });
 
-        $('.chkAuthor:checkbox:checked').each(function () {
-            authors.push($(this).attr("value"));
-            });
+                $('.chkAuthor:checkbox:checked').each(function () {
+                    authors.push($(this).attr("value"));
+                });
 
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetWebsite", "Home")',
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetWebsite", "Home")',
 
-                traditional: true,
-                data: { publisher: publishers, minPrice: minPrice, maxPrice: maxPrice , author: authors},
+                    traditional: true,
+                    data: { publisher: publishers, minPrice: minPrice, maxPrice: maxPrice , author: authors},
 
-                success: function (result) {
-                    $(".preload").fadeIn(1000, function() {
-                       $("#product").html(result).fadeIn(750);
-                    });
+                    success: function (result) {
+                        $(".preload").fadeIn(1000, function() {
+                            $("#product").html(result).fadeIn(750);
+                        });
 
-                    if (authors.length == 0)
-                    {
-                        if (minPrice=="" && maxPrice=="")
+                        if (authors.length == 0)
                         {
-                            history.pushState("", " ", '?' + 'publisher=' + publishers);
+                            if (minPrice=="" && maxPrice=="")
+                            {
+                                history.pushState("", " ", '?' + 'publisher=' + publishers);
+                            }
+                            else
+                            {
+                                history.pushState("", " ", '?' + (publishers.length==0?'':'publisher=' + publishers + '&') + (minPrice==''?'@minPrice':'minPrice=' + minPrice + '&') + (maxPrice==''?'@maxPrice':'maxPrice=' + maxPrice));
+
+                            }
+
                         }
                         else
                         {
-                            history.pushState("", " ", '?' + (publishers.length==0?'':'publisher=' + publishers + '&') + (minPrice==''?'@minPrice':'minPrice=' + minPrice + '&') + (maxPrice==''?'@maxPrice':'maxPrice=' + maxPrice));
+                            if (minPrice=="" && maxPrice=="")
+                            {
+                                history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors);
+                            }
+                            else
+                            {
+                                history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors + '&' + (minPrice==''?'@minPrice':'minPrice=' + minPrice + '&') + (maxPrice==''?'@maxPrice':'maxPrice=' + maxPrice));
+                            }
 
                         }
 
+                    },
+                    error: function () {
+                        alert('Error.');
                     }
-                    else
-                    {
-                        if (minPrice=="" && maxPrice=="")
-                        {
-                            history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors);
-                        }
-                        else
-                        {
-                            history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors + '&' + (minPrice==''?'@minPrice':'minPrice=' + minPrice + '&') + (maxPrice==''?'@maxPrice':'maxPrice=' + maxPrice));
-                        }
-
-                    }
-
-                },
-                error: function () {
-                    alert('Error.');
-                }
-            }).done(function () {
-                $("#thisButton").show();
-                $(".preload").fadeOut(750);
-            });
-        };
+                }).done(function () {
+                    $("#thisButton").show();
+                    $(".preload").fadeOut(750);
+                });
+            };
         </script>
+       
     }
 
 </body>
