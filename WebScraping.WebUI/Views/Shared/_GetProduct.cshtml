@@ -3,22 +3,29 @@
 
 
 
-
+@{
+    int count = 1;
+}
 @foreach (var book in Model.PaginatedBooks())
 {
 
     <div class="col-lg-3 col-md-6 col-sm-10 offset-md-0 offset-sm-1">
+
         <div class="card border-3" style="width: 100%;">
+            <div class="a-row a-spacing-none aok-inline-block">
+                <span class="a-size-small aok-float-left zg-badge-body zg-badge-color"><span class="zg-badge-text">#@count</span>
+                    </span><span class="aok-float-left zg-badge-triangle zg-badge-color"></span>
+            </div>
             <div class="image">
                 <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
             </div>
             <div class="card-body text-center">
                 <h5 class="card-title" style="color: #ea8987;">@(book.Name.Length > 20 ? book.Name.Substring(0, 20) + "..." : book.Name)</h5>
-                <h5 class="card-title" style="color: #f58322;font-size: 90%;">@(book.Author.Length > 20 ? book.Author.Substring(0, 20) + "..." : book.Author)</h5>
+                <h5 class="card-title" style="color: #f58322; font-size: 90%;">@(book.Author.Length > 20 ? book.Author.Substring(0, 20) + "..." : book.Author)</h5>
 
                 <p class="card-text">
                     <h4>
-                        <span class="badge badge-pill" style="background-color: cornflowerblue;color: white">
+                        <span class="badge badge-pill" style="background-color: cornflowerblue; color: white">
                             @book.Price <i class='fa fa-try' aria-hidden='true'></i>
                         </span>
                     </h4>
@@ -30,17 +37,15 @@
         </div>
 
     </div>
-
+    count++;
 }
 
-<ul class="pagination">
-    @for (int i = 1; i <= Model.PageCount(); i++)
-    {
-
-        <li class="@(i == Model.CurrentPage ? "page-item active" : "page-item")">
-            <a class="page-link" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author , ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
-        </li>
-    }
-</ul>
-
-
+<div class="center" style="margin-top: 5%;">
+    <div class="pagination">
+        @for (int i = 1; i <= Model.PageCount(); i++)
+        {
+            <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author, ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
+        }
+        
+    </div>
+</div>

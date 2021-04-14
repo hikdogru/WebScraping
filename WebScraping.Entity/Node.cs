@@ -12,7 +12,7 @@ namespace WebScraping.Entity
         public HtmlNodeCollection Detail { get; set; }
 
         public String WebsiteName { get; set; }
-        public int CountItem { get; set; }
+        public int ItemCount { get; set; }
 
     }
 }

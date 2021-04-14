@@ -48,11 +48,22 @@ input {
     }
 
 .image {
+    padding: 10px;
+    transition: transform .2s;
+    width: 150px;
+    height: 225px;
     display: block;
-    margin-top: 5px;
+    margin-top: 2rem;
+    margin-bottom: 5rem;
     margin-left: auto;
     margin-right: auto;
 }
+
+    .image:hover {
+        -ms-transform: scale(1.5); /* IE 9 */
+        -webkit-transform: scale(1.5); /* Safari 3-8 */
+        transform: scale(1.5);
+    }
 
 img.img {
     max-width: 150px;
@@ -81,26 +92,10 @@ div#bookCard .card, div#bookOtherPublisherCard .card {
 .center {
     margin: auto;
     width: 100%;
-    border: 0.1px solid antiquewhite;
     padding: 10px;
 }
-
-.image {
-    padding: 10px;
-    transition: transform .2s;
-    width: 150px;
-    height: 225px;
-    margin: 0 auto;
-}
-
-    .image:hover {
-        -ms-transform: scale(1.5); /* IE 9 */
-        -webkit-transform: scale(1.5); /* Safari 3-8 */
-        transform: scale(1.5);
-    }
 
 /*--------------------------*/
-
 * {
     box-sizing: border-box
 }
@@ -152,7 +147,6 @@ h6 {
 }
 
 
-
 @media(min-width:1200px) {
 
 
@@ -163,7 +157,7 @@ h6 {
 
 
     #sidebar {
-        width: 30%;
+        width: 20%;
         padding: 20px;
         float: left
     }
@@ -203,7 +197,7 @@ h6 {
     }
 
     #sidebar {
-        width: 30%;
+        width: 20%;
         padding: 20px;
         float: left
     }
@@ -226,12 +220,9 @@ h6 {
         height: 200px;
         border-radius: 10px
     }
-
-    .fa-plus,
-    .fa-minus {
-        font-size: 12px
+    .center {
+        margin-top: 20% !important;
     }
-
     .sign {
         height: 25px
     }
@@ -350,4 +341,6 @@ h6 {
         font-size: 12px;
         margin-top: 2%
     }
+
+    
 }
