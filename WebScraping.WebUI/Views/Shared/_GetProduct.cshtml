@@ -9,12 +9,19 @@
 @foreach (var book in Model.PaginatedBooks())
 {
 
-    <div class="col-lg-3 col-md-6 col-sm-10 offset-md-0 offset-sm-1">
 
+    <div class="col-lg-3 col-md-6 col-sm-10 offset-md-0 offset-sm-1" style="margin-bottom: 1rem">
         <div class="card border-3" style="width: 100%;">
             <div class="a-row a-spacing-none aok-inline-block">
-                <span class="a-size-small aok-float-left zg-badge-body zg-badge-color"><span class="zg-badge-text">#@count</span>
-                    </span><span class="aok-float-left zg-badge-triangle zg-badge-color"></span>
+                <span class="a-size-small aok-float-left zg-badge-body zg-badge-color">
+                    <span class="zg-badge-text">#@count</span>
+                </span><span class="aok-float-left zg-badge-triangle zg-badge-color"></span>
+
+
+
+                <span class="a-size-small aok-float-right zg-badge-body zg-badge-color" style="background-color: #a08fce !important;">
+                    <span class="zg-badge-text">#@book.WebsiteName</span>
+                </span><span class="aok-float-right zg-badge-triangle zg-badge-color"></span>
             </div>
             <div class="image">
                 <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
@@ -46,6 +53,6 @@
         {
             <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author, ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
         }
-        
+
     </div>
 </div>

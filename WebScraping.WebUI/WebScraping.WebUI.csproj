@@ -294,6 +294,7 @@
     <Content Include="Views\Home\GetWebsite1.cshtml" />
     <Content Include="Views\Shared\_GetProduct.cshtml" />
     <Content Include="Views\Shared\_NavbarPartial.cshtml" />
+    <Content Include="Views\Shared\_Slider.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

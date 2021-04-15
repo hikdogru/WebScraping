@@ -10,6 +10,7 @@
     <link href="~/Content/Site.css" rel="stylesheet" />
     <style>
 
+
         .center {
             text-align: center;
         }
@@ -94,6 +95,10 @@
             padding: 0 8px;
             color: #fff;
         }
+
+        .a-float-right, .aok-float-right {
+            float: right !important;
+        }
     </style>
 
 
@@ -102,6 +107,7 @@
 
 @Html.Partial("_NavbarPartial")
 
+@Html.Partial("_Slider")
 
 @{
     for (int i = 0; i < Model.Books.ToList().Count; i++)
@@ -369,12 +375,9 @@
 }
 @if (Model.Books.Count() > 0)
 {
-    foreach (var websiteName in Model.Books.GroupBy(b=>b.WebsiteName).Select(b=>b.Key))
-    {
-        <p class="text-center h2">@websiteName Çok Satanlar</p>
-    }
-    <hr>
-    <div class="row mb-3" id="product">
+
+
+    <div class="row mb-3" id="product" style="margin-top: 5rem;">
         @Html.Partial("_GetProduct", itemViewModel == null ? Model : itemViewModel)
     </div>
 }
@@ -469,6 +472,13 @@
                 $(".preload").fadeOut(750);
             });
         };
+    </script>
+
+    <script>
+        @* Slide otomatik geçiş süresi. Default 5000ms  *@
+        $('.carousel').carousel({
+            interval: 7000
+        })
     </script>
 
 }
