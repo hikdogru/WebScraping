@@ -7,12 +7,35 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @RenderSection("styles", false)
+    <style>
+        .switch {
+            align-self: center;
+        }
+        .inner-switch {
+            display: inline-block;
+            cursor: pointer;
+            border: 1px solid #555;
+            border-radius: 1.25rem;
+            width: 3.125rem;
+            text-align: center;
+            font-size: 1rem;
+            padding: 0.1875rem;
+            margin-left: 0.3125rem;
+        }
+        .dark,
+        .dark * {
+            background-color: #222;
+            color: #e6e6e6;
+            border-color: #e6e6e6;
+            font
+        }
+    </style>
 </head>
 <body>
 
     <div class="container-fluid body-content">
         @RenderBody()
-       
+
 
         <footer>
             <p class="text-center">&copy; @DateTime.Now.Year - Best WebScraping</p>
@@ -23,5 +46,16 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+<script>
+    $( ".inner-switch" ).on("click", function() {
+        if( $( "body" ).hasClass( "dark" )) {
+            $( "body" ).removeClass( "dark" );
+            $( ".inner-switch" ).text( "OFF" );
+        } else {
+            $( "body" ).addClass( "dark" );
+            $( ".inner-switch" ).text( "ON" );
+        }
+    });
+</script>
 </body>
 </html>
