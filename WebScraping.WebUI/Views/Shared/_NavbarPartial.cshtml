@@ -11,7 +11,7 @@
                 <a class="nav-link" href="@Url.Action("Index", "Home")">Anasayfa <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("GetProducts","Home")" id="productsLink">Kitaplar</a>
+                <a class="nav-link" href="@Url.Action("GetAllBooks","Home")" id="productsLink">Kitaplar</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="@Url.Action("GetBestSeller","Home")" id="bestSellerProductsLink">Çok Satanlar</a>
@@ -37,12 +37,12 @@
                 </div>
             
         </ul>
-        <form class="form-inline my-2 my-lg-0" action="/Home/Search" method="POST">
+        @*<form class="form-inline my-2 my-lg-0" action="/Home/Search" method="GET">*@
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" id="searchText" required>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
                 <i class="fa fa-search"></i>
             </button>
-        </form>
+        @*</form>*@
     </div>
 </nav>
 

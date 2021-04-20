@@ -7,9 +7,26 @@
 @section styles
     {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <link href="~/Content/Site.css" rel="stylesheet" />
     <style>
 
+        .list_item_container {
+            width: 300px;
+            height: 60px;
+            
+        }
+
+        .image1 {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+            float: left;
+        }
+
+        .image1 img {
+            width: 70%;
+        }
 
         .center {
             text-align: center;
@@ -390,6 +407,7 @@
 
 @section scripts
 {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         function sliderChange(val) {
             document.getElementById('minPrice').value = parseInt(@minPrice);
@@ -480,6 +498,55 @@
             interval: 7000
         })
     </script>
+
+    @*<script>
+
+            $(document).ready(function() {
+                $('#searchText').autocomplete({
+                    source: '@Url.Action("Search", "Home")'
+
+                });
+
+            });
+
+        </script>*@
+
+    <script>
+        $(function () {
+            $('#searchText').autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: '@Url.Action("Search", "Home")',
+                        data: { term: request.term },
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        success: function(data) {
+                            response($.map(data,
+                                function(item) {
+                                    return {
+                                        value: item.Image,
+                                        label: item.Name
+                                    }
+                                }));
+                        }
+                    });
+                }
+
+
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                var innerHtml =
+                    '<button type="submit"><a href="@Url.Action("SearchItems", "Home")"><div class="list_item_container"><div class="image1"><img src="' +
+                        item.value + '"></div><div class="label">' + item.label +
+                        '</div></a></button>';
+                return $("<li></li>")
+                    .data("item.autocomplete", item)
+                    .append(innerHtml)
+                    .appendTo(ul);
+            };;
+        });
+    </script>
+
 
 }
 

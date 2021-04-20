@@ -9,7 +9,7 @@ namespace WebScraping.Entity
         public HtmlNodeCollection Author { get; set; }
         public HtmlNodeCollection Price { get; set; }
         public HtmlNodeCollection Image { get; set; }
-        public HtmlNodeCollection Detail { get; set; }
+        public string Detail { get; set; }
 
         public String WebsiteName { get; set; }
         public int ItemCount { get; set; }
