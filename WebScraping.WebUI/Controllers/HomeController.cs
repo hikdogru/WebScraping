@@ -143,6 +143,7 @@ namespace WebScraping.WebUI.Controllers
                         BookScraping(bookNode, "https://www.hepsiburada.com");
                         count++;
                     }
+                    BookDetailUrl.Clear();
                 }
 
                 //if (url.Contains("bkm"))
@@ -643,28 +644,15 @@ namespace WebScraping.WebUI.Controllers
                 new RouteValueDictionary(new { url, minPrice = minPrice, maxPrice = maxPrice }));
         }
 
-        
+
         public JsonResult Search(string term)
         {
             if (!String.IsNullOrEmpty(term))
             {
-                var otherPublishers = _books.Where(b => b.Name.ToUpper()
-                        .Contains(term.ToUpper()) && b.Publisher != "")
-                    .GroupBy(b => new { b.Publisher, b.Name })
-                    .Select(b => b.FirstOrDefault())
-                    .OrderBy(b => ReplaceString(b.Price)).ToList();
-
-
-                if (otherPublishers.Count > 1)
-                {
-                    TempData["OtherPublishers"] = otherPublishers;
-                }
-
                 var distinct = _books.Where(b => b.Name.ToUpper().Trim().Contains(term.ToUpper()))
-                    .OrderBy(b => ReplaceString(b.Price)).Distinct().Select(b => new {b.Name, b.Image}).ToList();
-                TempData["Books"] = distinct;
+                    .OrderBy(b => ReplaceString(b.Price)).Distinct().Select(b => new { b.Name, b.Image }).ToList();
                 TempData["BooksLogoUrl"] = _booksLogoUrl;
-                TempData["SearchText"] = term;
+
 
                 return Json(distinct, JsonRequestBehavior.AllowGet);
             }
@@ -672,9 +660,29 @@ namespace WebScraping.WebUI.Controllers
             return Json(_books, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
-        public ActionResult SearchItems(string query , string a)
+
+        public ActionResult SearchItem(string query)
         {
+            if (!String.IsNullOrEmpty(query))
+            {
+                var otherPublishers = _books.Where(b => b.Name.ToUpper()
+                    .Contains(query.ToUpper()) && b.Publisher != "")
+                .GroupBy(b => new { b.Publisher, b.Name })
+                .Select(b => b.FirstOrDefault())
+                .OrderBy(b => ReplaceString(b.Price)).ToList();
+
+
+                if (otherPublishers.Count > 1)
+                {
+                    TempData["OtherPublishers"] = otherPublishers;
+                }
+
+                var entities = _books.Where(b => b.Name.Trim() == query.Trim()).Distinct().ToList();
+                TempData["SearchText"] = query;
+                TempData["Books"] = entities;
+                return RedirectToAction("Index", "Home", new RouteValueDictionary(new { query = query }));
+            }
+
             return RedirectToAction("Index");
         }
 
