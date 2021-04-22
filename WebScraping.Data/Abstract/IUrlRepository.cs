@@ -2,7 +2,7 @@
 
 namespace WebScraping.Data.Abstract
 {
-    public interface IUrlRepository:IUrlService
+    public interface IUrlRepository:IRepository
     {
         
     }

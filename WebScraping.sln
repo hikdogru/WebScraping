@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraping.Data", "WebScra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraping.Business", "WebScraping.Business\WebScraping.Business.csproj", "{D7514F7A-55E5-4DDB-A3D3-75CEF80ECA96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraping.Core", "WebScraping.Core\WebScraping.Core.csproj", "{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D7514F7A-55E5-4DDB-A3D3-75CEF80ECA96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7514F7A-55E5-4DDB-A3D3-75CEF80ECA96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7514F7A-55E5-4DDB-A3D3-75CEF80ECA96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿namespace WebScraping.Data.Abstract
 {
-    public interface IBookRepository
+    public interface IBookRepository:IRepository
     {
         
     }

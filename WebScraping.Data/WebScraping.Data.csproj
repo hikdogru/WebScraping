@@ -56,11 +56,13 @@
     <Compile Include="Abstract\IRepository.cs" />
     <Compile Include="Abstract\IUrlRepository.cs" />
     <Compile Include="Abstract\IWebsiteRepository.cs" />
+    <Compile Include="Concrete\Ef\EfBookNodeRepository.cs" />
+    <Compile Include="Concrete\Ef\EfBookRepository.cs" />
+    <Compile Include="Concrete\Ef\EfUrlRepository.cs" />
+    <Compile Include="Concrete\Ef\EfWebsiteRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Concrete\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />

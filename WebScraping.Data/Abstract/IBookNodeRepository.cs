@@ -2,7 +2,7 @@
 
 namespace WebScraping.Data.Abstract
 {
-    public interface IBookNodeRepository:IBookNodeService
+    public interface IBookNodeRepository:IRepository
     {
         
     }
