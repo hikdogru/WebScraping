@@ -51,15 +51,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\IBookNodeRepository.cs" />
+    <Compile Include="Abstract\IBookRepository.cs" />
+    <Compile Include="Abstract\IRepository.cs" />
+    <Compile Include="Abstract\IUrlRepository.cs" />
+    <Compile Include="Abstract\IWebsiteRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Abstract\" />
     <Folder Include="Concrete\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebScraping.Business\WebScraping.Business.csproj">
+      <Project>{D7514F7A-55E5-4DDB-A3D3-75CEF80ECA96}</Project>
+      <Name>WebScraping.Business</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

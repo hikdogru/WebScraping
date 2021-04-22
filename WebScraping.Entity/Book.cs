@@ -11,5 +11,7 @@
         public Website Website { get; set; }
         public string Image { get; set; }
         public string BookDetailUrl { get; set; }
+        // Best-seller or All-books
+        public string CategoryType { get; set; }
     }
 }

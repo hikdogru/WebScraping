@@ -41,11 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\IBookNodeService.cs" />
+    <Compile Include="Abstract\IBookService.cs" />
+    <Compile Include="Abstract\IUrlService.cs" />
+    <Compile Include="Abstract\IWebsiteService.cs" />
+    <Compile Include="Concrete\BookManager.cs" />
+    <Compile Include="Concrete\BookNodeManager.cs" />
+    <Compile Include="Concrete\UrlManager.cs" />
+    <Compile Include="Concrete\WebsiteManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Abstract\" />
-    <Folder Include="Concrete\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -11,7 +11,7 @@ namespace WebScraping.Entity
         public HtmlNodeCollection Image { get; set; }
         public string Detail { get; set; }
 
-        public String WebsiteName { get; set; }
+        public string WebsiteName { get; set; }
         public int ItemCount { get; set; }
 
     }
