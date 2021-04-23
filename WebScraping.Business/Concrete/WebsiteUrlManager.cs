@@ -4,29 +4,29 @@ using WebScraping.Entities;
 
 namespace WebScraping.Business.Concrete
 {
-    public class BookNodeManager:IBookNodeService
+    public class WebsiteUrlManager:IWebsiteUrlService
     {
-        public List<BookNode> GetAll()
+        public List<WebsiteUrl> GetAll()
         {
             throw new System.NotImplementedException();
         }
 
-        public BookNode GetById(int bookNodeId)
+        public WebsiteUrl GetById(int websiteUrlId)
         {
             throw new System.NotImplementedException();
         }
 
-        public void Add(BookNode bookNode)
+        public void Add(WebsiteUrl websiteUrl)
         {
             throw new System.NotImplementedException();
         }
 
-        public void Update(BookNode bookNode)
+        public void Update(WebsiteUrl websiteUrl)
         {
             throw new System.NotImplementedException();
         }
 
-        public void Delete(int bookNodeId)
+        public void Delete(int websiteUrl)
         {
             throw new System.NotImplementedException();
         }
