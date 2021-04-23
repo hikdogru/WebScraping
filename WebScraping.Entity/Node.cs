@@ -1,9 +1,9 @@
 ﻿using HtmlAgilityPack;
-using System;
+using WebScraping.Core.Entities;
 
-namespace WebScraping.Entity
+namespace WebScraping.Entities
 {
-    public class Node
+    public class Node:IEntity
     {
         public HtmlNodeCollection Name { get; set; }
         public HtmlNodeCollection Author { get; set; }

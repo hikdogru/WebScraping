@@ -1,15 +1,13 @@
 ﻿using HtmlAgilityPack;
-using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using WebScraping.Entity;
+using WebScraping.Entities;
 using WebScraping.WebUI.Models;
 using WebScraping.WebUI.ViewModel;
 

@@ -1,6 +1,9 @@
-﻿namespace WebScraping.Data.Abstract
+﻿using WebScraping.Core.Data;
+using WebScraping.Entities;
+
+namespace WebScraping.Data.Abstract
 {
-    public interface IBookRepository:IRepository
+    public interface IBookRepository:IEntityRepository<Book>
     {
         
     }

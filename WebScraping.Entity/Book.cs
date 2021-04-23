@@ -1,6 +1,8 @@
-﻿namespace WebScraping.Entity
+﻿using WebScraping.Core.Entities;
+
+namespace WebScraping.Entities
 {
-    public class Book
+    public class Book:IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

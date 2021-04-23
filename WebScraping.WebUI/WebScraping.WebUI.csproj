@@ -314,9 +314,9 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebScraping.Entity\WebScraping.Entity.csproj">
+    <ProjectReference Include="..\WebScraping.Entity\WebScraping.Entities.csproj">
       <Project>{1C5C5E9F-5F85-46AA-814A-EE9167D32578}</Project>
-      <Name>WebScraping.Entity</Name>
+      <Name>WebScraping.Entities</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

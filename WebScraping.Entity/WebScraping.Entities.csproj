@@ -7,7 +7,7 @@
     <ProjectGuid>{1C5C5E9F-5F85-46AA-814A-EE9167D32578}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebScraping.Entity</RootNamespace>
+    <RootNamespace>WebScraping.Entities</RootNamespace>
     <AssemblyName>WebScraping.Entity</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,13 +46,19 @@
   <ItemGroup>
     <Compile Include="Book.cs" />
     <Compile Include="BookNode.cs" />
-    <Compile Include="Url.cs" />
+    <Compile Include="WebsiteUrl.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Website.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebScraping.Core\WebScraping.Core.csproj">
+      <Project>{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}</Project>
+      <Name>WebScraping.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

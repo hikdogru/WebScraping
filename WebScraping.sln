@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraping.WebUI", "WebScraping.WebUI\WebScraping.WebUI.csproj", "{5D1CB793-86E5-4534-92A5-3E0C610DBA1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraping.Entity", "WebScraping.Entity\WebScraping.Entity.csproj", "{1C5C5E9F-5F85-46AA-814A-EE9167D32578}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraping.Entities", "WebScraping.Entity\WebScraping.Entities.csproj", "{1C5C5E9F-5F85-46AA-814A-EE9167D32578}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebScraping.Data", "WebScraping.Data\WebScraping.Data.csproj", "{B228D545-71E5-4BBC-A6AB-7FA8A1D6561D}"
 EndProject

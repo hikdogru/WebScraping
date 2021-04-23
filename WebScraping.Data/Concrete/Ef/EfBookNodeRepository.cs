@@ -1,8 +1,10 @@
-﻿using WebScraping.Data.Abstract;
+﻿using WebScraping.Core.Data.Ef;
+using WebScraping.Data.Abstract;
+using WebScraping.Entities;
 
 namespace WebScraping.Data.Concrete.Ef
 {
-    public class EfBookNodeRepository:IBookNodeRepository
+    public class EfBookNodeRepository:EfEntityRepositoryBase<BookNode, WebScrapingContext>, IBookNodeRepository
     {
         
     }

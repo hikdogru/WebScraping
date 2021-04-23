@@ -1,8 +1,10 @@
 ﻿using WebScraping.Business.Abstract;
+using WebScraping.Core.Data;
+using WebScraping.Entities;
 
 namespace WebScraping.Data.Abstract
 {
-    public interface IUrlRepository:IRepository
+    public interface IUrlRepository:IEntityRepository<WebsiteUrl>
     {
         
     }

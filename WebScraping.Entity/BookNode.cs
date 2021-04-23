@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-namespace WebScraping.Entity
+namespace WebScraping.Entities
 {
     public class BookNode : Node
     {

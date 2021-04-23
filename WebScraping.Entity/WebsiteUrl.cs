@@ -1,8 +1,10 @@
-﻿namespace WebScraping.Entity
+﻿using WebScraping.Core.Entities;
+
+namespace WebScraping.Entities
 {
-    public class Url
+    public class WebsiteUrl : IEntity
     {
-        public string WebsiteUrl { get; set; }
+        public string Url { get; set; }
         public string WebsiteName { get; set; }
 
         // Best-seller or All-products
