@@ -9,6 +9,6 @@ namespace WebScraping.Business.Abstract
         WebsiteUrl GetById(int websiteUrlId);
         void Add(WebsiteUrl websiteUrl);
         void Update(WebsiteUrl websiteUrl);
-        void Delete(int websiteUrl);
+        void Delete(int websiteUrlId);
     }
 }

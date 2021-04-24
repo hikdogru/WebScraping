@@ -3,7 +3,7 @@ using WebScraping.Entities;
 
 namespace WebScraping.Data.Abstract
 {
-    public interface IWebsiteRepository:IEntityRepository<Website>
+    public interface IWebsiteUrlRepository:IEntityRepository<WebsiteUrl>
     {
         
     }

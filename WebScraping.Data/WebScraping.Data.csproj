@@ -53,11 +53,12 @@
   <ItemGroup>
     <Compile Include="Abstract\IBookNodeRepository.cs" />
     <Compile Include="Abstract\IBookRepository.cs" />
-    <Compile Include="Abstract\IUrlRepository.cs" />
+    <Compile Include="Abstract\IWebsiteUrlRepository.cs" />
     <Compile Include="Abstract\IWebsiteRepository.cs" />
+    <Compile Include="Concrete\Ef\DataInitializer.cs" />
     <Compile Include="Concrete\Ef\EfBookNodeRepository.cs" />
     <Compile Include="Concrete\Ef\EfBookRepository.cs" />
-    <Compile Include="Concrete\Ef\EfUrlRepository.cs" />
+    <Compile Include="Concrete\Ef\EfWebsiteUrlRepository.cs" />
     <Compile Include="Concrete\Ef\EfWebsiteRepository.cs" />
     <Compile Include="Concrete\Ef\WebScrapingContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,10 +69,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebScraping.Business\WebScraping.Business.csproj">
-      <Project>{D7514F7A-55E5-4DDB-A3D3-75CEF80ECA96}</Project>
-      <Name>WebScraping.Business</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WebScraping.Core\WebScraping.Core.csproj">
       <Project>{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}</Project>
       <Name>WebScraping.Core</Name>

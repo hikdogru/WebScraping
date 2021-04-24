@@ -52,6 +52,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WebScraping.Core\WebScraping.Core.csproj">
+      <Project>{7FB2A805-55DA-45BA-ABCA-3718EA9266EC}</Project>
+      <Name>WebScraping.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebScraping.Data\WebScraping.Data.csproj">
+      <Project>{B228D545-71E5-4BBC-A6AB-7FA8A1D6561D}</Project>
+      <Name>WebScraping.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebScraping.Entity\WebScraping.Entities.csproj">
       <Project>{1C5C5E9F-5F85-46AA-814A-EE9167D32578}</Project>
       <Name>WebScraping.Entities</Name>

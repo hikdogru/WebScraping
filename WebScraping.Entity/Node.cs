@@ -5,6 +5,7 @@ namespace WebScraping.Entities
 {
     public class Node:IEntity
     {
+        public int Id { get; set; }
         public HtmlNodeCollection Name { get; set; }
         public HtmlNodeCollection Author { get; set; }
         public HtmlNodeCollection Price { get; set; }

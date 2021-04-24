@@ -1,34 +1,47 @@
 ﻿using System.Collections.Generic;
 using WebScraping.Business.Abstract;
+using WebScraping.Data.Abstract;
 using WebScraping.Entities;
 
 namespace WebScraping.Business.Concrete
 {
     public class BookNodeManager:IBookNodeService
     {
+        private IBookNodeRepository _bookNodeRepository;
+
+        public BookNodeManager(IBookNodeRepository bookNodeRepository)
+        {
+            _bookNodeRepository = bookNodeRepository;
+        }
+
         public List<BookNode> GetAll()
         {
-            throw new System.NotImplementedException();
+            return _bookNodeRepository.GetList();
         }
 
         public BookNode GetById(int bookNodeId)
         {
-            throw new System.NotImplementedException();
+            return _bookNodeRepository.Get(b => b.Id == bookNodeId);
         }
 
         public void Add(BookNode bookNode)
         {
-            throw new System.NotImplementedException();
+            _bookNodeRepository.Add(bookNode);
         }
 
         public void Update(BookNode bookNode)
         {
-            throw new System.NotImplementedException();
+            _bookNodeRepository.Update(bookNode);
         }
 
         public void Delete(int bookNodeId)
         {
-            throw new System.NotImplementedException();
+
+            var bookNode = _bookNodeRepository.Get(b => b.Id == bookNodeId);
+            if (bookNode != null)
+            {
+                _bookNodeRepository.Delete(bookNode);
+            }
         }
     }
 }

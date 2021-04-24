@@ -4,7 +4,7 @@ using WebScraping.Entities;
 
 namespace WebScraping.Data.Concrete.Ef
 {
-    public class EfUrlRepository: EfEntityRepositoryBase<WebsiteUrl, WebScrapingContext>, IUrlRepository
+    public class EfWebsiteUrlRepository: EfEntityRepositoryBase<WebsiteUrl, WebScrapingContext>, IWebsiteUrlRepository
     {
         
     }

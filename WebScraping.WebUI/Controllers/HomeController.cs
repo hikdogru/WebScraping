@@ -7,6 +7,9 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using WebScraping.Business.Abstract;
+using WebScraping.Business.Concrete;
+using WebScraping.Data.Concrete.Ef;
 using WebScraping.Entities;
 using WebScraping.WebUI.Models;
 using WebScraping.WebUI.ViewModel;
@@ -21,7 +24,6 @@ namespace WebScraping.WebUI.Controllers
         private static List<ItemCheckedModel> _itemCheckedModels = new List<ItemCheckedModel>();
         private List<string> _amazonBookDetails;
 
-        private List<HtmlNodeCollection> BookDetailsNode = new List<HtmlNodeCollection>();
         private List<string> BookDetailUrl = new List<string>();
         private static RouteValueDictionary _routeValues;
         private static int n = 1;
@@ -44,10 +46,15 @@ namespace WebScraping.WebUI.Controllers
             {"Hepsiburada", "https://cdn.freelogovectors.net/wp-content/uploads/2018/02/hepsiburada-logo.png" }
         };
 
-        private Dictionary<string, string> _allBooksUrl;
+
+        
 
         public ActionResult Index()
         {
+            using (var context = new WebScrapingContext())
+            {
+                context.SaveChanges();
+            }
             if (_books.Count > 0 == false)
             {
                 Book();
@@ -59,6 +66,8 @@ namespace WebScraping.WebUI.Controllers
 
         private void Book()
         {
+            
+            
             int n = 100;
             List<string> websitesUrl = new List<string>()
             {
@@ -116,33 +125,33 @@ namespace WebScraping.WebUI.Controllers
                 //    BookDetailsNode.Clear();
                 //}
 
-                if (url.Contains("hepsiburada"))
-                {
-                    int count = 0;
-                    var bookDetailNode = SelectNodes("//div[contains(@class, 'product')]/a", url);
-                    foreach (var node in bookDetailNode)
-                    {
-                        BookDetailUrl.Add("https://www.hepsiburada.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
-                    }
+                //if (url.Contains("hepsiburada"))
+                //{
+                //    int count = 0;
+                //    var bookDetailNode = SelectNodes("//div[contains(@class, 'product')]/a", url);
+                //    foreach (var node in bookDetailNode)
+                //    {
+                //        BookDetailUrl.Add("https://www.hepsiburada.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
+                //    }
 
-                    foreach (var detailUrl in BookDetailUrl)
-                    {
-                        var bookNode = new BookNode()
-                        {
-                            Name = SelectNodes("//*[contains(@id, 'product-name')]", detailUrl),
-                            Author = SelectNodes("//*[contains(@id, 'product-name')]", detailUrl),
-                            Price = SelectNodes("//div[contains(@class, 'product-price')]/span[contains(@class, 'price')]", detailUrl),
-                            Image = SelectNodes("//img[@class='product-image']", detailUrl),
-                            Publisher = SelectNodes("//div[contains(@class, 'product-information')]/span[@class='brand-name']/a", detailUrl),
-                            Detail = BookDetailUrl[count],
-                            WebsiteName = "Hepsiburada",
-                            ItemCount = 1,
-                        };
-                        BookScraping(bookNode, "https://www.hepsiburada.com");
-                        count++;
-                    }
-                    BookDetailUrl.Clear();
-                }
+                //    foreach (var detailUrl in BookDetailUrl)
+                //    {
+                //        var bookNode = new BookNode()
+                //        {
+                //            Name = SelectNodes("//*[contains(@id, 'product-name')]", detailUrl),
+                //            Author = SelectNodes("//*[contains(@id, 'product-name')]", detailUrl),
+                //            Price = SelectNodes("//div[contains(@class, 'product-price')]/span[contains(@class, 'price')]", detailUrl),
+                //            Image = SelectNodes("//img[@class='product-image']", detailUrl),
+                //            Publisher = SelectNodes("//div[contains(@class, 'product-information')]/span[@class='brand-name']/a", detailUrl),
+                //            Detail = BookDetailUrl[count],
+                //            WebsiteName = "Hepsiburada",
+                //            ItemCount = 1,
+                //        };
+                //        BookScraping(bookNode, "https://www.hepsiburada.com");
+                //        count++;
+                //    }
+                //    BookDetailUrl.Clear();
+                //}
 
                 //if (url.Contains("bkm"))
                 //{
@@ -592,54 +601,6 @@ namespace WebScraping.WebUI.Controllers
             ViewBag.Authors = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
 
             return RedirectToAction("GetWebsite", booksView);
-        }
-
-        [HttpPost]
-        public ActionResult GetFilteredItems(int? minPrice, int? maxPrice)
-        {
-            string url = "";
-            IEnumerable<Book> filteredItems;
-            for (int i = 0; i < books.Count; i++)
-            {
-                books[i].Price = books[i].Price.Replace("TL", "");
-                books[i].Price = books[i].Price.Replace(",", ".");
-            }
-
-
-            if (minPrice == maxPrice)
-            {
-                filteredItems = books.Where(b => double.Parse(b.Price.Trim()) == minPrice);
-            }
-            else
-            {
-                filteredItems = books.Where(b =>
-                    double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
-            }
-
-            if (_routeValues != null)
-            {
-                filteredItems = filteredItems.Where(b => _routeValues.Values.Any(p => p.ToString() == b.Publisher));
-                TempData["RouteValueDictionary"] = _routeValues;
-                for (int i = 1; i <= _routeValues.Count; i++)
-                {
-                    string routeValues = _routeValues["publisher[" + i + "]"].ToString();
-                    routeValues = routeValues.Replace(" ", "-");
-                    url += routeValues + "&";
-                }
-            }
-
-            var itemViewModel = new ItemViewModel()
-            {
-                BookPerPage = 24,
-                Books = filteredItems,
-                CurrentPage = 1
-            };
-
-            TempData["ItemViewModel"] = itemViewModel;
-            TempData["minPrice"] = minPrice;
-            TempData["maxPrice"] = maxPrice;
-            return RedirectToAction("GetWebsite", "Home",
-                new RouteValueDictionary(new { url, minPrice = minPrice, maxPrice = maxPrice }));
         }
 
 
