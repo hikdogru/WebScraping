@@ -10,6 +10,8 @@ namespace WebScraping.Business.Abstract
         void Add(BookNode bookNode);
         void Update(BookNode bookNode);
         void Delete(int bookNodeId);
+        List<BookNode> GetNodesByWebsite();
+
 
     }
 }

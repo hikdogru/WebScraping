@@ -43,5 +43,10 @@ namespace WebScraping.Business.Concrete
                 _bookNodeRepository.Delete(bookNode);
             }
         }
+
+        public List<BookNode> GetNodesByWebsite()
+        {
+            return _bookNodeRepository.GetNodesByWebsite();
+        }
     }
 }

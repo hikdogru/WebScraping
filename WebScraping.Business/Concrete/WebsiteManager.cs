@@ -13,6 +13,7 @@ namespace WebScraping.Business.Concrete
         {
             _websiteRepository = websiteRepository;
         }
+
         public List<Website> GetAll()
         {
             return _websiteRepository.GetList();

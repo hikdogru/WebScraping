@@ -65,6 +65,14 @@
     <Compile Include="Migrations\202104250434488_InitialCreate.designer.cs">
       <DependentUpon>202104250434488_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202104251434477_AddBookNodes.cs" />
+    <Compile Include="Migrations\202104251434477_AddBookNodes.designer.cs">
+      <DependentUpon>202104251434477_AddBookNodes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104251807245_UpdateWebsite.cs" />
+    <Compile Include="Migrations\202104251807245_UpdateWebsite.designer.cs">
+      <DependentUpon>202104251807245_UpdateWebsite.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,6 +93,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202104250434488_InitialCreate.resx">
       <DependentUpon>202104250434488_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104251434477_AddBookNodes.resx">
+      <DependentUpon>202104251434477_AddBookNodes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104251807245_UpdateWebsite.resx">
+      <DependentUpon>202104251807245_UpdateWebsite.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

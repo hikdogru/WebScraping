@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using HtmlAgilityPack;
 using WebScraping.Core.Entities;
 
 namespace WebScraping.Entities
@@ -13,8 +14,5 @@ namespace WebScraping.Entities
         public string Detail { get; set; }
         public int ItemCount { get; set; }
 
-
-        public int WebsiteId { get; set; }
-        public Website Website { get; set; }
     }
 }

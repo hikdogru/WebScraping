@@ -9,7 +9,6 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using WebScraping.Business.Abstract;
 using WebScraping.Business.Concrete;
-using WebScraping.Data.Concrete.Ef;
 using WebScraping.Entities;
 using WebScraping.WebUI.Models;
 using WebScraping.WebUI.ViewModel;
@@ -46,15 +45,21 @@ namespace WebScraping.WebUI.Controllers
             {"Hepsiburada", "https://cdn.freelogovectors.net/wp-content/uploads/2018/02/hepsiburada-logo.png" }
         };
 
+        private IWebsiteService _websiteService;
+        private IWebsiteUrlService _websiteUrlService;
+        private IBookNodeService _bookNodeService;
 
+        public HomeController(IWebsiteService websiteService, IWebsiteUrlService websiteUrlService, IBookNodeService bookNodeService)
+        {
+            _websiteService = websiteService;
+            _websiteUrlService = websiteUrlService;
+            _bookNodeService = bookNodeService;
+        }
 
 
         public ActionResult Index()
         {
-            using (var context = new WebScrapingContext())
-            {
-               
-            }
+            
             if (_books.Count > 0 == false)
             {
                 Book();
@@ -69,41 +74,9 @@ namespace WebScraping.WebUI.Controllers
 
 
             int n = 100;
-            List<string> websitesUrl = new List<string>()
-            {
-                //"https://www.amazon.com.tr/gp/bestsellers/books/",
-                //"https://www.amazon.com.tr/gp/bestsellers/books/ref=zg_bs_pg_2?ie=UTF8&pg=2",
-
-                "https://www.bkmkitap.com/kitap/cok-satan-kitaplar/",
-                "https://www.bkmkitap.com/kitap/cok-satan-kitaplar?pg=2/",
-
-                "https://kidega.com/cok-satan-kitaplar/",
-                "https://kidega.com/cok-satan-kitaplar?page=2/",
-
-                "https://www.kitap16.com/cok-satanlar-kitapligi",
-                "https://www.kitap16.com/index.php?p=Products&fpt_id=114&sort_type=rel-desc&page=2",
-
-                "https://www.dr.com.tr/CokSatanlar/Kitap/",
-                "https://www.dr.com.tr/CokSatanlar/Kitap/#/page=2/",
-
-                "https://www.ilknokta.com/index.php?p=ProductBestsellers&mod_id=41&page=1&period=yearly",
-                "https://www.ilknokta.com/index.php?p=ProductBestsellers&mod_id=41&page=2&period=yearly",
-
-                "https://www.eganba.com/kitap/cok-satanlar/",
-                "https://www.eganba.com/kitap/cok-satanlar/?page=2",
-
-                "https://www.kitapsec.com/Products/Edebiyat/Cok-Satan-Kitaplar/",
-                "https://www.kitapsec.com/Products/Edebiyat/Cok-Satan-Kitaplar/2-6-0a0-0-0-0-0-0.xhtml",
-
-                "https://www.idefix.com/CokSatanlar/Kitap",
-                "https://www.idefix.com/CokSatanlar/Kitap#/page=2",
-
-                "https://www.fidankitap.com/cok-satanlar-2",
-                "https://www.fidankitap.com/index.php?p=ProductBestsellers&mod_id=146&page=2",
-
-                "https://www.hepsiburada.com/kampanyalar/cok-satan-kitaplar",
-                "https://www.hepsiburada.com/kampanyalar/cok-satan-kitaplar?sayfa=2"
-            };
+            var websitesUrl = _websiteUrlService.GetAll();
+            
+            var bookNodes = _bookNodeService.GetNodesByWebsite();
             foreach (var url in websitesUrl)
             {
                 //if (url.Contains("amazon"))
@@ -124,34 +97,38 @@ namespace WebScraping.WebUI.Controllers
                 //    BookDetailUrl.Clear();
                 //    BookDetailsNode.Clear();
                 //}
+                foreach (var node in bookNodes)
+                {
+                    if (node.Website.Id ==11 && url.WebsiteId == 11)
+                    {
+                        int count = 0;
+                        var bookDetailNode = SelectNodes(node.Detail, url.Url);
+                        foreach (var detailNode in bookDetailNode)
+                        {
+                            BookDetailUrl.Add("https://www.hepsiburada.com" + HttpUtility.UrlDecode(detailNode.GetAttributeValue("href", string.Empty)));
+                        }
 
-                //if (url.Contains("hepsiburada"))
-                //{
-                //    int count = 0;
-                //    var bookDetailNode = SelectNodes("//div[contains(@class, 'product')]/a", url);
-                //    foreach (var node in bookDetailNode)
-                //    {
-                //        BookDetailUrl.Add("https://www.hepsiburada.com" + HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
-                //    }
+                        foreach (var detailUrl in BookDetailUrl)
+                        {
+                            var bookNode = new BookNodeModel()
+                            {
+                                Name = SelectNodes(node.Name, detailUrl),
+                                Author = SelectNodes(node.Author, detailUrl),
+                                Price = SelectNodes(node.Price, detailUrl),
+                                Image = SelectNodes(node.Image, detailUrl),
+                                Publisher = SelectNodes(node.Publisher, detailUrl),
+                                Detail = BookDetailUrl[count],
+                                WebsiteId = url.WebsiteId,
+                                ItemCount = n,
+                            };
+                            BookScraping(bookNode, "https://www.hepsiburada.com");
+                            count++;
+                        }
+                        BookDetailUrl.Clear();
+                    }
+                }
 
-                //    foreach (var detailUrl in BookDetailUrl)
-                //    {
-                //        var bookNode = new BookNode()
-                //        {
-                //            Name = SelectNodes("//*[contains(@id, 'product-name')]", detailUrl),
-                //            Author = SelectNodes("//*[contains(@id, 'product-name')]", detailUrl),
-                //            Price = SelectNodes("//div[contains(@class, 'product-price')]/span[contains(@class, 'price')]", detailUrl),
-                //            Image = SelectNodes("//img[@class='product-image']", detailUrl),
-                //            Publisher = SelectNodes("//div[contains(@class, 'product-information')]/span[@class='brand-name']/a", detailUrl),
-                //            Detail = BookDetailUrl[count],
-                //            WebsiteName = "Hepsiburada",
-                //            ItemCount = 1,
-                //        };
-                //        BookScraping(bookNode, "https://www.hepsiburada.com");
-                //        count++;
-                //    }
-                //    BookDetailUrl.Clear();
-                //}
+               
 
                 //if (url.Contains("bkm"))
                 //{
@@ -401,64 +378,64 @@ namespace WebScraping.WebUI.Controllers
         //    }
         //}
 
-        private void BookScraping(BookNode bookNode, string websiteUrl, string type = "")
+        private void BookScraping(BookNodeModel bookNode, string websiteUrl, string type = "")
         {
             string bookPrice = "";
 
-            //for (int i = 0; i < bookNode.Publisher.Count; i++)
-            //{
-            //    string bookName = WebUtility.HtmlDecode(bookNode.Name[i].InnerText.Replace("\n", "")).Trim();
-            //    string author = WebUtility.HtmlDecode(bookNode.Author[i].InnerText.Replace("\n", "")).Trim();
-            //    string publisher = WebUtility.HtmlDecode(bookNode.Publisher[i].InnerText);
-            //    string image = WebUtility.HtmlDecode(bookNode.Image[i].GetAttributeValue("data-src", ""));
-            //    string website = bookNode.WebsiteName;
-            //    string bookDetailUrl = bookNode.Detail;
+            for (int i = 0; i < bookNode.Publisher.Count; i++)
+            {
+                string bookName = WebUtility.HtmlDecode(bookNode.Name[i].InnerText.Replace("\n", "")).Trim();
+                string author = WebUtility.HtmlDecode(bookNode.Author[i].InnerText.Replace("\n", "")).Trim();
+                string publisher = WebUtility.HtmlDecode(bookNode.Publisher[i].InnerText);
+                string image = WebUtility.HtmlDecode(bookNode.Image[i].GetAttributeValue("data-src", ""));
+                int websiteId = bookNode.WebsiteId;
+                string bookDetailUrl = bookNode.Detail;
 
-            //    if (websiteUrl.Contains("hepsiburada"))
-            //    {
-            //        var bookNameAndAuthor = bookName.Replace(" – ", "*").Replace("-", "*").Split('*');
-            //        bookName = bookNameAndAuthor[0];
-            //        author = bookNameAndAuthor.Length > 1 ? bookNameAndAuthor[1] : "";
-            //        bookPrice = bookNode.Price[i].GetAttributeValue("content", string.Empty);
-            //        image = WebUtility.HtmlDecode(bookNode.Image[i].GetAttributeValue("src", ""));
-            //    }
-            //    else
-            //    {
+                if (websiteUrl.Contains("hepsiburada"))
+                {
+                    var bookNameAndAuthor = bookName.Replace(" – ", "*").Replace("-", "*").Split('*');
+                    bookName = bookNameAndAuthor[0];
+                    author = bookNameAndAuthor.Length > 1 ? bookNameAndAuthor[1] : "";
+                    bookPrice = bookNode.Price[i].GetAttributeValue("content", string.Empty);
+                    image = WebUtility.HtmlDecode(bookNode.Image[i].GetAttributeValue("src", ""));
+                }
+                else
+                {
 
-            //        bookPrice = bookNode.Price[i].InnerText.Replace("\n", "")
-            //            .Replace("TL", " TL")
-            //            .Replace("₺", "TL")
-            //            .Replace("\r", "")
-            //            .Replace(" ", "")
-            //            .Replace(" ", "TL")
-            //            .Trim();
-            //    }
+                    bookPrice = bookNode.Price[i].InnerText.Replace("\n", "")
+                        .Replace("TL", " TL")
+                        .Replace("₺", "TL")
+                        .Replace("\r", "")
+                        .Replace(" ", "")
+                        .Replace(" ", "TL")
+                        .Trim();
+                }
 
 
-            //    var book = new Book()
-            //    {
-            //        Id = i + 1,
-            //        Name = bookName,
-            //        Author = author,
-            //        Price = bookPrice,
-            //        Publisher = publisher,
-            //        WebsiteName = website,
-            //        Image = image,
-            //        BookDetailUrl = bookDetailUrl
-            //    };
-            //    if (type == "all")
-            //    {
-            //        _allBooks.Add(book);
-            //    }
-            //    else
-            //    {
-            //        _books.Add(book);
-            //    }
-            //    if (i == bookNode.ItemCount)
-            //    {
-            //        break;
-            //    }
-            //}
+                var book = new Book()
+                {
+                    Id = i + 1,
+                    Name = bookName,
+                    Author = author,
+                    Price = bookPrice,
+                    Publisher = publisher,
+                    WebsiteId = websiteId,
+                    Image = image,
+                    BookDetailUrl = bookDetailUrl
+                };
+                if (type == "all")
+                {
+                    _allBooks.Add(book);
+                }
+                else
+                {
+                    _books.Add(book);
+                }
+                if (i == bookNode.ItemCount)
+                {
+                    break;
+                }
+            }
         }
 
         private HtmlNodeCollection SelectNodes(string xpath, string websiteUrl)

@@ -80,6 +80,21 @@ namespace WebScraping.Data.Migrations
 
             websiteUrls.ForEach(w => context.WebsiteUrls.AddOrUpdate(w));
             context.SaveChanges();
+
+            List<BookNode> bookNodes = new List<BookNode>()
+            {
+                new BookNode(){WebsiteId = 11, Name = "/*[contains(@id, 'product-name')]",
+                    Author = "//*[contains(@id, 'product-name')]",
+                    Price = "//div[contains(@class, 'product-price')]/span[contains(@class, 'price')]",
+                    Publisher = "//div[contains(@class, 'product-information')]/span[@class='brand-name']/a",
+                    Image = "//img[@class='product-image']",
+                    Detail = "//div[contains(@class, 'product')]/a",
+                    ItemCount = 100,
+                }
+            };
+
+            bookNodes.ForEach(b=>context.BookNodes.AddOrUpdate(b));
+            context.SaveChanges();
             base.Seed(context);
         }
     }

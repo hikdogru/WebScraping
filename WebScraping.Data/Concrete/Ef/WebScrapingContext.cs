@@ -8,6 +8,7 @@ namespace WebScraping.Data.Concrete.Ef
     {
         public WebScrapingContext():base("WebScrapingConnectionString")
         {
+
         }
 
         public DbSet<Book> Books  { get; set; }
