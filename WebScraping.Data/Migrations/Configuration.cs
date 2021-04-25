@@ -1,30 +1,44 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
+using WebScraping.Data.Concrete.Ef;
 using WebScraping.Entities;
 
-
-namespace WebScraping.Data.Concrete.Ef
+namespace WebScraping.Data.Migrations
 {
-    public class DataInitializer : CreateDatabaseIfNotExists<WebScrapingContext>
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
+    internal sealed class Configuration : DbMigrationsConfiguration<WebScraping.Data.Concrete.Ef.WebScrapingContext>
     {
+        public Configuration()
+        {
+            AutomaticMigrationsEnabled = false;
+        }
+
         protected override void Seed(WebScrapingContext context)
         {
+            //  This method will be called after migrating to the latest version.
+
+            //  You can use the DbSet<T>.AddOrUpdate() helper extension method
+            //  to avoid creating duplicate seed data.
+           
+
             List<Website> websites = new List<Website>()
             {
-                new Website(){Id=1,Name="Bkm Kitap", LogoUrl= "http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
-                new Website(){Id=2,Name="Amazon", LogoUrl= "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1920px-Amazon_logo.svg.png"},
-                new Website(){Id=3,Name="Kidega", LogoUrl= "https://cdn.kidega.com/assets/web/img/kidega-logo.png"},
-                new Website(){Id=4,Name="Kitap16", LogoUrl= "https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png"} ,
-                new Website(){Id=5,Name="D&R", LogoUrl= "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
-                new Website(){Id=6,Name="İlknokta", LogoUrl= "https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg"},
-                new Website(){Id=7,Name="Eganba", LogoUrl= "https://www.eganba.com/wwwroot/images/eganba-logo.png"},
-                new Website(){Id=8,Name="Kitapseç", LogoUrl= "https://cdn.kitapsec.com//temalar/KitapSec2017/img/logo.jpg"},
-                new Website(){Id=9,Name="Idefix", LogoUrl= "https://fragtist.com/wp-content/uploads/2017/04/fragtist-IDEFIX-750x349.gif"},
-                new Website(){Id=10,Name="Fidan Kitap", LogoUrl= "https://www.fidankitap.com/u/fidankitap/fidan-kitap-logo-9-1576766279.png"},
-                new Website(){Id=11,Name="Hepsiburada", LogoUrl= "https://cdn.freelogovectors.net/wp-content/uploads/2018/02/hepsiburada-logo.png" },
+                new Website(){Name="Bkm Kitap", LogoUrl= "http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
+                new Website(){Name="Amazon", LogoUrl= "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1920px-Amazon_logo.svg.png"},
+                new Website(){Name="Kidega", LogoUrl= "https://cdn.kidega.com/assets/web/img/kidega-logo.png"},
+                new Website(){Name="Kitap16", LogoUrl= "https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png"} ,
+                new Website(){Name="D&R", LogoUrl= "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
+                new Website(){Name="İlknokta", LogoUrl= "https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg"},
+                new Website(){Name="Eganba", LogoUrl= "https://www.eganba.com/wwwroot/images/eganba-logo.png"},
+                new Website(){Name="Kitapseç", LogoUrl= "https://cdn.kitapsec.com//temalar/KitapSec2017/img/logo.jpg"},
+                new Website(){Name="Idefix", LogoUrl= "https://fragtist.com/wp-content/uploads/2017/04/fragtist-IDEFIX-750x349.gif"},
+                new Website(){Name="Fidan Kitap", LogoUrl= "https://www.fidankitap.com/u/fidankitap/fidan-kitap-logo-9-1576766279.png"},
+                new Website(){Name="Hepsiburada", LogoUrl= "https://cdn.freelogovectors.net/wp-content/uploads/2018/02/hepsiburada-logo.png" },
             };
-            websites.ForEach(w => context.Websites.AddOrUpdate(w));
+            websites.ForEach(w=>context.Websites.AddOrUpdate(w));
             context.SaveChanges();
 
             List<WebsiteUrl> websiteUrls = new List<WebsiteUrl>()
@@ -66,7 +80,6 @@ namespace WebScraping.Data.Concrete.Ef
 
             websiteUrls.ForEach(w => context.WebsiteUrls.AddOrUpdate(w));
             context.SaveChanges();
-
             base.Seed(context);
         }
     }

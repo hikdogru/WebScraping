@@ -1,4 +1,5 @@
-﻿using WebScraping.Core.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using WebScraping.Core.Entities;
 
 namespace WebScraping.Entities
 {
@@ -6,10 +7,10 @@ namespace WebScraping.Entities
     {
         public int Id { get; set; }
         public string Url { get; set; }
-        public string WebsiteName { get; set; }
-        public Website Website { get; set; }
-
         // Best-seller or All-products
         public string UrlType { get; set; }
+
+        public int WebsiteId { get; set; }
+        public Website Website { get; set; }
     }
 }

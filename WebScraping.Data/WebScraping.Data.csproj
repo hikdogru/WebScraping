@@ -61,9 +61,13 @@
     <Compile Include="Concrete\Ef\EfWebsiteUrlRepository.cs" />
     <Compile Include="Concrete\Ef\EfWebsiteRepository.cs" />
     <Compile Include="Concrete\Ef\WebScrapingContext.cs" />
+    <Compile Include="Migrations\202104250434488_InitialCreate.cs" />
+    <Compile Include="Migrations\202104250434488_InitialCreate.designer.cs">
+      <DependentUpon>202104250434488_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
@@ -77,6 +81,11 @@
       <Project>{1C5C5E9F-5F85-46AA-814A-EE9167D32578}</Project>
       <Name>WebScraping.Entities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202104250434488_InitialCreate.resx">
+      <DependentUpon>202104250434488_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
