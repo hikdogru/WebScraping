@@ -10,5 +10,6 @@ namespace WebScraping.Business.Abstract
         void Add(Website website);
         void Update(Website website);
         void Delete(int websiteId);
+        List<Website> GetWebsiteWithNodeAndUrl();
     }
 }

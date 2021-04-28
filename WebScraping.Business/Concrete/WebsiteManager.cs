@@ -42,5 +42,10 @@ namespace WebScraping.Business.Concrete
                 _websiteRepository.Delete(website);
             }
         }
+
+        public List<Website> GetWebsiteWithNodeAndUrl()
+        {
+            return _websiteRepository.GetWebsiteWithNodeAndUrl();
+        }
     }
 }

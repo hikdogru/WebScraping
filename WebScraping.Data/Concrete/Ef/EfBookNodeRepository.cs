@@ -13,7 +13,7 @@ namespace WebScraping.Data.Concrete.Ef
         {
             using (var context = new WebScrapingContext())
             {
-                var nodes = context.BookNodes.Include(b => b.Website).ToList();
+                var nodes = context.BookNodes.Include(w => w.Website).Include(w => w.Website.WebsiteUrls).ToList();
                 return nodes;
             }
         }

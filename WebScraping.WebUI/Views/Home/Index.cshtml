@@ -52,6 +52,13 @@
 
 @Html.Partial("_NavbarPartial")
 
+<div class="row">
+    <h3 class="ml-5">Index @ViewBag.Time</h3>
+    <h3 class="ml-5">Book @ViewBag.TimeBook</h3>
+    <h3 class="ml-5">SelectNodes1 @ViewBag.SelectNodes1</h3>
+    <h3 class="ml-5">SelectNodes2 @((int)TempData["SelectNodes2"])</h3>
+    <h3 class="ml-5">BookScraping @ViewBag.BookScraping</h3>
+</div>
 @{
     var viewDataOtherPublishers = (List<Book>)TempData["OtherPublishers"];
     var viewDataBook = (List<Book>)TempData["Books"];
