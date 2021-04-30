@@ -22,7 +22,7 @@ namespace WebScraping.Data.Migrations
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method
             //  to avoid creating duplicate seed data.
-           
+
 
             List<Website> websites = new List<Website>()
             {
@@ -38,7 +38,7 @@ namespace WebScraping.Data.Migrations
                 new Website(){Name="Fidan Kitap", LogoUrl= "https://www.fidankitap.com/u/fidankitap/fidan-kitap-logo-9-1576766279.png", WebsiteUrl = "https://www.fidankitap.com"},
                 new Website(){Name="Hepsiburada", LogoUrl= "https://cdn.freelogovectors.net/wp-content/uploads/2018/02/hepsiburada-logo.png", WebsiteUrl = "https://www.hepsiburada.com"},
             };
-            websites.ForEach(w=>context.Websites.AddOrUpdate(w));
+            websites.ForEach(w => context.Websites.AddOrUpdate(w));
             context.SaveChanges();
 
             List<WebsiteUrl> websiteUrls = new List<WebsiteUrl>()
@@ -95,7 +95,7 @@ namespace WebScraping.Data.Migrations
                 //Amazon
                 new BookNode()
                 {
-                    WebsiteId = 2, Name = "//*[@id='productTitle']", 
+                    WebsiteId = 2, Name = "//*[@id='productTitle']",
                     Author = "//span[1][contains(@class , 'author')]/a",
                     Price = "//div[@class='a-row']/span[contains(@class , 'inlineBlock-display')]/span",
                     Publisher = "//div[@id='detailBulletsWrapper_feature_div'] //ul/li[1]/span/span[2]",
@@ -107,18 +107,91 @@ namespace WebScraping.Data.Migrations
                 new BookNode()
                 {
                     WebsiteId = 1,
-                    Name = "//h1[@id='productName']",
+                    Name = "//a[@class='fl col-12 text-description detailLink']",
                     Author = "//a[@id='productModelText']",
-                    Price = "//span[@class='product-price'])",
-                    Publisher = "//a[contains(@class, 'product-brand')]/span",
-                    Image = "//span[@class='imgInner']/img/@src",
+                    Price = "//div[@class='col col-12 currentPrice']",
+                    Publisher = "//a[@class='col col-12 text-title mt']",
+                    Image = "//span[@class='imgInner']/img",
                     Detail = "//a[@class='fl col-12 text-description detailLink']",
                     ItemCount = 100,
 
-                }
+                },
+                //Kidega
+                new BookNode()
+                {
+                        WebsiteId = 3,
+                        Name = "//a[@class='book-name']",
+                        Author = "//div[@class='itemHeader']/div[2]",
+                        Price = "//b[@class='lastPrice']",
+                        Image = "//div[@class='image']/a/img/@src",
+                        Publisher = "//a[@class='publisher']",
+                        Detail = "//a[contains(@class,'book-name')]",
+                        ItemCount = 100,
+
+            },
+                //Kitap16
+                new BookNode()
+                {
+                    WebsiteId = 4,
+                    Name = "//div[@class='name']/a",
+                    Author = "//div[@class='writer']/a",
+                    Price = "//span[@class='price price_sale convert_cur']",
+                    Image = "//div[@class='image image_b']/a/img/@src",
+                    Publisher = "//div[@class='publisher']/a",
+                    Detail = "//div[contains(@class, 'name')]/a",
+                    ItemCount = 100,
+                },
+                //D&R
+                new BookNode()
+                {
+                    WebsiteId = 5 ,
+                    Name = "//h3[@class='ellipsis']",
+                    Author = "//a[@class='who']",
+                    Price = "//span[@class='price']",
+                    Image = "//div[@class='content']/a/figure/img/@data-src",
+                    Publisher = "//a[@class='who mb10']",
+                    Detail = "//a[contains(@class, 'item-name')]",
+                    ItemCount = 100,
+                },
+                //İlknokta
+                new BookNode()
+                {
+                    WebsiteId = 6 ,
+                    Name = "//div[@class='name']/a",
+                    Author = "//div[@class='writer']/a",
+                    Price = "//span[@class='price price_sale convert_cur']",
+                    Image = "//div[@class='image image_b']/a/img/@src",
+                    Publisher = "//div[@class='publisher']",
+                    Detail = "//div[contains(@class, 'name')]/a",
+                    ItemCount = 100,
+                },
+                //Eganba
+                new BookNode()
+                {
+                    WebsiteId = 7 ,
+                    Name = "//a[@class='product-name']",
+                    Author = "//div[@class='product-author']",
+                    Price = "//div[@class='product-price']/span/following-sibling::text()",
+                    Image = "//div[@class='prod-list-item']/div/a/img/@src",
+                    Publisher = "//div[@class='product-store']",
+                    Detail = "//a[contains(@class, 'product-name')]",
+                    ItemCount = 100,
+                },
+                //Idefix
+                new BookNode()
+                {
+                    WebsiteId = 9 ,
+                    Name = "//div[@class='box-title']/a",
+                    Author = "//div[@class='box-line-2 pName']/a[@class='who']",
+                    Price = "//span[@class='price price']",
+                    Image = "//div[@class='image-area']/img",
+                    Publisher = "//a[@class='who2 alternate']",
+                    Detail = "//div[contains(@class, 'box-title')]/a",
+                    ItemCount = 100,
+                },
             };
 
-            bookNodes.ForEach(b=>context.BookNodes.AddOrUpdate(b));
+            bookNodes.ForEach(b => context.BookNodes.AddOrUpdate(b));
             context.SaveChanges();
             base.Seed(context);
         }

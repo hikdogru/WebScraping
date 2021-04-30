@@ -52,13 +52,13 @@
 
 @Html.Partial("_NavbarPartial")
 
-<div class="row">
-    <h3 class="ml-5">Index @ViewBag.Time</h3>
-    <h3 class="ml-5">Book @ViewBag.TimeBook</h3>
-    <h3 class="ml-5">SelectNodes1 @ViewBag.SelectNodes1</h3>
-    <h3 class="ml-5">SelectNodes2 @((int)TempData["SelectNodes2"])</h3>
+@*<div class="row">
+    <h3 class="ml-5">Index @(ViewBag.Time ?? "")</h3>
+    <h3 class="ml-5">Book @(ViewBag.TimeBook ?? "")</h3>
+    <h3 class="ml-5">SelectNodes1 @(ViewBag.SelectNodes1 ?? "")</h3>
+    <h3 class="ml-5">SelectNodes2 @((int)(TempData["SelectNodes2"] ?? ""))</h3>
     <h3 class="ml-5">BookScraping @ViewBag.BookScraping</h3>
-</div>
+</div>*@
 @{
     var viewDataOtherPublishers = (List<Book>)TempData["OtherPublishers"];
     var viewDataBook = (List<Book>)TempData["Books"];
@@ -72,7 +72,7 @@
 <div class="container text-center">
 
     <h2 class="text-success">Arama Sonuçları</h2>
-    <p class="text-muted">Toplam @viewDataOtherPublishers.Count ürün gösteriliyor. Aranan ürün:@((string)TempData["SearchText"])</p>
+    <p class="text-muted">Toplam @viewDataOtherPublishers.Count ürün gösteriliyor. Aranan ürün: <span class="text-success">@((string)TempData["SearchText"])</span></p>
     <div class="row">
         @foreach (var publisher in viewDataOtherPublishers)
         {
@@ -106,11 +106,11 @@
             <img src="@viewDataItem[0].Image" class="img" alt="Item Image" />
         </div>
 
-        @*@foreach (var book in viewDataItem)
+        @foreach (var book in viewDataItem)
         {
             foreach (var logo in viewDataBooksLogo)
             {
-                if (logo.Key.ToLower().Contains(book.WebsiteName.ToLower()))
+                if (book.BookDetailUrl.ToLower().Contains(logo.Key.ToLower()))
                 {
                     <div class="row center mb-5" style="width: 80%; background-color: antiquewhite;">
                         <div class="col-md-3">
@@ -142,7 +142,7 @@
                 }
             }
 
-        }*@
+        }
     </div>
 
 }
@@ -155,12 +155,12 @@ else if (viewDataBook != null && viewDataOtherPublishers == null)
     </div>
     <div class="container">
         <div class="row mt-5">
-            @*@foreach (var book in viewDataBook)
+            @foreach (var book in viewDataBook)
             {
 
                 foreach (var logo in viewDataBooksLogo)
                 {
-                    if (logo.Key.ToLower().Contains(book.WebsiteName.ToLower()))
+                    if ((book.BookDetailUrl.ToLower().Contains(logo.Key.ToLower())))
                     {
                         <div class="row center" style="width: 80%; background-color: antiquewhite;">
                             <div class="col-md-3">
@@ -189,7 +189,7 @@ else if (viewDataBook != null && viewDataOtherPublishers == null)
                     }
                 }
 
-            }*@
+            }
         </div>
     </div>
 
