@@ -14,5 +14,6 @@ namespace WebScraping.Business.Abstract
         void Add(Book book);
         void Update(Book book);
         void Delete(int bookId);
+        List<Book> GetBooksWithWebsite();
     }
 }

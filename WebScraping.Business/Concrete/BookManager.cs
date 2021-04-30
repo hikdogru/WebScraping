@@ -54,5 +54,10 @@ namespace WebScraping.Business.Concrete
             _bookRepository.Delete(new Book() { Id = bookId });
 
         }
+
+        public List<Book> GetBooksWithWebsite()
+        {
+            return _bookRepository.GetBooksWithWebsite();
+        }
     }
 }

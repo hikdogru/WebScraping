@@ -369,7 +369,7 @@
                             {
                                 if (authorIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == author.ItemId))
                                 {
-                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" @*checked="@author.IsCheck"*@ checked="checked" onclick="getProduct()" value="@author.ItemId">
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" checked="checked" onclick="getProduct()" value="@author.ItemId">
                                     <span class="btn btn-light">@author.ItemName</span>
                                 }
 

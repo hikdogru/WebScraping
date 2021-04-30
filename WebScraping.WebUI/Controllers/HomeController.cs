@@ -25,22 +25,22 @@ namespace WebScraping.WebUI.Controllers
         private static readonly List<ItemCheckedModel> _itemCheckedModels = new List<ItemCheckedModel>();
         private readonly List<string> _bookDetailUrl = new List<string>();
 
-        private readonly Dictionary<string, string> _booksLogoUrl = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _booksLogoUrl = new Dictionary<string, string>
         {
-            {"Bkm Kitap", "http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
-            {
-                "Amazon",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1920px-Amazon_logo.svg.png"
-            },
-            {"Kidega", "https://cdn.kidega.com/assets/web/img/kidega-logo.png"},
-            {"Kitap16", "https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png"},
-            {"DR", "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
-            {"İlknokta", "https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg"},
-            {"Eganba", "https://www.eganba.com/wwwroot/images/eganba-logo.png"},
-            {"Kitapseç", "https://cdn.kitapsec.com//temalar/KitapSec2017/img/logo.jpg"},
-            {"Idefix", "https://fragtist.com/wp-content/uploads/2017/04/fragtist-IDEFIX-750x349.gif"},
-            {"Fidan Kitap", "https://www.fidankitap.com/u/fidankitap/fidan-kitap-logo-9-1576766279.png"},
-            {"Hepsiburada", "https://cdn.freelogovectors.net/wp-content/uploads/2018/02/hepsiburada-logo.png"}
+            //{"Bkm Kitap", "http://www.bkmkitap.com/Data/EditorFiles/logonew23.png"},
+            //{
+            //    "Amazon",
+            //    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1920px-Amazon_logo.svg.png"
+            //},
+            //{"Kidega", "https://cdn.kidega.com/assets/web/img/kidega-logo.png"},
+            //{"Kitap16", "https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png"},
+            //{"DR", "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
+            //{"İlknokta", "https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg"},
+            //{"Eganba", "https://www.eganba.com/wwwroot/images/eganba-logo.png"},
+            //{"Kitapseç", "https://cdn.kitapsec.com//temalar/KitapSec2017/img/logo.jpg"},
+            //{"Idefix", "https://fragtist.com/wp-content/uploads/2017/04/fragtist-IDEFIX-750x349.gif"},
+            //{"Fidan Kitap", "https://www.fidankitap.com/u/fidankitap/fidan-kitap-logo-9-1576766279.png"},
+            //{"Hepsiburada", "https://cdn.freelogovectors.net/wp-content/uploads/2018/02/hepsiburada-logo.png"}
         };
 
         private readonly IBookNodeService _bookNodeService;
@@ -62,41 +62,38 @@ namespace WebScraping.WebUI.Controllers
 
         public ActionResult Index()
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-            if (_books.Count > 0 == false) Book();
 
-            watch.Stop();
-            ViewBag.Time = watch.ElapsedMilliseconds;
+            if (_books.Count > 0 == false) Book();
             return View(_books);
         }
 
 
         private void Book()
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
             var bookNodes = _bookNodeService.GetNodesByWebsite();
-            
+            var allBooks = _bookService.GetBooksWithWebsite();
+            var websites = _websiteService.GetAll();
+            _books.AddRange(allBooks);
+            foreach (var website in websites)
+            {
+                _booksLogoUrl.Add(website.Name, website.LogoUrl);
+            }
+
+
             foreach (var node in bookNodes)
             {
-
                 if (node.WebsiteId != 2 && node.WebsiteId != 11 && node.Website.Id != 11 && node.Website.Id != 2)
                 {
-
                     foreach (var websiteUrl in node.Website.WebsiteUrls)
                     {
                         var bookDetailNode = SelectNodes(node.Detail, websiteUrl.Url);
                         foreach (var detailNode in bookDetailNode)
                         {
 
-                            _bookDetailUrl.Add((detailNode.GetAttributeValue("href", string.Empty).Contains("http")?"":node.Website.WebsiteUrl) +
+                            _bookDetailUrl.Add((detailNode.GetAttributeValue("href", string.Empty).Contains("http") ? "" : node.Website.WebsiteUrl) +
                                                    HttpUtility.UrlDecode(
                                                        detailNode.GetAttributeValue("href", string.Empty)));
-
-
                         }
-
 
                         var bookNodeXpath = new BookNodeXPath()
                         {
@@ -116,11 +113,6 @@ namespace WebScraping.WebUI.Controllers
 
 
                 }
-
-
-                watch.Stop();
-                ViewBag.TimeBook = watch.ElapsedMilliseconds;
-
 
 
                 //_allBooksUrl = new Dictionary<string, string>();
@@ -164,8 +156,6 @@ namespace WebScraping.WebUI.Controllers
 
         private void BookScraping(BookNodeModel bookNode, string websiteUrl, int websiteId, string type = "")
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
             var bookPrice = "";
 
             for (var i = 0; i < bookNode.Author.Count; i++)
@@ -221,15 +211,13 @@ namespace WebScraping.WebUI.Controllers
                 {
                     book.CategoryType = "Best-seller";
                     _bookService.Add(book);
-                    _books.Add(book);
+                    //_books.Add(book);
 
                 }
 
 
                 if (i == bookNode.ItemCount) break;
             }
-            watch.Stop();
-            ViewBag.BookScraping = watch.ElapsedMilliseconds;
         }
 
 
@@ -383,29 +371,37 @@ namespace WebScraping.WebUI.Controllers
                 var itemId = 1;
                 foreach (var publisherName in publishers)
                 {
-                    var itemCheckedModel = new ItemCheckedModel();
-                    itemCheckedModel.ItemEntityName = "Publisher";
-                    itemCheckedModel.IsCheck = false;
-                    itemCheckedModel.ItemName = publisherName;
-                    itemCheckedModel.ItemId = itemId;
-                    _itemCheckedModels.Add(itemCheckedModel);
-                    itemId++;
+                    if (!String.IsNullOrEmpty(publisherName))
+                    {
+                        var itemCheckedModel = new ItemCheckedModel();
+                        itemCheckedModel.ItemEntityName = "Publisher";
+                        itemCheckedModel.IsCheck = false;
+                        itemCheckedModel.ItemName = publisherName;
+                        itemCheckedModel.ItemId = itemId;
+                        _itemCheckedModels.Add(itemCheckedModel);
+                        itemId++;
+                    }
+
                 }
 
                 foreach (var author in authors)
                 {
-                    var itemCheckedModel = new ItemCheckedModel();
-                    itemCheckedModel.ItemEntityName = "Author";
-                    itemCheckedModel.IsCheck = false;
-                    itemCheckedModel.ItemName = author;
-                    itemCheckedModel.ItemId = itemId;
-                    _itemCheckedModels.Add(itemCheckedModel);
-                    itemId++;
+                    if (!String.IsNullOrEmpty(author))
+                    {
+                        var itemCheckedModel = new ItemCheckedModel();
+                        itemCheckedModel.ItemEntityName = "Author";
+                        itemCheckedModel.IsCheck = false;
+                        itemCheckedModel.ItemName = author;
+                        itemCheckedModel.ItemId = itemId;
+                        _itemCheckedModels.Add(itemCheckedModel);
+                        itemId++;
+                    }
+
                 }
             }
         }
 
-
+        //Carousel
         public ActionResult GetProducts(int page = 1)
         {
             var randomBooks = _books.OrderBy(b => Guid.NewGuid()).Take(20);
@@ -432,6 +428,8 @@ namespace WebScraping.WebUI.Controllers
             if (!string.IsNullOrEmpty(term))
             {
                 var distinct = _books.Where(b => b.Name.ToUpper().Trim().Contains(term.ToUpper()))
+                    .GroupBy(b => b.Publisher)
+                    .Select(b => b.FirstOrDefault())
                     .OrderBy(b => ReplaceString(b.Price)).Distinct().Select(b => new { b.Name, b.Image }).ToList();
                 TempData["BooksLogoUrl"] = _booksLogoUrl;
 
@@ -445,6 +443,7 @@ namespace WebScraping.WebUI.Controllers
 
         public ActionResult SearchItem(string query)
         {
+
             if (!string.IsNullOrEmpty(query))
             {
                 var otherPublishers = _books.Where(b => b.Name.ToUpper()
