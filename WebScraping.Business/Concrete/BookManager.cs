@@ -11,7 +11,7 @@ using WebScraping.Entities;
 
 namespace WebScraping.Business.Concrete
 {
-    public class BookManager:IBookService
+    public class BookManager : IBookService
     {
         private IBookRepository _bookRepository;
 
@@ -34,7 +34,14 @@ namespace WebScraping.Business.Concrete
 
         public void Add(Book book)
         {
-            _bookRepository.Add(book);
+            var books = _bookRepository.GetList().Where(b=>b.BookDetailUrl == book.BookDetailUrl);
+
+            if (books.Count()<=0)
+            {
+                _bookRepository.Add(book);
+            }
+            
+
         }
 
         public void Update(Book book)
@@ -44,11 +51,8 @@ namespace WebScraping.Business.Concrete
 
         public void Delete(int bookId)
         {
-            var book = _bookRepository.Get(b => b.Id == bookId);
-            if (book != null)
-            {
-                _bookRepository.Delete(book);
-            }
+            _bookRepository.Delete(new Book() { Id = bookId });
+
         }
     }
 }

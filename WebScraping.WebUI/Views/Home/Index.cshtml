@@ -110,7 +110,7 @@
         {
             foreach (var logo in viewDataBooksLogo)
             {
-                if (book.BookDetailUrl.ToLower().Contains(logo.Key.ToLower()))
+                if (logo.Key.ToLower().Contains(book.Website.Name.ToLower()))
                 {
                     <div class="row center mb-5" style="width: 80%; background-color: antiquewhite;">
                         <div class="col-md-3">

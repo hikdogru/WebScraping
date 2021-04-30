@@ -34,7 +34,7 @@ namespace WebScraping.WebUI.Controllers
             },
             {"Kidega", "https://cdn.kidega.com/assets/web/img/kidega-logo.png"},
             {"Kitap16", "https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png"},
-            {"D&R", "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
+            {"DR", "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png"},
             {"İlknokta", "https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg"},
             {"Eganba", "https://www.eganba.com/wwwroot/images/eganba-logo.png"},
             {"Kitapseç", "https://cdn.kitapsec.com//temalar/KitapSec2017/img/logo.jpg"},
@@ -46,15 +46,17 @@ namespace WebScraping.WebUI.Controllers
         private readonly IBookNodeService _bookNodeService;
         private IWebsiteService _websiteService;
         private readonly IWebsiteUrlService _websiteUrlService;
+        private readonly IBookService _bookService;
 
         private int _time = 0;
 
         public HomeController(IWebsiteService websiteService, IWebsiteUrlService websiteUrlService,
-            IBookNodeService bookNodeService)
+            IBookNodeService bookNodeService, IBookService bookService)
         {
             _websiteService = websiteService;
             _websiteUrlService = websiteUrlService;
             _bookNodeService = bookNodeService;
+            _bookService = bookService;
         }
 
 
@@ -216,7 +218,12 @@ namespace WebScraping.WebUI.Controllers
                 if (type == "all")
                     _allBooks.Add(book);
                 else
+                {
+                    book.CategoryType = "Best-seller";
+                    _bookService.Add(book);
                     _books.Add(book);
+
+                }
 
 
                 if (i == bookNode.ItemCount) break;
