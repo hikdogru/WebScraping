@@ -77,6 +77,17 @@ namespace WebScraping.Data.Migrations
                 new WebsiteUrl(){WebsiteId=11,Id= 6, Url="https://www.hepsiburada.com/kampanyalar/cok-satan-kitaplar?sayfa=2", UrlType="Best-Seller" },
 
             };
+            for (int i = 0; i < 5; i++)
+            {
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 1, UrlType = "All-books", Url = $"https://www.bkmkitap.com/edebiyat-kitaplari?pg={i + 1}" });
+                websiteUrls.Add(new WebsiteUrl(){WebsiteId = 3, UrlType = "All-books", Url = "https://kidega.com/kitap/edebiyat/tur?page=" + i+1});
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 4, UrlType = "All-books", Url = "https://www.kitap16.com/index.php?p=Products&ctg_id=19&sort_type=prs_yearly-desc&page=" + i + 1 });
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 5, UrlType = "All-books", Url = "https://www.dr.com.tr/kategori/Kitap/Edebiyat/grupno=00055#/page=" + i + 1 });
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 6, UrlType = "All-books", Url = "https://www.ilknokta.com/index.php?p=Products&ctg_id=2021&page=" + i + 1 });
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 8, UrlType = "All-books", Url = $"https://www.kitapsec.com/Products/Edebiyat/{i+1}-6-0a0-0-0-0-0-0.xhtml"});
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 9, UrlType = "All-books", Url = $"https://www.idefix.com/kategori/Kitap/Edebiyat/grupno=00055?ShowNotForSale=True&Page={i+1}" });
+
+            }
 
             websiteUrls.ForEach(w => context.WebsiteUrls.AddOrUpdate(w));
             context.SaveChanges();
