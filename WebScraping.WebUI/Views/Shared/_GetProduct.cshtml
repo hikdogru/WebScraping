@@ -49,7 +49,7 @@
 
 <div class="center" style="margin-top: 1rem;">
     <div class="pagination">
-        @for (int i = 1; i <= Model.PageCount(); i++)
+        @for (int i = Model.GetPageNumber().startPage; i <= Model.GetPageNumber().endPage; i++)
         {
             <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author, ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
         }

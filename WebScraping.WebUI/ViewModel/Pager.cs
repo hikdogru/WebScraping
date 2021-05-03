@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using WebScraping.Entities;
 
-
 namespace WebScraping.WebUI.ViewModel
 {
-    public class ItemViewModel
+    public class Pager
     {
-        public IEnumerable<Book> Books { get; set; }
-        public int BookPerPage { get; set; }
         public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
+        public IEnumerable<Book> Books { get; set; }
+
 
         public (int startPage, int endPage) GetPageNumber()
         {
@@ -34,12 +34,17 @@ namespace WebScraping.WebUI.ViewModel
 
         public int PageCount()
         {
-            return Convert.ToInt32(Math.Ceiling(Books.Count() / (double)BookPerPage));
+            return Convert.ToInt32(Math.Ceiling(Books.Count() / (double)PageSize));
         }
+
         public IEnumerable<Book> PaginatedBooks()
         {
-            int start = (CurrentPage - 1) * BookPerPage;
-            return Books.Skip(start).Take(BookPerPage);
+            int start = (CurrentPage - 1) * PageSize;
+            return Books.Skip(start).Take(PageSize);
         }
+
+        
+
+
     }
 }
