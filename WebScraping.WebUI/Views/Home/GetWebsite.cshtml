@@ -300,7 +300,7 @@
             </header>
             <div class="filter-content collapse show" id="collapse_aside5">
 
-                <input type="text" placeholder="Website ara" id="webisteSearchInput">
+                <input type="text" placeholder="Website ara" id="websiteSearchInput">
                 <div class="card-body overflow-auto" id="websiteDiv" style="height: 250px;">
                     @{
                         var websiteIds = (List<string>)ViewBag.websiteId;
@@ -459,18 +459,26 @@
 
     @* Live Search*@
     <script>
-        jQuery("#searchInput").on("keyup",
+        $("#searchInput").on("keyup",
             function () {
                 var value = $(this).val().toLowerCase();
-                jQuery("#publisherDiv *").filter(function () {
+                $("#publisherDiv *").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
 
-        jQuery("#authorInput").on("keyup",
+        $("#authorInput").on("keyup",
             function () {
                 var value = $(this).val().toLowerCase();
-                jQuery("#authorDiv *").filter(function () {
+                $("#authorDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+        $("#websiteSearchInput").on("keyup",
+            function () {
+                var value = $(this).val().toLowerCase();
+                $("#websiteDiv *").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
@@ -509,23 +517,10 @@
                             $("#product").html(result).fadeIn(750);
                         });
 
-                    @*if (authors.length == 0) {
-                        if (minPrice == "" && maxPrice == "") {
-                            history.pushState("", " ", '?' + 'publisher=' + publishers);
-                        } else {
-                            history.pushState("", " ", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + (minPrice == '' ? '@minPrice' : 'minPrice=' + minPrice + '&') + (maxPrice == '' ? '@maxPrice' : 'maxPrice=' + maxPrice));
-
-                        }
-
-                    } else {
-                        if (minPrice == "" && maxPrice == "") {
-                            history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors);
-                        } else {
-                            history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors + '&' + (minPrice == '' ? '@minPrice' : 'minPrice=' + minPrice + '&') + (maxPrice == '' ? '@maxPrice' : 'maxPrice=' + maxPrice));
-                        }*@
-
-
-                    //history.pushState("", "", '?' + 'website=' + websites + '&'+ 'publisher=' + publishers + '&' + 'author=' + authors + '&' +  'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
+                    history.pushState("", "", '?' + (websites.length == 0 ? '' : 'website=' + websites + '&')
+                         + (publishers.length === 0 ? '' : 'publisher=' + publishers + '&')
+                        + (authors.length == 0 ? '' : 'author=' + authors + '&')
+                        + (minPrice == '' ? '' : 'minPrice=' + minPrice + '&') + (maxPrice == '' ? '' : 'maxPrice=' + maxPrice));
 
 
                 },
@@ -540,13 +535,13 @@
     </script>
 
     <script>
-        @* Slide otomatik geçiş süresi. Default 5000ms  
+        @* Slide otomatik geçiş süresi. Default 5000ms *@
         $('.carousel').carousel({
             interval: 7000
         })
     </script>
 
-    @*<script>
+   @* <script>
 
             $(document).ready(function() {
                 $('#searchText').autocomplete({
