@@ -4,12 +4,12 @@
 
 
 @{
-   
+
     int count = 1;
 }
 @foreach (var book in Model.PaginatedBooks())
 {
-    
+
 
     <div class="col-sm-10 col-md-6 col-lg-3 offset-md-0 offset-sm-1" style="margin-bottom: 1rem">
         <div class="card border-3" style="width: 100%; height: 100%;">
@@ -49,10 +49,13 @@
 
 <div class="center" style="margin-top: 1rem;">
     <div class="pagination">
+        <a href="@Url.Action("GetWebsite", "Home", new {page=1})" class="page-link">İlk</a>
         @for (int i = Model.GetPageNumber().startPage; i <= Model.GetPageNumber().endPage; i++)
         {
-            <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="@Url.Action("GetWebsite", "Home", new {ViewBag.author, ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
+            <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="@Url.Action("GetWebsite", "Home", new {ViewBag.website, ViewBag.author, ViewBag.publisher, ViewBag.minPrice, ViewBag.maxPrice, page = i})">@i</a>
         }
+        <a href="@Url.Action("GetWebsite", "Home", new {page=Model.PageCount()})" class="page-link">Son</a>
+
 
     </div>
 </div>

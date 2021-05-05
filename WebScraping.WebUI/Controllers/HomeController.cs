@@ -101,39 +101,7 @@ namespace WebScraping.WebUI.Controllers
             //    }
 
 
-            //    //AllBooksUrl = new Dictionary<string, string>();
-            //    //for (int i = 1; i <= 10; i++)
-            //    //{
-            //    //    AllBooksUrl.Add("Bkm Kitap" + i, "https://www.bkmkitap.com/edebiyat-kitaplari?pg=" + i);
-            //    //}
-
-            //    //foreach (var url in AllBooksUrl)
-            //    //{
-            //    //    if (url.Value.Contains("bkm"))
-            //    //    {
-            //    //        var bookNode = new BookNode()
-            //    //        {
-            //    //            Name = doc.DocumentNode.SelectNodes("//a[@class='fl col-12 text-description detailLink']", url.Value),
-            //    //            Author = doc.DocumentNode.SelectNodes("//a[@class='fl col-12 text-title']", url.Value),
-            //    //            Price = doc.DocumentNode.SelectNodes("//div[@class='col col-12 currentPrice']", url.Value),
-            //    //            Image = doc.DocumentNode.SelectNodes("//span[@class='imgInner']/img", url.Value),
-            //    //            Publisher = doc.DocumentNode.SelectNodes("//a[@class='col col-12 text-title mt']", url.Value),
-            //    //            Detail = doc.DocumentNode.SelectNodes("//a[@class='fl col-12 text-description detailLink']", url.Value),
-            //    //            WebsiteName = "BKM Kitap",
-            //    //            ItemCount = 100
-            //    //        };
-
-            //    //        foreach (var node in bookNode.Detail)
-            //    //        {
-            //    //            bookDetailUrl.Add("https://www.bkmkitap.com" +
-            //    //                              HttpUtility.UrlDecode(node.GetAttributeValue("href", string.Empty)));
-            //    //        }
-
-            //    //        BookScraping(bookNode, "https://www.bkmkitap.com", "all");
-            //    //    }
-
-            //    //}
-            //}
+         
         }
 
 
@@ -269,7 +237,7 @@ namespace WebScraping.WebUI.Controllers
         }
 
 
-        public ActionResult GetWebsite(List<string> publisher, List<string> author, int? minPrice = 0,
+        public ActionResult GetWebsite(List<string> website ,List<string> publisher, List<string> author, int? minPrice = 0,
                 int? maxPrice = 0, int? page = 1)
         {
             var itemViewModel = new ItemViewModel();
@@ -283,6 +251,13 @@ namespace WebScraping.WebUI.Controllers
                 itemViewModel.Books = filteredItems;
                 ViewBag.minPrice = minPrice;
                 ViewBag.maxPrice = maxPrice;
+            }
+
+            if (website != null && website.Count>0)
+            {
+                filteredItems = filteredItems.Where(b => website.Any(w => int.Parse(w) == b.WebsiteId));
+                website.ForEach(p => ViewBag.website += p + (website.Count > 1 ? "," : ""));
+
             }
 
             if (publisher != null && publisher.Count > 0)

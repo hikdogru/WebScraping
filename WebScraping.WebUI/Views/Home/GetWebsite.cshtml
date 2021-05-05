@@ -14,13 +14,10 @@
             width: 400px !important;
             height: 300px !important;
             overflow: scroll;
-            
         }
 
         .list_item_container {
             width: 350px;
-            
-            
         }
 
         .image1 {
@@ -31,10 +28,10 @@
             border: none;
         }
 
-        .image1 img {
-            width: 70%;
-        }
-        
+            .image1 img {
+                width: 70%;
+            }
+
 
         .center {
             text-align: center;
@@ -295,6 +292,40 @@
     <div class="py-2 border-bottom ml-3">
         <article class="filter-group">
             <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside5"
+                   data-abc="true" aria-expanded="True">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Website </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse show" id="collapse_aside5">
+
+                <input type="text" placeholder="Website ara" id="webisteSearchInput">
+                <div class="card-body overflow-auto" id="websiteDiv" style="height: 250px;">
+                    @{
+                        var websiteIds = (List<string>)ViewBag.websiteId;
+                    }
+
+                    @foreach (var book in Model.Books.GroupBy(b => b.Website).Select(b => b.FirstOrDefault()))
+                    {
+                        <input type="hidden" name="website" value="@book.WebsiteId">
+                        <label class="checkbox-btn">
+
+                            <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.WebsiteId)" onclick="getProduct()" value="@book.WebsiteId">
+                            <span class="btn btn-light"> @book.Website.Name</span>
+
+                        </label>
+                    }
+
+
+                </div>
+            </div>
+
+        </article>
+    </div>
+    <div class="py-2 border-bottom ml-3">
+        <article class="filter-group">
+            <header class="card-header">
                 <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
                    data-abc="true" aria-expanded="True">
                     <i class="icon-control fa fa-chevron-down"></i>
@@ -396,7 +427,7 @@
 </section>
 @{
     var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
-    
+
     //var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
 }
 @if (Model.Books.Count() > 0)
@@ -452,6 +483,7 @@
             var maxPrice = $("#maxPrice").val();
             var publishers = [];
             var authors = [];
+            var websites = [];
             $('.chkPublisher:checkbox:checked').each(function() {
                 publishers.push($(this).attr("value"));
             });
@@ -460,12 +492,16 @@
                 authors.push($(this).attr("value"));
             });
 
+            $('.chkWebsite:checkbox:checked').each(function() {
+                websites.push($(this).attr("value"));
+            });
+            console.log(websites);
             $.ajax({
                 type: 'GET',
                 url: '@Url.Action("GetWebsite", "Home")',
 
                 traditional: true,
-                data: { publisher: publishers, minPrice: minPrice, maxPrice: maxPrice, author: authors },
+                data: {website : websites, publisher: publishers, author: authors, minPrice: minPrice, maxPrice: maxPrice },
 
                 success: function(result) {
                     $(".preload").fadeIn(1000,
@@ -473,7 +509,7 @@
                             $("#product").html(result).fadeIn(750);
                         });
 
-                    if (authors.length == 0) {
+                    @*if (authors.length == 0) {
                         if (minPrice == "" && maxPrice == "") {
                             history.pushState("", " ", '?' + 'publisher=' + publishers);
                         } else {
@@ -486,9 +522,11 @@
                             history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors);
                         } else {
                             history.pushState("", "", '?' + (publishers.length == 0 ? '' : 'publisher=' + publishers + '&') + 'author=' + authors + '&' + (minPrice == '' ? '@minPrice' : 'minPrice=' + minPrice + '&') + (maxPrice == '' ? '@maxPrice' : 'maxPrice=' + maxPrice));
-                        }
+                        }*@
 
-                    }
+
+                    //history.pushState("", "", '?' + 'website=' + websites + '&'+ 'publisher=' + publishers + '&' + 'author=' + authors + '&' +  'minPrice=' + minPrice + '&' + 'maxPrice=' + maxPrice);
+
 
                 },
                 error: function() {
@@ -502,7 +540,7 @@
     </script>
 
     <script>
-        @* Slide otomatik geçiş süresi. Default 5000ms  *@
+        @* Slide otomatik geçiş süresi. Default 5000ms  
         $('.carousel').carousel({
             interval: 7000
         })
@@ -520,6 +558,8 @@
 
         </script>*@
 
+
+    @* Autocomplete *@
     <script>
         $(function () {
             $('#searchText').autocomplete({
@@ -545,7 +585,8 @@
 
             }).data("ui-autocomplete")._renderItem = function (ul, item) {
                 var innerHtml =
-                    '<button style="border:0px;margin-bottom:2px;"><a href="/Home/SearchItem?query='+item.label+'"><div class="list_item_container"><div class="image1"><img src="' +
+                    '<button style="border:0px;margin-bottom:2px;"><a href="/Home/SearchItem?query='+item.label+'">' +
+                        '<div class="list_item_container"><div class="image1"><img src="' +
                         item.value + '"></div><div class="label">' + item.label +
                         '</div></a></button>';
                 return $("<li></li>")
