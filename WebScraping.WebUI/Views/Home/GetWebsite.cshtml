@@ -132,19 +132,25 @@
 @Html.Partial("_Slider")
 
 @{
-    for (int i = 0; i < Model.Books.ToList().Count; i++)
+    var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
+
+
+
+    for (int i = 0; i < itemViewModel.Books.ToList().Count; i++)
     {
-        Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace("TL", "");
-        Model.Books.ToList()[i].Price = Model.Books.ToList()[i].Price.Replace(",", ".");
+        itemViewModel.Books.ToList()[i].Price = itemViewModel.Books.ToList()[i].Price.Replace("TL", "");
+        itemViewModel.Books.ToList()[i].Price = itemViewModel.Books.ToList()[i].Price.Replace(",", ".");
     }
     double maxPrice = 0.0;
     double minPrice = 0.0;
-    if (Model.Books.ToList().Count > 0)
+    if (itemViewModel.Books.ToList().Count > 0)
     {
-        maxPrice = Model.Books.Max(b => double.Parse(b.Price.Trim()));
-        minPrice = Model.Books.Min(b => double.Parse(b.Price));
+        maxPrice = itemViewModel.Books.Max(b => double.Parse(b.Price.Trim()));
+        minPrice = itemViewModel.Books.Min(b => double.Parse(b.Price));
 
     }
+
+
     int n = 1;
 }
 <div class="filter">
@@ -306,7 +312,7 @@
                         var websiteIds = (List<string>)ViewBag.websiteId;
                     }
 
-                    @foreach (var book in Model.Books.GroupBy(b => b.Website).Select(b => b.FirstOrDefault()))
+                    @foreach (var book in itemViewModel.Books.GroupBy(b => b.Website).Select(b => b.FirstOrDefault()))
                     {
                         <input type="hidden" name="website" value="@book.WebsiteId">
                         <label class="checkbox-btn">
@@ -425,12 +431,8 @@
         </article>
     </div>
 </section>
-@{
-    var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
 
-    //var booksByPublisher = (ItemViewModel)TempData["BooksByPublisher"];
-}
-@if (Model.Books.Count() > 0)
+@if (itemViewModel.Books.Count() > 0)
 {
 
 
@@ -508,22 +510,24 @@
                 type: 'GET',
                 url: '@Url.Action("GetWebsite", "Home")',
 
+
                 traditional: true,
-                data: {website : websites, publisher: publishers, author: authors, minPrice: minPrice, maxPrice: maxPrice },
+                data: { website: websites, publisher: publishers, author: authors, minPrice: minPrice, maxPrice: maxPrice },
 
                 success: function(result) {
                     $(".preload").fadeIn(1000,
                         function() {
                             $("#product").html(result).fadeIn(750);
                         });
-
-                    history.pushState("", "", '?' + (websites.length == 0 ? '' : 'website=' + websites + '&')
-                         + (publishers.length === 0 ? '' : 'publisher=' + publishers + '&')
+                    // Url işlemleri
+                    history.pushState("", "", '?' + (websites.length == 0 ? '' : 'website='+ websites + '&')
+                        + (publishers.length === 0 ? '' : 'publisher=' + publishers + '&')
                         + (authors.length == 0 ? '' : 'author=' + authors + '&')
-                        + (minPrice == '' ? '' : 'minPrice=' + minPrice + '&') + (maxPrice == '' ? '' : 'maxPrice=' + maxPrice));
-
+                        + (minPrice == '' ? 'minPrice=' + @minPrice+ '&' : 'minPrice=' + minPrice + '&')
+                        + (maxPrice == '' ? 'maxPrice=' + @maxPrice : 'maxPrice=' + maxPrice));
 
                 },
+
                 error: function() {
                     alert('Error.');
                 }
@@ -532,7 +536,11 @@
                 $(".preload").fadeOut(750);
             });
         };
+
+
     </script>
+
+
 
     <script>
         @* Slide otomatik geçiş süresi. Default 5000ms *@
@@ -541,7 +549,7 @@
         })
     </script>
 
-   @* <script>
+    @* <script>
 
             $(document).ready(function() {
                 $('#searchText').autocomplete({
@@ -556,7 +564,7 @@
 
     @* Autocomplete *@
     <script>
-        $(function () {
+        $(function() {
             $('#searchText').autocomplete({
                 source: function(request, response) {
                     $.ajax({
@@ -578,11 +586,15 @@
                 }
 
 
-            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            }).data("ui-autocomplete")._renderItem = function(ul, item) {
                 var innerHtml =
-                    '<button style="border:0px;margin-bottom:2px;"><a href="/Home/SearchItem?query='+item.label+'">' +
+                    '<button style="border:0px;margin-bottom:2px;"><a href="/Home/SearchItem?query=' +
+                        item.label +
+                        '">' +
                         '<div class="list_item_container"><div class="image1"><img src="' +
-                        item.value + '"></div><div class="label">' + item.label +
+                        item.value +
+                        '"></div><div class="label">' +
+                        item.label +
                         '</div></a></button>';
                 return $("<li></li>")
                     .data("item.autocomplete", item)

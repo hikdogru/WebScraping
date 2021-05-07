@@ -101,7 +101,7 @@ namespace WebScraping.WebUI.Controllers
             //    }
 
 
-         
+
         }
 
 
@@ -237,7 +237,7 @@ namespace WebScraping.WebUI.Controllers
         }
 
 
-        public ActionResult GetWebsite(List<string> website ,List<string> publisher, List<string> author, int? minPrice = 0,
+        public ActionResult GetWebsite(List<string> website, List<string> publisher, List<string> author, int? minPrice = 0,
                 int? maxPrice = 0, int? page = 1)
         {
             var itemViewModel = new ItemViewModel();
@@ -253,7 +253,7 @@ namespace WebScraping.WebUI.Controllers
                 ViewBag.maxPrice = maxPrice;
             }
 
-            if (website != null && website.Count>0)
+            if (website != null && website.Count > 0)
             {
                 filteredItems = filteredItems.Where(b => website.Any(w => int.Parse(w) == b.WebsiteId));
                 website.ForEach(p => ViewBag.website += p + (website.Count > 1 ? "," : ""));
@@ -319,7 +319,9 @@ namespace WebScraping.WebUI.Controllers
 
             if (Request.IsAjaxRequest())
                 return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
-            return View(itemViewModel);
+            TempData["ItemViewModel"] = itemViewModel;
+            return View();
+
         }
 
         private static void GetItemsByChecked()
