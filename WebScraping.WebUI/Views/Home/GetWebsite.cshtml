@@ -5,10 +5,12 @@
 
 
 @section styles
-    {
+{
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <link href="~/Content/Site.css" rel="stylesheet" />
+
     <style>
         ul#ui-id-1 {
             width: 400px !important;
@@ -131,6 +133,8 @@
 
 @Html.Partial("_Slider")
 
+
+
 @{
     var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
 
@@ -154,9 +158,9 @@
     int n = 1;
 }
 <div class="filter">
-    <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
+    <button class="btn btn-default collapsed" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
 </div>
-<div id="mobile-filter">
+<div id="mobile-filter" class="collapse">
 
     <div class="py-5 border-bottom ml-3">
         <form action="~/Home/GetFilteredItems" method="POST">
@@ -196,6 +200,38 @@
                 </div>
             </article>
         </form>
+    </div>
+    <div class="py-2 border-bottom ml-3">
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside6"
+                   data-abc="true" aria-expanded="True">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Website </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse show" id="collapse_aside6">
+
+                <input type="text" placeholder="Website ara" id="websiteMobileSearchInput">
+                <div class="card-body overflow-auto" id="websiteMobileDiv" style="height: 150px;">
+
+
+                    @foreach (var book in itemViewModel.Books.GroupBy(b => b.Website).Select(b => b.FirstOrDefault()))
+                    {
+                        <input type="hidden" name="website" value="@book.WebsiteId">
+                        <label class="checkbox-btn">
+
+                            <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.WebsiteId)" onclick="getProduct()" value="@book.WebsiteId">
+                            <span class="btn btn-light"> @book.Website.Name</span>
+
+                        </label>
+                    }
+
+
+                </div>
+            </div>
+
+        </article>
     </div>
     <div class="py-2 border-bottom ml-3">
         <article class="filter-group">
@@ -437,6 +473,7 @@
 
 
     <div class="row mb-3" id="product" style="margin-top: 5rem;">
+        @Html.Partial("_FilterSortPanel")
         @Html.Partial("_GetProduct", itemViewModel == null ? Model : itemViewModel)
     </div>
 }
@@ -450,6 +487,7 @@
 @section scripts
 {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
     <script>
         function sliderChange(val) {
             document.getElementById('minPrice').value = parseInt(@minPrice);
@@ -481,6 +519,13 @@
             function () {
                 var value = $(this).val().toLowerCase();
                 $("#websiteDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        $("#websiteMobileSearchInput").on("keyup",
+            function () {
+                var value = $(this).val().toLowerCase();
+                $("#websiteMobileDiv *").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
@@ -604,6 +649,12 @@
         });
     </script>
 
+
+    <script>
+        function getValue(sortValue) {
+            alert(sortValue);
+        } 
+    </script>
 
 }
 
