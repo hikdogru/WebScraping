@@ -235,7 +235,7 @@ namespace WebScraping.WebUI.Controllers
 
 
         public ActionResult GetWebsite(List<string> website, List<string> publisher, List<string> author, int? minPrice = 0,
-                int? maxPrice = 0, int? page = 1, string sortValue = "")
+                int? maxPrice = 0, int? page = 1, string sort = "")
         {
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
@@ -306,19 +306,22 @@ namespace WebScraping.WebUI.Controllers
             }
 
 
-            if (!String.IsNullOrEmpty(sortValue))
+            if (!String.IsNullOrEmpty(sort))
             {
                 foreach (int val in Enum.GetValues(typeof(BookSortModel.Sort)))
                 {
-                    if (int.Parse(sortValue) == val)
+                    if (int.Parse(sort) == val)
                     {
                         // val = 1 MinToMax
-                        if (int.Parse(sortValue) == 1)
+                        if (int.Parse(sort) == 1)
                         {
                             filteredItems = filteredItems.OrderBy(b => ReplaceString(b.Price)).ToList();
                         }
                     }
                 }
+
+                TempData["Sort"] = sort;
+
             }
             
 
