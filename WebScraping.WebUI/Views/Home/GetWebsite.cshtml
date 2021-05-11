@@ -470,11 +470,12 @@
 
 @if (itemViewModel.Books.Count() > 0)
 {
-
-
-    <div class="row mb-3" id="product" style="margin-top: 5rem;">
+    <div class="row" style="margin-top: 5rem;">
         @Html.Partial("_FilterSortPanel")
-        @Html.Partial("_GetProduct", itemViewModel == null ? Model : itemViewModel)
+    </div>
+
+    <div class="row mb-3" id="product" style="margin-top: 2rem;">
+        @Html.Partial("_GetProduct", itemViewModel)
     </div>
 }
 @* Sayfalar yüklenirken gelen gif*@
@@ -533,7 +534,7 @@
 
     <script>
 
-        function getProduct() {
+        function getProduct(select = {}, page = 1) {
             var minPrice = $('#minPrice').val();
             var maxPrice = $("#maxPrice").val();
             var publishers = [];
@@ -557,7 +558,7 @@
 
 
                 traditional: true,
-                data: { website: websites, publisher: publishers, author: authors, minPrice: minPrice, maxPrice: maxPrice },
+                data: { website: websites, publisher: publishers, author: authors, minPrice: minPrice, maxPrice: maxPrice, sortValue:select.value, page:page },
 
                 success: function(result) {
                     $(".preload").fadeIn(1000,
@@ -569,7 +570,10 @@
                         + (publishers.length === 0 ? '' : 'publisher=' + publishers + '&')
                         + (authors.length == 0 ? '' : 'author=' + authors + '&')
                         + (minPrice == '' ? 'minPrice=' + @minPrice+ '&' : 'minPrice=' + minPrice + '&')
-                        + (maxPrice == '' ? 'maxPrice=' + @maxPrice : 'maxPrice=' + maxPrice));
+                        + (maxPrice == '' ? 'maxPrice=' + @maxPrice : 'maxPrice=' + maxPrice)
+                        + (page > 1 ? '&page=' + page : '')
+
+                    );
 
                 },
 
@@ -650,11 +654,7 @@
     </script>
 
 
-    <script>
-        function getValue(sortValue) {
-            alert(sortValue);
-        } 
-    </script>
+    
 
 }
 

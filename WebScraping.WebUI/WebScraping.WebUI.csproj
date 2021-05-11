@@ -158,6 +158,7 @@
     </Compile>
     <Compile Include="Models\BookModel.cs" />
     <Compile Include="Models\BookNodeModel.cs" />
+    <Compile Include="Models\BookSortModel.cs" />
     <Compile Include="Models\ItemCheckedModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\ItemViewModel.cs" />
