@@ -199,7 +199,7 @@ namespace WebScraping.WebUI.Controllers
 
         private BookNodeModel SelectNodes(BookNodeXPath bookNodeXPath, string websiteUrl)
         {
-            
+
             using (var myWebClient = new WebClient())
             {
                 myWebClient.Headers["User-Agent"] =
@@ -227,7 +227,7 @@ namespace WebScraping.WebUI.Controllers
 
                 };
 
-                
+
 
                 return bookNode;
             }
@@ -240,11 +240,11 @@ namespace WebScraping.WebUI.Controllers
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
             itemViewModel.CurrentPage = (int)page;
-            IEnumerable<Book> filteredItems = books;
+            List<Book> filteredItems = books;
             if (minPrice != 0 && maxPrice != 0)
             {
                 filteredItems = filteredItems.Where(b =>
-                    double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice);
+                    double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice).ToList();
                 itemViewModel.Books = filteredItems;
                 ViewBag.minPrice = minPrice;
                 ViewBag.maxPrice = maxPrice;
@@ -252,7 +252,7 @@ namespace WebScraping.WebUI.Controllers
 
             if (website != null && website.Count > 0)
             {
-                filteredItems = filteredItems.Where(b => website.Any(w => int.Parse(w) == b.WebsiteId));
+                filteredItems = filteredItems.Where(b => website.Any(w => int.Parse(w) == b.WebsiteId)).ToList();
                 website.ForEach(p => ViewBag.website += p + (website.Count > 1 ? "," : ""));
 
             }
@@ -265,7 +265,7 @@ namespace WebScraping.WebUI.Controllers
                     var publishers = _itemCheckedModels
                         .Where(m => publisherId.Any(p => int.Parse(!string.IsNullOrEmpty(p) ? p : "0") == m.ItemId))
                         .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    filteredItems = filteredItems.Where(b => publishers.Any(p => p == b.Publisher));
+                    filteredItems = filteredItems.Where(b => publishers.Any(p => p == b.Publisher)).ToList();
                     ViewBag.publisherId = publisherId;
                 }
 
@@ -274,7 +274,7 @@ namespace WebScraping.WebUI.Controllers
                     var entities = _itemCheckedModels
                         .Where(m => publisher.Any(p => int.Parse(p.Replace(",", "")) == m.ItemId))
                         .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    filteredItems = filteredItems.Where(b => entities.Any(p => p == b.Publisher));
+                    filteredItems = filteredItems.Where(b => entities.Any(p => p == b.Publisher)).ToList();
                     ViewBag.publisherId = publisher;
                 }
 
@@ -289,7 +289,7 @@ namespace WebScraping.WebUI.Controllers
                     var authors = _itemCheckedModels
                         .Where(m => authorId.Any(a => int.Parse(!string.IsNullOrEmpty(a) ? a : "0") == m.ItemId))
                         .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    filteredItems = filteredItems.Where(b => authors.Any(a => a == b.Author));
+                    filteredItems = filteredItems.Where(b => authors.Any(a => a == b.Author)).ToList();
                     ViewBag.authorId = authorId;
                 }
                 else
@@ -298,7 +298,7 @@ namespace WebScraping.WebUI.Controllers
                         .Where(m => author.Any(a => int.Parse(a.Replace(",", "")) == m.ItemId))
                         .GroupBy(m => m.ItemName)
                         .Select(m => m.Key);
-                    filteredItems = filteredItems.Where(b => entities.Any(a => a == b.Author));
+                    filteredItems = filteredItems.Where(b => entities.Any(a => a == b.Author)).ToList();
                     ViewBag.authorId = author;
                 }
 
@@ -317,13 +317,28 @@ namespace WebScraping.WebUI.Controllers
                         {
                             filteredItems = filteredItems.OrderBy(b => ReplaceString(b.Price)).ToList();
                         }
+                        // val = 2 MaxToMin
+                        else if (int.Parse(sort) == 2)
+                        {
+                            filteredItems = filteredItems.OrderByDescending(b => ReplaceString(b.Price)).ToList();
+                        }
+                        // val = 3 AToZ
+                        else if (int.Parse(sort) == 3)
+                        {
+                            filteredItems = filteredItems.OrderBy(b => b.Name).ToList();
+                        }
+                        // val = 4 ZToA
+                        else if (int.Parse(sort) == 4)
+                        {
+                            filteredItems = filteredItems.OrderByDescending(b => b.Name).ToList();
+                        }
                     }
                 }
 
                 TempData["Sort"] = sort;
 
             }
-            
+
 
             itemViewModel.Books = filteredItems;
             GetItemsByChecked();
@@ -456,7 +471,7 @@ namespace WebScraping.WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-        
+
 
         public ActionResult GetBestSeller(int page = 1)
         {
@@ -494,10 +509,10 @@ namespace WebScraping.WebUI.Controllers
         }
 
         // Tl ekini kaldırıyor.
-        public static int ReplaceString(string price)
+        public static float ReplaceString(string price)
         {
             var bookPrice = price.Replace("TL", "");
-            return (int)float.Parse(bookPrice);
+            return float.Parse(bookPrice);
         }
 
 
