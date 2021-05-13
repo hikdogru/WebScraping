@@ -1,12 +1,17 @@
 ﻿@using WebScraping.WebUI.ViewModel
 @model ItemViewModel
 
-
-
 @{
 
     int count = 1;
 }
+
+
+@Html.Partial("_FilterSortPanel")
+
+
+
+
 @foreach (var book in Model.PaginatedBooks())
 {
 
@@ -47,18 +52,22 @@
     count++;
 }
 
-<div class="center" style="margin-top: 1rem;">
-    <div class="pagination">
-        <a href="javascript:;" onclick="getProduct('', 1)" class="page-link">İlk</a>
-        @for (int i = Model.GetPageNumber().startPage; i <= Model.GetPageNumber().endPage; i++)
-        {
-            <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="javascript:;" onclick="getProduct('',@i)">@i</a>
-        }
-        <a href="javascript:;" onclick="getProduct('',@Model.PageCount())" class="page-link">Son</a>
+@if (Model.PageCount() != 1)
+{
+    <div class="center" style="margin-top: 1rem;">
+        <div class="pagination">
+            <a href="javascript:;" onclick="getProduct('', 1)" class="page-link">İlk</a>
+            @for (int i = Model.GetPageNumber().startPage; i <= Model.GetPageNumber().endPage; i++)
+            {
+                <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="javascript:;" onclick="getProduct('',@i)">@i</a>
+            }
+            <a href="javascript:;" onclick="getProduct('',@Model.PageCount())" class="page-link">Son</a>
 
 
+        </div>
     </div>
-</div>
+
+}
 
 
 

@@ -64,7 +64,7 @@ namespace WebScraping.WebUI.Controllers
             {
                 BooksLogoUrl.Add(website.Name, website.LogoUrl);
             }
-
+            
 
             //foreach (var node in bookNodes)
             //{
@@ -334,13 +334,13 @@ namespace WebScraping.WebUI.Controllers
                         }
                     }
                 }
-
-                TempData["Sort"] = sort;
-
             }
 
 
             itemViewModel.Books = filteredItems;
+            ViewBag.TotalBooks = filteredItems.Count;
+            ViewBag.BookPerPage = itemViewModel.BookPerPage;
+            ViewBag.CurrentPage = itemViewModel.CurrentPage;
             GetItemsByChecked();
 
             // checkbox publishers value
@@ -488,6 +488,7 @@ namespace WebScraping.WebUI.Controllers
             GetItemsByChecked();
             ViewBag.Publishers = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
             ViewBag.Authors = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
+            ViewBag.TotalBooks = books.Count;
 
             return RedirectToAction("GetWebsite", booksView);
         }
