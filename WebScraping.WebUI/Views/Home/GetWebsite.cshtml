@@ -470,13 +470,21 @@
 
 
 
-@if (itemViewModel.Books.Count() > 0)
-{
 
-    <div class="row mb-3" id="product" style="margin-top: 2rem;">
+
+<div class="row mb-3" id="product" style="margin-top: 2rem;">
+    @if (itemViewModel.Books.Count() > 0)
+    {
         @Html.Partial("_GetProduct", itemViewModel)
-    </div>
-}
+    }
+    else
+    {
+        <div class="col-md-12 alert alert-danger mt-5">İstenilen kritere göre ürün bulunamadı!</div>
+
+    }
+</div>
+
+
 @* Sayfalar yüklenirken gelen gif*@
 <div class="preload">
     <img src="/Content/images/preloaders.gif" class="preload-img" />
@@ -658,7 +666,25 @@
     </script>
 
 
-    
+    <script>
+        function changeCardSize(cardCount) {
+            var divProduct = document.querySelectorAll("[id*='divProduct']");
+            var cardSize = 12 / cardCount;
+            for (let node of divProduct) {
+                if (node.classList.contains('col-lg-3')) {
+                    node.classList.remove('col-lg-3');
+                } else if (node.classList.contains('col-lg-4')) {
+                    node.classList.remove('col-lg-4');
+                } else {
+                    node.classList.remove('col-lg-2');
+                }
+
+                node.classList.add('col-lg-' + cardSize);
+            }
+
+        }
+    </script>
+
 
 }
 
