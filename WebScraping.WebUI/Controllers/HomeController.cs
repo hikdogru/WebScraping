@@ -64,7 +64,7 @@ namespace WebScraping.WebUI.Controllers
             {
                 BooksLogoUrl.Add(website.Name, website.LogoUrl);
             }
-            
+
 
             //foreach (var node in bookNodes)
             //{
@@ -252,9 +252,25 @@ namespace WebScraping.WebUI.Controllers
 
             if (website != null && website.Count > 0)
             {
-                filteredItems = filteredItems.Where(b => website.Any(w => int.Parse(w) == b.WebsiteId)).ToList();
-                website.ForEach(p => ViewBag.website += p + (website.Count > 1 ? "," : ""));
+                if (website[0].IndexOf(',') >= 0)
+                {
+                   var websiteIds = website[0].Split(',').ToList();
+                   var websites = _itemCheckedModels
+                       .Where(m => websiteIds.Any(w => int.Parse(!string.IsNullOrEmpty(w) ? w : "0") == m.ItemId))
+                       .GroupBy(m => m.ItemName).Select(m => m.Key);
+                   filteredItems = filteredItems.Where(b => websites.Any(w => w==b.Website.Name)).ToList();
+                   ViewBag.WebsiteId = websiteIds;
+                }
+                else
+                {
+                    var entities = _itemCheckedModels
+                        .Where(m => website.Any(w => int.Parse(w.Replace(",", "")) == m.ItemId))
+                        .GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = filteredItems.Where(b => entities.Any(e => e == b.Website.Name)).ToList();
+                    ViewBag.WebsiteId = website;
 
+                }
+                website.ForEach(p => ViewBag.website += p + (website.Count > 1 ? "," : ""));
             }
 
             if (publisher != null && publisher.Count > 0)
@@ -349,6 +365,9 @@ namespace WebScraping.WebUI.Controllers
             // checkbox authors value
             TempData["Authors"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
 
+            // checkbox websites value
+            TempData["Websites"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Website");
+
             if (Request.IsAjaxRequest())
                 return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
             TempData["ItemViewModel"] = itemViewModel;
@@ -363,6 +382,8 @@ namespace WebScraping.WebUI.Controllers
                 var publishers = (books ?? AllBooks).OrderBy(b => b.Publisher).GroupBy(b => b.Publisher)
                     .Select(b => b.Key).Distinct();
                 var authors = (books ?? AllBooks).OrderBy(b => b.Author).GroupBy(b => b.Author).Select(b => b.Key)
+                    .Distinct();
+                var websites = (books ?? AllBooks).OrderBy(b => b.Website.Name).GroupBy(b => b.Website.Name).Select(b => b.Key)
                     .Distinct();
                 var itemId = 1;
                 foreach (var publisherName in publishers)
@@ -393,6 +414,20 @@ namespace WebScraping.WebUI.Controllers
                         itemId++;
                     }
 
+                }
+
+                foreach (var website in websites)
+                {
+                    if (!String.IsNullOrEmpty(website))
+                    {
+                        var itemCheckedModel = new ItemCheckedModel();
+                        itemCheckedModel.ItemEntityName = "Website";
+                        itemCheckedModel.IsCheck = false;
+                        itemCheckedModel.ItemName = website;
+                        itemCheckedModel.ItemId = itemId;
+                        _itemCheckedModels.Add(itemCheckedModel);
+                        itemId++;
+                    }
                 }
             }
         }
@@ -488,6 +523,7 @@ namespace WebScraping.WebUI.Controllers
             GetItemsByChecked();
             ViewBag.Publishers = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
             ViewBag.Authors = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
+            TempData["Websites"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Website");
             ViewBag.TotalBooks = books.Count;
 
             return RedirectToAction("GetWebsite", booksView);

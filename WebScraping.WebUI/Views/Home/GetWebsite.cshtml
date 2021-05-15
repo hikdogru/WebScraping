@@ -138,6 +138,8 @@
 @{
     var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
 
+    var websiteIds = (List<string>)ViewBag.WebsiteId;
+
 
 
     for (int i = 0; i < itemViewModel.Books.ToList().Count; i++)
@@ -216,13 +218,21 @@
                 <div class="card-body overflow-auto" id="websiteMobileDiv" style="height: 150px;">
 
 
-                    @foreach (var book in itemViewModel.Books.GroupBy(b => b.Website).Select(b => b.FirstOrDefault()))
+                    @foreach (var book in (IEnumerable<ItemCheckedModel>)TempData["Websites"])
                     {
-                        <input type="hidden" name="website" value="@book.WebsiteId">
+                        <input type="hidden" name="website" value="@book.ItemId">
                         <label class="checkbox-btn">
+                            @if (websiteIds != null && websiteIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == book.ItemId))
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsiteMobile(@book.ItemId)" checked onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
 
-                            <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.WebsiteId)" onclick="getProduct()" value="@book.WebsiteId">
-                            <span class="btn btn-light"> @book.Website.Name</span>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsiteMobile(@book.ItemId)" onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
+                            }
 
                         </label>
                     }
@@ -344,17 +354,23 @@
 
                 <input type="text" placeholder="Website ara" id="websiteSearchInput">
                 <div class="card-body overflow-auto" id="websiteDiv" style="height: 150px;">
-                    @{
-                        var websiteIds = (List<string>)ViewBag.websiteId;
-                    }
 
-                    @foreach (var book in itemViewModel.Books.GroupBy(b => b.Website).Select(b => b.FirstOrDefault()))
+
+                    @foreach (var book in (IEnumerable<ItemCheckedModel>)TempData["Websites"])
                     {
-                        <input type="hidden" name="website" value="@book.WebsiteId">
+                        <input type="hidden" name="website" value="@book.ItemId">
                         <label class="checkbox-btn">
+                            @if (websiteIds != null && websiteIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == book.ItemId))
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.ItemId)" checked onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
 
-                            <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.WebsiteId)" onclick="getProduct()" value="@book.WebsiteId">
-                            <span class="btn btn-light"> @book.Website.Name</span>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.ItemId)" onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
+                            }
 
                         </label>
                     }
@@ -392,7 +408,7 @@
                             {
                                 if (publisherIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == publisher.ItemId))
                                 {
-                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" checked="checked" onclick="getProduct()" value="@publisher.ItemId">
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" checked onclick="getProduct()" value="@publisher.ItemId">
                                     <span class="btn btn-light"> @publisher.ItemName </span>
 
                                 }
@@ -506,6 +522,7 @@
     </script>
 
     @* Live Search*@
+    @* Bu metod çok fazla tekrar ediyor. Düzeltilecek *@
     <script>
         $("#searchInput").on("keyup",
             function () {
