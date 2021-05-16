@@ -367,7 +367,6 @@ namespace WebScraping.WebUI.Controllers
 
             // checkbox websites value
             TempData["Websites"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Website");
-
             if (Request.IsAjaxRequest())
                 return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
             TempData["ItemViewModel"] = itemViewModel;

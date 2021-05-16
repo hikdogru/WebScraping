@@ -128,13 +128,6 @@
 
 }
 
-
-@Html.Partial("_NavbarPartial")
-
-@Html.Partial("_Slider")
-
-
-
 @{
     var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
 
@@ -159,6 +152,14 @@
 
     int n = 1;
 }
+
+
+
+
+@Html.Partial("_NavbarPartial")
+@Html.Partial("_Slider", itemViewModel)
+
+
 <div class="filter">
     <button class="btn btn-default collapsed" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
 </div>
