@@ -22,8 +22,9 @@ namespace WebScraping.WebUI.Controllers
         private static readonly List<Book> BestSellerBooks = new List<Book>();
         private static readonly List<Book> AllBooks = new List<Book>();
         private static List<Book> books;
-        private static readonly List<ItemCheckedModel> _itemCheckedModels = new List<ItemCheckedModel>();
+        private static readonly List<ItemCheckedModel> ItemCheckedModels = new List<ItemCheckedModel>();
         private readonly List<string> _bookDetailUrl = new List<string>();
+        private List<Book> filteredItems;
 
         private static readonly Dictionary<string, string> BooksLogoUrl = new Dictionary<string, string>();
 
@@ -32,7 +33,6 @@ namespace WebScraping.WebUI.Controllers
         private readonly IWebsiteUrlService _websiteUrlService;
         private readonly IBookService _bookService;
 
-        private int _time = 0;
 
         public HomeController(IWebsiteService websiteService, IWebsiteUrlService websiteUrlService,
             IBookNodeService bookNodeService, IBookService bookService)
@@ -76,9 +76,11 @@ namespace WebScraping.WebUI.Controllers
             //            foreach (var detailNode in bookDetailNode)
             //            {
 
-            //                _bookDetailUrl.Add((detailNode.GetAttributeValue("href", string.Empty).Contains("http") ? "" : node.Website.WebsiteUrl) +
-            //                                       HttpUtility.UrlDecode(
-            //                                           detailNode.GetAttributeValue("href", string.Empty)));
+            //                _bookDetailUrl.Add((detailNode.GetAttributeValue("href", string.Empty).Contains("http")
+            //                                       ? ""
+            //                                       : node.Website.WebsiteUrl) +
+            //                                   HttpUtility.UrlDecode(
+            //                                       detailNode.GetAttributeValue("href", string.Empty)));
             //            }
 
             //            var bookNodeXpath = new BookNodeXPath()
@@ -96,12 +98,8 @@ namespace WebScraping.WebUI.Controllers
 
             //            _bookDetailUrl.Clear();
             //        }
-
-
             //    }
-
-
-
+            //}
         }
 
 
@@ -155,19 +153,19 @@ namespace WebScraping.WebUI.Controllers
                     WebsiteId = websiteId,
                     Image = image,
                     BookDetailUrl = _bookDetailUrl[i],
+                    CategoryType = type
 
 
                 };
 
-                if (type == "All-books")
+                if (_bookService.Add(book))
                 {
-                    book.CategoryType = "All-books";
                     _bookService.Add(book);
                 }
                 else
                 {
-                    book.CategoryType = "Best-seller";
-                    _bookService.Add(book);
+                    var entity = _bookService.GetAll().Where(b => b.BookDetailUrl == book.BookDetailUrl).FirstOrDefault(); 
+                    _bookService.Update(entity);
                 }
 
 
@@ -240,30 +238,26 @@ namespace WebScraping.WebUI.Controllers
             var itemViewModel = new ItemViewModel();
             itemViewModel.BookPerPage = 24;
             itemViewModel.CurrentPage = (int)page;
-            List<Book> filteredItems = books;
+            filteredItems = books;
             if (minPrice != 0 && maxPrice != 0)
             {
-                filteredItems = filteredItems.Where(b =>
-                    double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice).ToList();
-                itemViewModel.Books = filteredItems;
-                ViewBag.minPrice = minPrice;
-                ViewBag.maxPrice = maxPrice;
+                itemViewModel.Books = FilteringByPrice(minPrice, maxPrice); 
             }
 
             if (website != null && website.Count > 0)
             {
                 if (website[0].IndexOf(',') >= 0)
                 {
-                   var websiteIds = website[0].Split(',').ToList();
-                   var websites = _itemCheckedModels
-                       .Where(m => websiteIds.Any(w => int.Parse(!string.IsNullOrEmpty(w) ? w : "0") == m.ItemId))
-                       .GroupBy(m => m.ItemName).Select(m => m.Key);
-                   filteredItems = filteredItems.Where(b => websites.Any(w => w==b.Website.Name)).ToList();
-                   ViewBag.WebsiteId = websiteIds;
+                    var websiteIds = website[0].Split(',').ToList();
+                    var websites = ItemCheckedModels
+                        .Where(m => websiteIds.Any(w => int.Parse(!string.IsNullOrEmpty(w) ? w : "0") == m.ItemId))
+                        .GroupBy(m => m.ItemName).Select(m => m.Key);
+                    filteredItems = filteredItems.Where(b => websites.Any(w => w == b.Website.Name)).ToList();
+                    ViewBag.WebsiteId = websiteIds;
                 }
                 else
                 {
-                    var entities = _itemCheckedModels
+                    var entities = ItemCheckedModels
                         .Where(m => website.Any(w => int.Parse(w.Replace(",", "")) == m.ItemId))
                         .GroupBy(m => m.ItemName).Select(m => m.Key);
                     filteredItems = filteredItems.Where(b => entities.Any(e => e == b.Website.Name)).ToList();
@@ -278,7 +272,7 @@ namespace WebScraping.WebUI.Controllers
                 if (publisher[0].IndexOf(",") >= 0)
                 {
                     var publisherId = publisher[0].Split(',').ToList();
-                    var publishers = _itemCheckedModels
+                    var publishers = ItemCheckedModels
                         .Where(m => publisherId.Any(p => int.Parse(!string.IsNullOrEmpty(p) ? p : "0") == m.ItemId))
                         .GroupBy(m => m.ItemName).Select(m => m.Key);
                     filteredItems = filteredItems.Where(b => publishers.Any(p => p == b.Publisher)).ToList();
@@ -287,7 +281,7 @@ namespace WebScraping.WebUI.Controllers
 
                 else
                 {
-                    var entities = _itemCheckedModels
+                    var entities = ItemCheckedModels
                         .Where(m => publisher.Any(p => int.Parse(p.Replace(",", "")) == m.ItemId))
                         .GroupBy(m => m.ItemName).Select(m => m.Key);
                     filteredItems = filteredItems.Where(b => entities.Any(p => p == b.Publisher)).ToList();
@@ -302,7 +296,7 @@ namespace WebScraping.WebUI.Controllers
                 if (author[0].IndexOf(",") >= 0)
                 {
                     var authorId = author[0].Split(',').ToList();
-                    var authors = _itemCheckedModels
+                    var authors = ItemCheckedModels
                         .Where(m => authorId.Any(a => int.Parse(!string.IsNullOrEmpty(a) ? a : "0") == m.ItemId))
                         .GroupBy(m => m.ItemName).Select(m => m.Key);
                     filteredItems = filteredItems.Where(b => authors.Any(a => a == b.Author)).ToList();
@@ -310,7 +304,7 @@ namespace WebScraping.WebUI.Controllers
                 }
                 else
                 {
-                    var entities = _itemCheckedModels
+                    var entities = ItemCheckedModels
                         .Where(m => author.Any(a => int.Parse(a.Replace(",", "")) == m.ItemId))
                         .GroupBy(m => m.ItemName)
                         .Select(m => m.Key);
@@ -324,32 +318,7 @@ namespace WebScraping.WebUI.Controllers
 
             if (!String.IsNullOrEmpty(sort))
             {
-                foreach (int val in Enum.GetValues(typeof(BookSortModel.Sort)))
-                {
-                    if (int.Parse(sort) == val)
-                    {
-                        // val = 1 MinToMax
-                        if (int.Parse(sort) == 1)
-                        {
-                            filteredItems = filteredItems.OrderBy(b => ReplaceString(b.Price)).ToList();
-                        }
-                        // val = 2 MaxToMin
-                        else if (int.Parse(sort) == 2)
-                        {
-                            filteredItems = filteredItems.OrderByDescending(b => ReplaceString(b.Price)).ToList();
-                        }
-                        // val = 3 AToZ
-                        else if (int.Parse(sort) == 3)
-                        {
-                            filteredItems = filteredItems.OrderBy(b => b.Name).ToList();
-                        }
-                        // val = 4 ZToA
-                        else if (int.Parse(sort) == 4)
-                        {
-                            filteredItems = filteredItems.OrderByDescending(b => b.Name).ToList();
-                        }
-                    }
-                }
+                Sort(sort);
             }
 
 
@@ -360,13 +329,13 @@ namespace WebScraping.WebUI.Controllers
             GetItemsByChecked();
 
             // checkbox publishers value
-            TempData["Publishers"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
+            TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
 
             // checkbox authors value
-            TempData["Authors"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
+            TempData["Authors"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
 
             // checkbox websites value
-            TempData["Websites"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Website");
+            TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website");
             if (Request.IsAjaxRequest())
                 return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
             TempData["ItemViewModel"] = itemViewModel;
@@ -374,9 +343,50 @@ namespace WebScraping.WebUI.Controllers
 
         }
 
+        private List<Book> FilteringByPrice(int? minPrice, int? maxPrice)
+        {
+            filteredItems = filteredItems.Where(b =>
+                double.Parse(b.Price.Trim()) >= minPrice && double.Parse(b.Price.Trim()) <= maxPrice).ToList();
+            
+            ViewBag.minPrice = minPrice;
+            ViewBag.maxPrice = maxPrice;
+            return filteredItems;
+        }
+
+        
+        private void Sort(string sortValue)
+        {
+            foreach (int val in Enum.GetValues(typeof(BookSortModel.Sort)))
+            {
+                if (int.Parse(sortValue) == val)
+                {
+                    // val = 1 MinToMax
+                    if (int.Parse(sortValue) == 1)
+                    {
+                        filteredItems = filteredItems.OrderBy(b => ReplaceString(b.Price)).ToList();
+                    }
+                    // val = 2 MaxToMin
+                    else if (int.Parse(sortValue) == 2)
+                    {
+                        filteredItems = filteredItems.OrderByDescending(b => ReplaceString(b.Price)).ToList();
+                    }
+                    // val = 3 AToZ
+                    else if (int.Parse(sortValue) == 3)
+                    {
+                        filteredItems = filteredItems.OrderBy(b => b.Name).ToList();
+                    }
+                    // val = 4 ZToA
+                    else if (int.Parse(sortValue) == 4)
+                    {
+                        filteredItems = filteredItems.OrderByDescending(b => b.Name).ToList();
+                    }
+                }
+            }
+        }
+
         private static void GetItemsByChecked()
         {
-            if (_itemCheckedModels.Count == 0)
+            if (ItemCheckedModels.Count == 0)
             {
                 var publishers = (books ?? AllBooks).OrderBy(b => b.Publisher).GroupBy(b => b.Publisher)
                     .Select(b => b.Key).Distinct();
@@ -394,7 +404,7 @@ namespace WebScraping.WebUI.Controllers
                         itemCheckedModel.IsCheck = false;
                         itemCheckedModel.ItemName = publisherName;
                         itemCheckedModel.ItemId = itemId;
-                        _itemCheckedModels.Add(itemCheckedModel);
+                        ItemCheckedModels.Add(itemCheckedModel);
                         itemId++;
                     }
 
@@ -409,7 +419,7 @@ namespace WebScraping.WebUI.Controllers
                         itemCheckedModel.IsCheck = false;
                         itemCheckedModel.ItemName = author;
                         itemCheckedModel.ItemId = itemId;
-                        _itemCheckedModels.Add(itemCheckedModel);
+                        ItemCheckedModels.Add(itemCheckedModel);
                         itemId++;
                     }
 
@@ -424,32 +434,11 @@ namespace WebScraping.WebUI.Controllers
                         itemCheckedModel.IsCheck = false;
                         itemCheckedModel.ItemName = website;
                         itemCheckedModel.ItemId = itemId;
-                        _itemCheckedModels.Add(itemCheckedModel);
+                        ItemCheckedModels.Add(itemCheckedModel);
                         itemId++;
                     }
                 }
             }
-        }
-
-        //Carousel
-        public ActionResult GetProducts(int page = 1)
-        {
-            var randomBooks = BestSellerBooks.OrderBy(b => Guid.NewGuid()).Take(20);
-            books = new List<Book>(randomBooks);
-            TempData["WebsiteBooks"] = books;
-            TempData["BooksLogoUrl"] = BooksLogoUrl;
-            var booksView = new ItemViewModel
-            {
-                BookPerPage = 24,
-                Books = books,
-                CurrentPage = page
-            };
-
-            GetItemsByChecked();
-            ViewBag.Publishers = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
-            ViewBag.Authors = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
-
-            return RedirectToAction("GetWebsite", booksView);
         }
 
 
@@ -506,7 +495,6 @@ namespace WebScraping.WebUI.Controllers
         }
 
 
-
         public ActionResult GetBestSeller(int page = 1)
         {
             books = new List<Book>(BestSellerBooks);
@@ -520,9 +508,9 @@ namespace WebScraping.WebUI.Controllers
             };
 
             GetItemsByChecked();
-            ViewBag.Publishers = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
-            ViewBag.Authors = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
-            TempData["Websites"] = _itemCheckedModels.Where(m => m.ItemEntityName == "Website");
+            ViewBag.Publishers = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
+            ViewBag.Authors = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
+            TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website");
             ViewBag.TotalBooks = books.Count;
 
             return RedirectToAction("GetWebsite", booksView);
@@ -539,8 +527,8 @@ namespace WebScraping.WebUI.Controllers
             };
 
             GetItemsByChecked();
-            ViewBag.Publishers = _itemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
-            ViewBag.Authors = _itemCheckedModels.Where(m => m.ItemEntityName == "Author");
+            ViewBag.Publishers = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
+            ViewBag.Authors = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
             return RedirectToAction("GetWebsite", booksView);
         }
 

@@ -32,15 +32,17 @@ namespace WebScraping.Business.Concrete
             return _bookRepository.Get(b => b.Id == bookId);
         }
 
-        public void Add(Book book)
+        public bool Add(Book book)
         {
             var books = _bookRepository.GetList().Where(b=>b.BookDetailUrl == book.BookDetailUrl);
 
             if (books.Count()<=0)
             {
                 _bookRepository.Add(book);
+                return true;
             }
-            
+
+            return false;
 
         }
 

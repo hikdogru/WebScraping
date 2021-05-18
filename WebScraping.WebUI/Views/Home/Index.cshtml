@@ -78,162 +78,208 @@
     </style>
 }
 
-@Html.Partial("_NavbarPartial")
-
 @{
-    var viewDataOtherPublishers = (List<Book>)TempData["OtherPublishers"];
-    var viewDataBook = (List<Book>)TempData["Books"];
-    var viewDataItem = (List<Book>)TempData["Entities"];
-    var viewDataWebsiteBooks = (List<Book>)TempData["WebsiteBooks"];
-    var viewDataBooksLogo = (Dictionary<string, string>)TempData["BooksLogoUrl"];
-}
-@if (viewDataOtherPublishers != null)
-{
+            var viewDataOtherPublishers = (List<Book>)TempData["OtherPublishers"];
+            var viewDataBook = (List<Book>)TempData["Books"];
+            var viewDataItem = (List<Book>)TempData["Entities"];
+            var viewDataWebsiteBooks = (List<Book>)TempData["WebsiteBooks"];
+            var viewDataBooksLogo = (Dictionary<string, string>)TempData["BooksLogoUrl"];
+        }
 
-    <div class="container text-center">
-
-        <h2 class="text-success">Arama Sonuçları</h2>
-        <p class="text-muted">Toplam @viewDataOtherPublishers.Count ürün gösteriliyor. Aranan ürün: <span class="text-success">@((string)TempData["SearchText"])</span></p>
-        <div class="row">
-            @foreach (var publisher in viewDataOtherPublishers)
-            {
-                <div class="col-md-4 mt-5">
-                    <h2 class="text-primary" id="bookName">@publisher.Name</h2>
-
-                    <div class="image">
-                        <img src="@publisher.Image" class="img" alt="Item Image" />
-                        <h3 class="text-center">@publisher.Publisher</h3>
-                    </div>
-                    <div class="text-center">
-                        <form action="/Home/GetBooksByWebsitePrice" method="POST">
-                            <input type="hidden" id="bookName" name="bookName" value="@publisher.Name">
-                            <input type="hidden" id="bookPublisher" name="bookPublisher" value="@publisher.Publisher">
-                            <button type="submit" class="btn btn-primary btn-lg" style="width: 150px;">Seç</button>
-                        </form>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-}
-
-@if (viewDataItem != null)
-{
-    <div class="container text-center mt-5">
-
-
-        <div class="image">
-            <img src="@viewDataItem[0].Image" class="img" alt="Item Image" />
-            <h2 class="text-primary" id="bookName">@viewDataItem[0].Name</h2>
-
-        </div>
-
-        @foreach (var book in viewDataItem)
+    @Html.Partial("_NavbarPartial")
+    <h5 class="text-center text-primary">Çok Satanlar Kitaplığı</h5>
+    <div class="row m-1">
+        @foreach (var book in Model.GroupBy(b => b.Website, b=> b.Website.LogoUrl,  (n,u)=>new {WebsiteName=n.Name, LogoUrl=u.FirstOrDefault(), List=n.Books}))
         {
-            foreach (var logo in viewDataBooksLogo)
-            {
-                if (logo.Key.ToLower().Contains(book.Website.Name.ToLower()))
-                {
-                    <div class="row center mb-5" style="width: 80%; background-color: antiquewhite;">
-                        <div class="col-md-3">
-                            <span class="site_logo">
-                                <img src="@logo.Value" class="logo">
-                            </span>
-                        </div>
-                        <div class="col-md-4">
-                            <h2>
-                                <span class="badge badge-pill">
-                                    <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher)
-                                </span>
-                            </h2>
-                        </div>
-                        <div class="col-md-2">
-                            <h3>
-                                <span class="badge badge-pill badge-secondary">
-                                    @book.Price <i class='fa fa-try' aria-hidden='true'></i>
-                                </span>
-                            </h3>
-                        </div>
-                        <div class="col-md-2">
-
-                            <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
-                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Siteye git
-                            </a>
-                        </div>
-                        @if (book.WebsiteId == viewDataItem[0].WebsiteId)
-                        {
-                            <div class="col-md-1">
-
-                                <h5><span class="badge badge-pill badge-success">En ucuz</span></h5>
-                            </div>
-                        }
-
+            <div class="col-md-4 mb-3">
+                <div class="row m-1" style="width: 100%; height: 100%;border: solid 1px">
+                    <div class="col-md-12" >
+                        <h5 class="text-center">
+                            <img src="@book.LogoUrl" style="width: 150px;"/>
+                        </h5>
                     </div>
+                    @foreach (var item in book.List.Take(6))
+                    {
+                        <div class="col-md-4">
+                            <div class="card" style="width: 100%; height: 100%;">
+                                <div class="image">
+                                    <img src="@item.Image" class="card-img-top img img-fluid" alt="..." id="img">
+                                </div>
+                                <div class="card-body text-center">
+                                    <h5 class="card-title" style="color: #ea8987;">@item.Name</h5>
+                                    <h5 class="card-title" style="color: #f58322; font-size: 90%;">@item.Author</h5>
 
-                }
-            }
+                                    <p class="card-text">
+                                        <h4>
+                                            <span class="badge badge-pill" style="background-color: cornflowerblue; color: white">
+                                                @item.Price <i class='fa fa-try' aria-hidden='true'></i>
+                                            </span>
+                                        </h4>
+                                    </p>
+                                    <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> Can</p>
+                                    <a href="" class="btn btn-secondary" target="_blank">Ürüne git</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
 
+
+
+
+                </div>
+            </div>
         }
     </div>
 
-}
 
-else if (viewDataBook != null && viewDataOtherPublishers == null)
-{
-    <div class="image">
-        <img src="@viewDataBook[0].Image" class="card-img-top img" alt="Item Image">
-        <h3 class="text-center text-primary">@viewDataBook[0].Name</h3>
-    </div>
-    <div class="container">
-        <div class="row mt-5">
-            @foreach (var book in viewDataBook)
-            {
 
-                foreach (var logo in viewDataBooksLogo)
-                {
-                    if (book.Website.Name.Equals(logo.Key))
+        @*@if (viewDataOtherPublishers != null)
+        {
+
+            <div class="container text-center">
+
+                <h2 class="text-success">Arama Sonuçları</h2>
+                <p class="text-muted">Toplam @viewDataOtherPublishers.Count ürün gösteriliyor. Aranan ürün: <span class="text-success">@((string)TempData["SearchText"])</span></p>
+                <div class="row">
+                    @foreach (var publisher in viewDataOtherPublishers)
                     {
-                        <div class="row center" style="width: 80%; background-color: antiquewhite;">
-                            <div class="col-md-3">
-                                <span class="site_logo">
-                                    <img src="@logo.Value" class="logo">
-                                </span>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="urun_adi">
-                                    <h5> <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher) </h5>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <h3>
-                                    <span class="badge badge-pill badge-secondary ">
-                                        @book.Price <i class='fa fa-try' aria-hidden='true'></i>
-                                    </span>
-                                </h3>
-                            </div>
-                            <div class="col-md-2">
-                                <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
-                                    <i class="fa fa-arrow-circle-right fa-lg" aria-hidden="true"></i> Siteye git
-                                </a>
+                        <div class="col-md-4 mt-5">
+                            <h2 class="text-primary" id="bookName">@publisher.Name</h2>
 
+                            <div class="image">
+                                <img src="@publisher.Image" class="img" alt="Item Image" />
+                                <h3 class="text-center">@publisher.Publisher</h3>
                             </div>
-                            
-                            @if (book.WebsiteId == viewDataBook[0].WebsiteId)
-                            {
-                                <div class="col-md-1">
-
-                                    <h5><span class="badge badge-pill badge-success">En ucuz</span></h5>
-                                </div>
-                            }
+                            <div class="text-center">
+                                <form action="/Home/GetBooksByWebsitePrice" method="POST">
+                                    <input type="hidden" id="bookName" name="bookName" value="@publisher.Name">
+                                    <input type="hidden" id="bookPublisher" name="bookPublisher" value="@publisher.Publisher">
+                                    <button type="submit" class="btn btn-primary btn-lg" style="width: 150px;">Seç</button>
+                                </form>
+                            </div>
                         </div>
                     }
+                </div>
+            </div>
+        }
+
+        @if (viewDataItem != null)
+        {
+            <div class="container text-center mt-5">
+
+
+                <div class="image">
+                    <img src="@viewDataItem[0].Image" class="img" alt="Item Image" />
+                    <h2 class="text-primary" id="bookName">@viewDataItem[0].Name</h2>
+
+                </div>
+
+                @foreach (var book in viewDataItem)
+                {
+                    foreach (var logo in viewDataBooksLogo)
+                    {
+                        if (logo.Key.ToLower().Contains(book.Website.Name.ToLower()))
+                        {
+                            <div class="row center mb-5" style="width: 80%; background-color: antiquewhite;">
+                                <div class="col-md-3">
+                                    <span class="site_logo">
+                                        <img src="@logo.Value" class="logo">
+                                    </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <h2>
+                                        <span class="badge badge-pill">
+                                            <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher)
+                                        </span>
+                                    </h2>
+                                </div>
+                                <div class="col-md-2">
+                                    <h3>
+                                        <span class="badge badge-pill badge-secondary">
+                                            @book.Price <i class='fa fa-try' aria-hidden='true'></i>
+                                        </span>
+                                    </h3>
+                                </div>
+                                <div class="col-md-2">
+
+                                    <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                        <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Siteye git
+                                    </a>
+                                </div>
+                                @if (book.WebsiteId == viewDataItem[0].WebsiteId)
+                                {
+                                    <div class="col-md-1">
+
+                                        <h5><span class="badge badge-pill badge-success">En ucuz</span></h5>
+                                    </div>
+                                }
+
+                            </div>
+
+                        }
+                    }
+
                 }
+            </div>
 
-            }
-        </div>
-    </div>
+        }
 
-}
+        else if (viewDataBook != null && viewDataOtherPublishers == null)
+        {
+            <div class="image">
+                <img src="@viewDataBook[0].Image" class="card-img-top img" alt="Item Image">
+                <h3 class="text-center text-primary">@viewDataBook[0].Name</h3>
+            </div>
+            <div class="container">
+                <div class="row mt-5">
+                    @foreach (var book in viewDataBook)
+                    {
+
+                        foreach (var logo in viewDataBooksLogo)
+                        {
+                            if (book.Website.Name.Equals(logo.Key))
+                            {
+                                <div class="row center" style="width: 80%; background-color: antiquewhite;">
+                                    <div class="col-md-3">
+                                        <span class="site_logo">
+                                            <img src="@logo.Value" class="logo">
+                                        </span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="urun_adi">
+                                            <h5> <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher) </h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h3>
+                                            <span class="badge badge-pill badge-secondary ">
+                                                @book.Price <i class='fa fa-try' aria-hidden='true'></i>
+                                            </span>
+                                        </h3>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                            <i class="fa fa-arrow-circle-right fa-lg" aria-hidden="true"></i> Siteye git
+                                        </a>
+
+                                    </div>
+
+                                    @if (book.WebsiteId == viewDataBook[0].WebsiteId)
+                                    {
+                                        <div class="col-md-1">
+
+                                            <h5><span class="badge badge-pill badge-success">En ucuz</span></h5>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
+
+                    }
+                </div>
+            </div>
+
+        }*@
 
 
 @section scripts
