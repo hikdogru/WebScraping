@@ -123,6 +123,28 @@
         .a-float-right, .aok-float-right {
             float: right !important;
         }
+
+        .blockBtn.active span {
+            background: #f49849;
+        }
+
+        .blockBtn span {
+            float: left;
+            background: #afafaf;
+            width: 8px;
+            height: 8px;
+            margin-right: 3px;
+            cursor: pointer;
+        }
+
+        .blockBtn {
+            margin-right: 5px;
+        }
+
+        .card-size button {
+            border: 0px;
+            background-color: white;
+        }
     </style>
 
 
@@ -685,9 +707,10 @@
 
 
     <script>
-        function changeCardSize(cardCount) {
-            var divProduct = document.querySelectorAll("[id*='divProduct']");
-            var cardSize = 12 / cardCount;
+        function changeCardSize(btn) {
+            let divProduct = document.querySelectorAll("[id*='divProduct']");
+            let buttonCardSize = document.querySelectorAll("[class*='blockBtn']");
+            let cardSize = 12 / btn.value;
             for (let node of divProduct) {
                 if (node.classList.contains('col-lg-3')) {
                     node.classList.remove('col-lg-3');
@@ -696,9 +719,14 @@
                 } else {
                     node.classList.remove('col-lg-2');
                 }
-
                 node.classList.add('col-lg-' + cardSize);
             }
+            for (let button of buttonCardSize) {
+                if (button.classList.contains('active')) {
+                    button.classList.remove('active');
+                };
+            }
+            btn.firstChild.nextSibling.classList.add('active');
 
         }
     </script>

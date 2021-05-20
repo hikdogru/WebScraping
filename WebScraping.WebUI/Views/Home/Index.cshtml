@@ -91,7 +91,7 @@
     <div class="row m-1">
         @foreach (var book in Model.GroupBy(b => b.Website, b=> b.Website.LogoUrl,  (n,u)=>new {WebsiteName=n.Name, LogoUrl=u.FirstOrDefault(), List=n.Books}))
         {
-            <div class="col-md-4 mb-3">
+            <div class="col-12 col-md-6 col-lg-6 mb-3">
                 <div class="row m-1" style="width: 100%; height: 100%;border: solid 1px">
                     <div class="col-md-12" >
                         <h5 class="text-center">
@@ -100,9 +100,9 @@
                     </div>
                     @foreach (var item in book.List.Take(6))
                     {
-                        <div class="col-md-4">
+                        <div class="col-12 col-md-6 col-lg-4">
                             <div class="card" style="width: 100%; height: 100%;">
-                                <div class="image">
+                                <div class="image" style="width: 100%;">
                                     <img src="@item.Image" class="card-img-top img img-fluid" alt="..." id="img">
                                 </div>
                                 <div class="card-body text-center">
@@ -117,15 +117,11 @@
                                         </h4>
                                     </p>
                                     <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> Can</p>
-                                    <a href="" class="btn btn-secondary" target="_blank">Ürüne git</a>
+                                    <a href="@item.BookDetailUrl" class="btn btn-secondary" target="_blank">Ürüne git</a>
                                 </div>
                             </div>
                         </div>
                     }
-
-
-
-
                 </div>
             </div>
         }
