@@ -34,15 +34,16 @@ namespace WebScraping.Business.Concrete
 
         public bool Add(Book book)
         {
-            var books = _bookRepository.GetList().Where(b=>b.BookDetailUrl == book.BookDetailUrl);
+            var books = _bookRepository.GetList().Where(b=>b.BookDetailUrl == book.BookDetailUrl && b.CategoryType == book.CategoryType);
 
-            if (books.Count()<=0)
+            if (books != null && books.Count()>0)
             {
-                _bookRepository.Add(book);
-                return true;
+                return false;
             }
 
-            return false;
+            _bookRepository.Add(book);
+            return true;
+
 
         }
 

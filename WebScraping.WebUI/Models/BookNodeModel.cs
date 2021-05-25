@@ -10,7 +10,7 @@ namespace WebScraping.WebUI.Models
         public HtmlNodeCollection Publisher { get; set; }
         public HtmlNodeCollection Price { get; set; }
         public HtmlNodeCollection Image { get; set; }
-        public string Detail { get; set; }
+        public HtmlNodeCollection Detail { get; set; }
         public int ItemCount { get; set; }
 
 

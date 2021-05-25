@@ -46,6 +46,7 @@ namespace WebScraping.Core.Data.Ef
             {
                 var updatedEntity = context.Entry(entity);
                 updatedEntity.State = EntityState.Modified;
+                context.SaveChanges();
             }
         }
 
