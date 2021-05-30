@@ -669,7 +669,7 @@
             $('#searchText').autocomplete({
                 source: function(request, response) {
                     $.ajax({
-                        url: '@Url.Action("Search", "Home")',
+                        url: '@*@Url.Action("Search", "Home")*@/Home/Search/',
                         data: { term: request.term },
                         type: "GET",
                         dataType: "json",
