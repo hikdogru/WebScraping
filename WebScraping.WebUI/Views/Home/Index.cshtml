@@ -17,36 +17,7 @@
         }
 
 
-        img.img {
-            max-width: 150px;
-            max-height: 225px;
-            position: relative;
-            vertical-align: middle;
-            left: 50%;
-            transform: translate(-50%);
-            height: 200px;
-            width: 125px;
-            object-fit: cover;
-        }
-
-        img.logo {
-            max-width: 150px;
-            max-height: 225px;
-            left: 50%;
-            width: 100px;
-            object-fit: cover;
-        }
-
-        div#bookCard .card, div#bookOtherPublisherCard .card {
-            box-shadow: 5px 10px 12px 12px rgb(120 43 45 / 10%), 0 6px 20px 0 rgb(43 45 56 / 10%);
-        }
-
-        .center {
-            margin: auto;
-            width: 100%;
-            border: 0.1px solid antiquewhite;
-            padding: 10px;
-        }
+        
 
         .zg-badge-body.zg-badge-color {
             background-color: #4CAF50;
@@ -80,16 +51,23 @@
 
 
 
-    @Html.Partial("_NavbarPartial")
-    <h5 class="text-center text-primary">Çok Satanlar Kitaplığı</h5>
-    <div class="row m-1">
-        @foreach (var book in Model.GroupBy(b => b.Website, b=> b.Website.LogoUrl,  (n,u)=>new {WebsiteName=n.Name, LogoUrl=u.FirstOrDefault(), List=n.Books}))
+@Html.Partial("_NavbarPartial")
+<h5 class="text-center text-primary">Çok Satanlar Kitaplığı</h5>
+
+
+
+
+<h3>@TempData["SelectNodesTime"]</h3>
+
+
+<div class="row m-1">
+        @foreach (var book in Model.GroupBy(b => b.Website, b => b.Website.LogoUrl, (n, u) => new { WebsiteName = n.Name, LogoUrl = u.FirstOrDefault(), List = n.Books }))
         {
             <div class="col-12 col-md-6 col-lg-6 mb-3">
                 <div class="row m-1" style="width: 100%; height: 100%;border: solid 1px">
-                    <div class="col-md-12" >
+                    <div class="col-md-12">
                         <h5 class="text-center">
-                            <img src="@book.LogoUrl" style="width: 150px;"/>
+                            <img src="@book.LogoUrl" style="width: 150px;" />
                         </h5>
                     </div>
                     @foreach (var item in book.List.Take(6))
@@ -110,7 +88,7 @@
                                             </span>
                                         </h4>
                                     </p>
-                                    <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> Can</p>
+                                    <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> @item.Publisher</p>
                                     <a href="@item.BookDetailUrl" class="btn btn-secondary" target="_blank">Ürüne git</a>
                                 </div>
                             </div>
@@ -125,7 +103,7 @@
 
 
 
-       
+
 
 @section scripts
 {
