@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -161,7 +162,7 @@ namespace WebScraping.WebUI.Controllers
                 };
 
                 var entity = _bookService.GetAll().Where(b => b.BookDetailUrl == book.BookDetailUrl && b.CategoryType == book.CategoryType).FirstOrDefault();
-               
+
                 if (entity != null)
                 {
                     if (book.Price != entity.Price)
@@ -208,7 +209,6 @@ namespace WebScraping.WebUI.Controllers
                     Publisher = publisherNode,
                     Detail = detailNode,
                     ItemCount = 200,
-
                 };
                 stopwatch.Stop();
                 SelectNodesTime += (int)stopwatch.ElapsedMilliseconds;
@@ -226,87 +226,19 @@ namespace WebScraping.WebUI.Controllers
             itemViewModel.CurrentPage = (int)page;
             _filteredItems = books;
             if (minPrice != 0 && maxPrice != 0)
-            {
                 itemViewModel.Books = FilteringByPrice(minPrice, maxPrice);
-            }
 
             if (website != null && website.Count > 0)
-            {
-                if (website[0].IndexOf(',') >= 0)
-                {
-                    var websiteIds = website[0].Split(',').ToList();
-                    var websites = ItemCheckedModels
-                        .Where(m => websiteIds.Any(w => int.Parse(!string.IsNullOrEmpty(w) ? w : "0") == m.ItemId))
-                        .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    _filteredItems = _filteredItems.Where(b => websites.Any(w => w == b.Website.Name)).ToList();
-                    ViewBag.WebsiteId = websiteIds;
-                }
-                else
-                {
-                    var entities = ItemCheckedModels
-                        .Where(m => website.Any(w => int.Parse(w.Replace(",", "")) == m.ItemId))
-                        .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    _filteredItems = _filteredItems.Where(b => entities.Any(e => e == b.Website.Name)).ToList();
-                    ViewBag.WebsiteId = website;
-
-                }
-                website.ForEach(p => ViewBag.website += p + (website.Count > 1 ? "," : ""));
-            }
+                Filtering(website, "Website");            
 
             if (publisher != null && publisher.Count > 0)
-            {
-                if (publisher[0].IndexOf(",") >= 0)
-                {
-                    var publisherId = publisher[0].Split(',').ToList();
-                    var publishers = ItemCheckedModels
-                        .Where(m => publisherId.Any(p => int.Parse(!string.IsNullOrEmpty(p) ? p : "0") == m.ItemId))
-                        .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    _filteredItems = _filteredItems.Where(b => publishers.Any(p => p == b.Publisher)).ToList();
-                    ViewBag.publisherId = publisherId;
-                }
-
-                else
-                {
-                    var entities = ItemCheckedModels
-                        .Where(m => publisher.Any(p => int.Parse(p.Replace(",", "")) == m.ItemId))
-                        .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    _filteredItems = _filteredItems.Where(b => entities.Any(p => p == b.Publisher)).ToList();
-                    ViewBag.publisherId = publisher;
-                }
-
-                publisher.ForEach(p => ViewBag.publisher += p + (publisher.Count > 1 ? "," : ""));
-            }
+                Filtering(publisher, "Publisher");
 
             if (author != null && author.Count > 0)
-            {
-                if (author[0].IndexOf(",") >= 0)
-                {
-                    var authorId = author[0].Split(',').ToList();
-                    var authors = ItemCheckedModels
-                        .Where(m => authorId.Any(a => int.Parse(!string.IsNullOrEmpty(a) ? a : "0") == m.ItemId))
-                        .GroupBy(m => m.ItemName).Select(m => m.Key);
-                    _filteredItems = _filteredItems.Where(b => authors.Any(a => a == b.Author)).ToList();
-                    ViewBag.authorId = authorId;
-                }
-                else
-                {
-                    var entities = ItemCheckedModels
-                        .Where(m => author.Any(a => int.Parse(a.Replace(",", "")) == m.ItemId))
-                        .GroupBy(m => m.ItemName)
-                        .Select(m => m.Key);
-                    _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Author)).ToList();
-                    ViewBag.authorId = author;
-                }
-
-                author.ForEach(a => ViewBag.author += a + (author.Count > 1 ? "," : ""));
-            }
-
+                Filtering(author, "Author");
 
             if (!String.IsNullOrEmpty(sort))
-            {
                 Sort(sort);
-            }
-
 
             itemViewModel.Books = _filteredItems;
             ViewBag.TotalBooks = _filteredItems.Count;
@@ -316,17 +248,59 @@ namespace WebScraping.WebUI.Controllers
 
             // checkbox publishers value
             TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
-
             // checkbox authors value
             TempData["Authors"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
-
             // checkbox websites value
             TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website");
+            TempData["ItemViewModel"] = itemViewModel;
+
             if (Request.IsAjaxRequest())
                 return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
-            TempData["ItemViewModel"] = itemViewModel;
             return View();
 
+        }
+        /// <summary>
+        ///  Book filtering method by websitename, author and publisher
+        /// </summary>
+        /// <param name="entityIdList">The id list of the elements of the filtered class</param>
+        /// <param name="entityName">Filtered class name</param>
+        private void Filtering(List<string> entityIdList, object entityName)
+        {
+            IEnumerable<string> entities= null;
+            if (entityIdList[0].IndexOf(",") >= 0)
+            {
+                var Id = entityIdList[0].Split(',').ToList();
+                entities = ItemCheckedModels
+                    .Where(m => Id.Any(a => int.Parse(!string.IsNullOrEmpty(a) ? a : "0") == m.ItemId))
+                    .GroupBy(m => m.ItemName).Select(m => m.Key);
+            }
+            else
+            {
+                entities = ItemCheckedModels
+                        .Where(m => entityIdList.Any(a => int.Parse(a.Replace(",", "")) == m.ItemId))
+                        .GroupBy(m => m.ItemName)
+                        .Select(m => m.Key);
+            }
+
+            if (entityName == "Author")
+            {
+                _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Author)).ToList();
+                ViewBag.authorId = entityIdList;
+                entityIdList.ForEach(p => ViewBag.author += p + (entityIdList.Count > 1 ? "," : ""));
+            }
+
+            else if (entityName == "Publisher")
+            {
+                _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Publisher)).ToList();
+                ViewBag.publisherId = entityIdList;
+                entityIdList.ForEach(p => ViewBag.publisher += p + (entityIdList.Count > 1 ? "," : ""));
+            }
+            else if (entityName == "Website")
+            {
+                _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Website.Name)).ToList();
+                ViewBag.WebsiteId = entityIdList;
+                entityIdList.ForEach(p => ViewBag.website += p + (entityIdList.Count > 1 ? "," : ""));
+            }
         }
 
         private List<Book> FilteringByPrice(int? minPrice, int? maxPrice)
@@ -556,7 +530,7 @@ namespace WebScraping.WebUI.Controllers
 
     }
 
-    
+
 
 
 }
