@@ -28,7 +28,7 @@ namespace WebScraping.Data.Migrations
             {
                 new Website(){Name="Bkm Kitap", LogoUrl= "http://www.bkmkitap.com/Data/EditorFiles/logonew23.png", WebsiteUrl = "http://www.bkmkitap.com"},
                 new Website(){Name="Amazon", LogoUrl= "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1920px-Amazon_logo.svg.png",WebsiteUrl = "https://www.amazon.com.tr"},
-                new Website(){Name="Kidega", LogoUrl= "https://cdn.kidega.com/assets/web/img/kidega-logo.png", WebsiteUrl = "https://www.kidega.com"},
+                new Website(){Name="Kidega", LogoUrl= "https://cdn.kidega.com/assets/web/img/kidega-logo.png", WebsiteUrl = "https://kidega.com"},
                 new Website(){Name="Kitap16", LogoUrl= "https://www.kitap16.com/u/kitap16/kitap-transparan-1579509339.png", WebsiteUrl = "https://www.kitap16.com"} ,
                 new Website(){Name="D&R", LogoUrl= "https://www.dr.com.tr/Themes/DR/Content/assets/images/general/head-logo.png",WebsiteUrl = "https://www.dr.com.tr"},
                 new Website(){Name="İlknokta", LogoUrl= "https://www.ilknokta.com/u/ilknokta/ilknokta-logosu-1613392480.jpg", WebsiteUrl = "https://www.ilknokta.com"},
@@ -49,44 +49,50 @@ namespace WebScraping.Data.Migrations
                 new WebsiteUrl(){WebsiteId=1,Id= 3, Url="https://www.bkmkitap.com/kitap/cok-satan-kitaplar/", UrlType="Best-Seller"},
                 new WebsiteUrl(){WebsiteId=1,Id= 4, Url="https://www.bkmkitap.com/kitap/cok-satan-kitaplar?pg=2/", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=3,Id= 5, Url="https://kidega.com/cok-satan-kitaplar/", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=3,Id= 6, Url="https://kidega.com/cok-satan-kitaplar?page=2/", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=3,Id= 5, Url="https://kidega.com/cok-satan-kitaplar/?page=1", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=3,Id= 6, Url="https://kidega.com/cok-satan-kitaplar/?page=2", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=4,Id= 5, Url="https://www.kitap16.com/cok-satanlar-kitapligi", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=4,Id= 6, Url="https://www.kitap16.com/index.php?p=Products&fpt_id=114&sort_type=rel-desc&page=2", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=4,Id= 7, Url="https://www.kitap16.com/cok-satanlar-kitapligi", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=4,Id= 8, Url="https://www.kitap16.com/index.php?p=Products&fpt_id=114&sort_type=rel-desc&page=2", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=5,Id= 5, Url="https://www.dr.com.tr/CokSatanlar/Kitap/", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=5,Id= 6, Url="https://www.dr.com.tr/CokSatanlar/Kitap/#/page=2/", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=5,Id= 9, Url="https://www.dr.com.tr/CokSatanlar/Kitap/", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=5,Id= 10, Url="https://www.dr.com.tr/CokSatanlar/Kitap/#/page=2/", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=6,Id= 5, Url="https://www.ilknokta.com/index.php?p=ProductBestsellers&mod_id=41&page=1&period=yearly", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=6,Id= 6, Url="https://www.ilknokta.com/index.php?p=ProductBestsellers&mod_id=41&page=2&period=yearly", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=6,Id= 11, Url="https://www.ilknokta.com/index.php?p=ProductBestsellers&mod_id=41&page=1&period=yearly", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=6,Id= 12, Url="https://www.ilknokta.com/index.php?p=ProductBestsellers&mod_id=41&page=2&period=yearly", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=7,Id= 5, Url="https://www.eganba.com/kitap/cok-satanlar/", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=7,Id= 6, Url="https://www.eganba.com/kitap/cok-satanlar/?page=2", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=7,Id= 13, Url="https://www.eganba.com/kitap/cok-satanlar/", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=7,Id= 14, Url="https://www.eganba.com/kitap/cok-satanlar/?page=2", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=8,Id= 5, Url="https://www.kitapsec.com/Products/Edebiyat/Cok-Satan-Kitaplar/", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=8,Id= 6, Url="https://www.kitapsec.com/Products/Edebiyat/Cok-Satan-Kitaplar/2-6-0a0-0-0-0-0-0.xhtml", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=8,Id= 15, Url="https://www.kitapsec.com/Products/Edebiyat/Cok-Satan-Kitaplar/", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=8,Id= 16, Url="https://www.kitapsec.com/Products/Edebiyat/Cok-Satan-Kitaplar/2-6-0a0-0-0-0-0-0.xhtml", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=9,Id= 5, Url="https://www.idefix.com/CokSatanlar/Kitap", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=9,Id= 6, Url="https://www.idefix.com/CokSatanlar/Kitap#/page=2", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=9,Id= 17, Url="https://www.idefix.com/CokSatanlar/Kitap", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=9,Id= 18, Url="https://www.idefix.com/CokSatanlar/Kitap#/page=2", UrlType="Best-Seller"},
 
-                new WebsiteUrl(){WebsiteId=10,Id= 5, Url="https://www.fidankitap.com/cok-satanlar-2", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=10,Id= 6, Url="https://www.fidankitap.com/index.php?p=ProductBestsellers&mod_id=146&page=2", UrlType="Best-Seller" },
+                new WebsiteUrl(){WebsiteId=10,Id= 19, Url="https://www.fidankitap.com/cok-satanlar-2", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=10,Id= 20, Url="https://www.fidankitap.com/index.php?p=ProductBestsellers&mod_id=146&page=2", UrlType="Best-Seller" },
 
-                new WebsiteUrl(){WebsiteId=11,Id= 5, Url="https://www.hepsiburada.com/kampanyalar/cok-satan-kitaplar", UrlType="Best-Seller"},
-                new WebsiteUrl(){WebsiteId=11,Id= 6, Url="https://www.hepsiburada.com/kampanyalar/cok-satan-kitaplar?sayfa=2", UrlType="Best-Seller" },
+                new WebsiteUrl(){WebsiteId=10,Id= 21, Url="https://www.fidankitap.com/index.php?p=ProductBestsellers&mod_id=146&page=1", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=10,Id= 22, Url="https://www.fidankitap.com/index.php?p=ProductBestsellers&mod_id=146&page=2", UrlType="Best-Seller" },
+
+                new WebsiteUrl(){WebsiteId=11,Id= 23, Url="https://www.hepsiburada.com/kampanyalar/cok-satan-kitaplar", UrlType="Best-Seller"},
+                new WebsiteUrl(){WebsiteId=11,Id= 24, Url="https://www.hepsiburada.com/kampanyalar/cok-satan-kitaplar?sayfa=2", UrlType="Best-Seller" },
+
+               
 
             };
             for (int i = 0; i < 5; i++)
             {
                 websiteUrls.Add(new WebsiteUrl() { WebsiteId = 1, UrlType = "All-books", Url = $"https://www.bkmkitap.com/edebiyat-kitaplari?pg={i + 1}" });
-                websiteUrls.Add(new WebsiteUrl(){WebsiteId = 3, UrlType = "All-books", Url = "https://kidega.com/kitap/edebiyat/tur?page=" + i+1});
+                websiteUrls.Add(new WebsiteUrl(){WebsiteId = 3, UrlType = "All-books", Url = "https://kidega.com/kitap/edebiyat-kitaplari/?page=" + i+1});
                 websiteUrls.Add(new WebsiteUrl() { WebsiteId = 4, UrlType = "All-books", Url = "https://www.kitap16.com/index.php?p=Products&ctg_id=19&sort_type=prs_yearly-desc&page=" + i + 1 });
-                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 5, UrlType = "All-books", Url = "https://www.dr.com.tr/kategori/Kitap/Edebiyat/grupno=00055#/page=" + i + 1 });
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 5, UrlType = "All-books", Url = $"https://www.dr.com.tr/kategori/Kitap/Edebiyat/grupno=00055#/page={i + 1}"});
                 websiteUrls.Add(new WebsiteUrl() { WebsiteId = 6, UrlType = "All-books", Url = "https://www.ilknokta.com/index.php?p=Products&ctg_id=2021&page=" + i + 1 });
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 7, UrlType = "All-books", Url = "https://www.eganba.com/kitap/kategori/edebiyat?page=" + i + 1 });
                 websiteUrls.Add(new WebsiteUrl() { WebsiteId = 8, UrlType = "All-books", Url = $"https://www.kitapsec.com/Products/Edebiyat/{i+1}-6-0a0-0-0-0-0-0.xhtml"});
                 websiteUrls.Add(new WebsiteUrl() { WebsiteId = 9, UrlType = "All-books", Url = $"https://www.idefix.com/kategori/Kitap/Edebiyat/grupno=00055?ShowNotForSale=True&Page={i+1}" });
-
+                websiteUrls.Add(new WebsiteUrl() { WebsiteId = 10, UrlType = "All-books", Url = $"https://www.fidankitap.com/index.php?p=Products&ctg_id=1&sort_type=prs_alltimes-desc&page={i + 1}" });
             }
 
             websiteUrls.ForEach(w => context.WebsiteUrls.AddOrUpdate(w));
@@ -94,7 +100,7 @@ namespace WebScraping.Data.Migrations
 
             List<BookNode> bookNodes = new List<BookNode>()
             {
-                //Hepsiburada
+                // Hepsiburada
                 new BookNode(){WebsiteId = 11, Name = "/*[contains(@id, 'product-name')]",
                     Author = "//*[contains(@id, 'product-name')]",
                     Price = "//div[contains(@class, 'product-price')]/span[contains(@class, 'price')]",
@@ -103,7 +109,7 @@ namespace WebScraping.Data.Migrations
                     Detail = "//div[contains(@class, 'product')]/a",
                     ItemCount = 100,
                 },
-                //Amazon
+                // Amazon
                 new BookNode()
                 {
                     WebsiteId = 2, Name = "//*[@id='productTitle']",
@@ -114,7 +120,7 @@ namespace WebScraping.Data.Migrations
                     Detail = "//*[@class='aok-inline-block zg-item']/a[@class='a-link-normal']",
                     ItemCount = 100,
                 },
-                //Bkm
+                // Bkm
                 new BookNode()
                 {
                     WebsiteId = 1,
@@ -127,20 +133,20 @@ namespace WebScraping.Data.Migrations
                     ItemCount = 100,
 
                 },
-                //Kidega
+                // Kidega
                 new BookNode()
                 {
                         WebsiteId = 3,
-                        Name = "//a[@class='book-name']",
-                        Author = "//div[@class='itemHeader']/div[2]",
-                        Price = "//b[@class='lastPrice']",
-                        Image = "//div[@class='image']/a/img/@src",
-                        Publisher = "//a[@class='publisher']",
-                        Detail = "//a[contains(@class,'book-name')]",
+                        Name = "//*[@class='book-name']",
+                        Author = "//div[@class='manufacturer'][1]//a/span[contains(@class,'manufacturer-name')]",
+                        Price = "//div[@class='lastPrice']/div",
+                        Image = "//div[contains(@class,'prd-image-org')]/img",
+                        Publisher = "//span[@class='distributor-name']",
+                        Detail = "//a[contains(@class,'prd-lnk')]",
                         ItemCount = 100,
 
             },
-                //Kitap16
+                // Kitap16
                 new BookNode()
                 {
                     WebsiteId = 4,
@@ -152,7 +158,7 @@ namespace WebScraping.Data.Migrations
                     Detail = "//div[contains(@class, 'name')]/a",
                     ItemCount = 100,
                 },
-                //D&R
+                // D&R
                 new BookNode()
                 {
                     WebsiteId = 5 ,
@@ -164,7 +170,7 @@ namespace WebScraping.Data.Migrations
                     Detail = "//a[contains(@class, 'item-name')]",
                     ItemCount = 100,
                 },
-                //İlknokta
+                // İlknokta
                 new BookNode()
                 {
                     WebsiteId = 6 ,
@@ -176,7 +182,7 @@ namespace WebScraping.Data.Migrations
                     Detail = "//div[contains(@class, 'name')]/a",
                     ItemCount = 100,
                 },
-                //Eganba
+                // Eganba
                 new BookNode()
                 {
                     WebsiteId = 7 ,
@@ -188,7 +194,7 @@ namespace WebScraping.Data.Migrations
                     Detail = "//a[contains(@class, 'product-name')]",
                     ItemCount = 100,
                 },
-                //Idefix
+                // Idefix
                 new BookNode()
                 {
                     WebsiteId = 9 ,
@@ -200,6 +206,17 @@ namespace WebScraping.Data.Migrations
                     Detail = "//div[contains(@class, 'box-title')]/a",
                     ItemCount = 100,
                 },
+
+                // Fidan Kitap
+                new BookNode()
+                {
+                    WebsiteId = 10,
+                    Name = "//div[@class='name']/a",
+                    Author = "//div[@class='writer']/a",
+                    Price = "//span[@class='price price_sale convert_cur']",
+                    Image = "//a[@class='tooltip-ajax']/img",
+                    Detail = "//div[contains(@class, 'writer')]/a"
+                }
             };
 
             bookNodes.ForEach(b => context.BookNodes.AddOrUpdate(b));

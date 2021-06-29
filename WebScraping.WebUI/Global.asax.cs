@@ -1,6 +1,9 @@
 ﻿using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Configuration;
+using System.Data.Entity;
+using WebScraping.Data.Concrete.Ef;
 
 namespace WebScraping.WebUI
 {
@@ -13,6 +16,7 @@ namespace WebScraping.WebUI
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
         }
     }
 }

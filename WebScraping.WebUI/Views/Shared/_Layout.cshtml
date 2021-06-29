@@ -37,13 +37,16 @@
 
         @* Autocomplete *@
         ul#ui-id-1 {
-            width: 400px !important;
-            height: 300px !important;
+            width:auto;
+            max-width: 400px !important;
+            height: auto !important;
+            max-height:300px;
             overflow: scroll;
         }
 
         .list_item_container {
             width: 350px;
+            margin-bottom: 3rem;
         }
 
         .image1 {
@@ -107,21 +110,22 @@
                             function(item) {
                                 return {
                                     value: item.Image,
-                                    label: item.Name
+                                    label: item.Name,
+                                    
                                 }
                             }));
                     }
                 });
             }
-        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+        }).data("ui-autocomplete")._renderItem = function (ul, item) {
             var innerHtml =
                 '<button style="border:0px;margin-bottom:2px;"><a href="/Home/SearchItem?query=' +
                     item.label +
                     '">' +
                     '<div class="list_item_container"><div class="image1"><img src="' +
                     item.value +
-                    '"></div><div class="label">' +
-                    item.label +
+                '"></div><div class="label">' +
+                item.label
                     '</div></a></button>';
             return $("<li></li>")
                 .data("item.autocomplete", item)
