@@ -29,7 +29,7 @@ namespace WebScraping.WebUI.Controllers
 
 
         private static List<Book> _bestSellerBooks = new();
-        private static readonly List<Book> AllBooks = new();
+        private static List<Book> _allBooks = new();
         private static List<Book> books;
         private static readonly List<ItemCheckedModel> ItemCheckedModels = new List<ItemCheckedModel>();
         private List<Book> _filteredItems;
@@ -57,27 +57,26 @@ namespace WebScraping.WebUI.Controllers
 
         public ActionResult Index()
         {
-            Timer timer = new Timer(TimeSpan.FromMinutes(20).TotalMilliseconds);
+            Timer timer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
             timer.AutoReset = true;
             timer.Elapsed += CallBookMethod;
             timer.Start();
 
-            var allBooks = _bookService.GetBooksWithWebsite();
-            if (_bestSellerBooks.Count > 0 == false) Book();
-            return View(allBooks);
+
+            if (_allBookList.Count == 0) Book();
+            return View(_allBookList);
         }
 
 
         private void CallBookMethod(object sender, ElapsedEventArgs e)
         {
-            Book();
-            ViewBag.Message = "Books Updated";
+            Scrape();
+            TempData["Message"] = "Books Updated";
         }
 
 
         private void Book()
         {
-            var bookNodes = _bookNodeService.GetNodesByWebsite();
             var websites = _websiteService.GetAll();
             foreach (var website in websites)
             {
@@ -88,11 +87,25 @@ namespace WebScraping.WebUI.Controllers
                 }
             }
 
+            if (_bookService.GetBooksWithWebsite().Count==0)
+            {
+                Scrape();
+            }
+            
 
+            var bestSellerBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "Best-Seller");
+            _bestSellerBooks = new List<Book>(bestSellerBooks);
+
+            var allBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "All-books");
+            _allBookList = new List<Book>(allBooks);
+        }
+
+        private void Scrape()
+        {
+            var bookNodes = _bookNodeService.GetNodesByWebsite();
             foreach (var node in bookNodes)
             {
-                if (node.WebsiteId != 2 && node.WebsiteId != 11 && node.Website.Id != 11 && node.Website.Id != 2
-                    /*node.WebsiteId == 4 && node.Website.Id == 4*/)
+                if (node.WebsiteId != 2 && node.WebsiteId != 11 && node.Website.Id != 11 && node.Website.Id != 2)
                 {
                     foreach (var websiteUrl in node.Website.WebsiteUrls)
                     {
@@ -112,36 +125,6 @@ namespace WebScraping.WebUI.Controllers
                     }
                 }
             }
-
-            //foreach (var node in bookNodes)
-            //{
-            //    if (node.WebsiteId != 2 && node.WebsiteId != 11 && node.Website.Id != 11 && node.Website.Id != 2)
-            //    {
-            //        foreach (var websiteUrl in node.Website.WebsiteUrls)
-            //        {
-            //            var bookNodeXpath = new BookNodeXPath()
-            //            {
-            //                Name = node.Name,
-            //                Author = node.Author,
-            //                Price = node.Price,
-            //                Image = node.Image,
-            //                Publisher = node.Publisher,
-            //                Detail = node.Detail
-            //            };
-
-            //            var bookNode = SelectNodes(bookNodeXpath, websiteUrl.Url);
-            //            BookScraping(bookNode, node.Website.WebsiteUrl, node.WebsiteId, websiteUrl.UrlType);
-            //        }
-            //    }
-            //}
-
-
-            var allBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "All-books");
-            AllBooks.AddRange(allBooks);
-            var bestSellerBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "Best-Seller");
-            _bestSellerBooks.AddRange(bestSellerBooks);
-            var allBooksInDatabase = _bookService.GetBooksWithWebsite();
-            _allBookList.AddRange(allBooksInDatabase);
         }
 
 
@@ -226,42 +209,37 @@ namespace WebScraping.WebUI.Controllers
         {
             var bookNodeModelList = new List<BookNodeModel>();
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            using (var myWebClient = new WebClient())
+            using var myWebClient = new WebClient();
+            myWebClient.Headers["User-Agent"] =
+                "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko";
+            myWebClient.Headers["Accept"] =
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+
+            var page = myWebClient.DownloadData(websiteUrl.Url);
+            var doc = new HtmlDocument();
+            doc.LoadHtml(Encoding.UTF8.GetString(page));
+
+            var nameNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Name);
+            var authorNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Author);
+
+
+            var publisherNode = String.IsNullOrEmpty(bookNodeXPath.Publisher) ? null : doc.DocumentNode.SelectNodes(bookNodeXPath.Publisher);
+            var imageNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Image);
+            var priceNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Price);
+            var detailNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Detail);
+            var bookNode = new BookNodeModel
             {
-                myWebClient.Headers["User-Agent"] =
-                    "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko";
-                myWebClient.Headers["Accept"] =
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+                Name = nameNode,
+                Author = authorNode,
+                Price = priceNode,
+                Image = imageNode,
+                Publisher = publisherNode,
+                Detail = detailNode,
+                ItemCount = 200,
 
-                var page = myWebClient.DownloadData(websiteUrl.Url);
-                var doc = new HtmlDocument();
-                doc.LoadHtml(Encoding.UTF8.GetString(page));
+            };
 
-                var nameNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Name);
-                var authorNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Author);
-
-                
-                var publisherNode = String.IsNullOrEmpty(bookNodeXPath.Publisher) ? null :doc.DocumentNode.SelectNodes(bookNodeXPath.Publisher);
-                var imageNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Image);
-                var priceNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Price);
-                var detailNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Detail);
-                var bookNode = new BookNodeModel
-                {
-                    Name = nameNode,
-                    Author = authorNode,
-                    Price = priceNode,
-                    Image = imageNode,
-                    Publisher = publisherNode,
-                    Detail = detailNode,
-                    ItemCount = 200,
-
-                };
-
-                bookNodeModelList.Add(bookNode);
-
-
-
-            }
+            bookNodeModelList.Add(bookNode);
 
             return bookNodeModelList;
         }
@@ -401,11 +379,11 @@ namespace WebScraping.WebUI.Controllers
         {
             if (ItemCheckedModels.Count == 0)
             {
-                var publishers = (books ?? AllBooks).OrderBy(b => b.Publisher).GroupBy(b => b.Publisher)
+                var publishers = (books ?? _allBooks).OrderBy(b => b.Publisher).GroupBy(b => b.Publisher)
                     .Select(b => b.Key).Distinct();
-                var authors = (books ?? AllBooks).OrderBy(b => b.Author).GroupBy(b => b.Author).Select(b => b.Key)
+                var authors = (books ?? _allBooks).OrderBy(b => b.Author).GroupBy(b => b.Author).Select(b => b.Key)
                     .Distinct();
-                var websites = (books ?? AllBooks).OrderBy(b => b.Website.Name).GroupBy(b => b.Website.Name).Select(b => b.Key)
+                var websites = (books ?? _allBooks).OrderBy(b => b.Website.Name).GroupBy(b => b.Website.Name).Select(b => b.Key)
                     .Distinct();
                 var itemId = 1;
                 foreach (var publisherName in publishers)
@@ -475,7 +453,6 @@ namespace WebScraping.WebUI.Controllers
 
         public ActionResult SearchItem(string query)
         {
-
             if (!string.IsNullOrEmpty(query))
             {
                 var otherPublishers = _allBookList.Where(b => b.Name.ToUpper()
@@ -488,7 +465,8 @@ namespace WebScraping.WebUI.Controllers
 
                 if (otherPublishers.Count > 1) TempData["OtherPublishers"] = otherPublishers;
 
-                var entities = _allBookList.Where(b => b.Name.Trim() == query.Trim()).Distinct().OrderBy(b => ReplaceString(b.Price)).ToList();
+                var entities = _allBookList.Where(b => b.Name.Trim() == query.Trim()).Distinct().GroupBy(b=>b.Website).Select(b=>b.FirstOrDefault()).OrderBy(b => ReplaceString(b.Price)).ToList();
+                
                 TempData["SearchText"] = query;
                 TempData["Books"] = entities;
             }
@@ -500,9 +478,10 @@ namespace WebScraping.WebUI.Controllers
         [HttpPost]
         public ActionResult GetBooksByWebsitePrice(string bookName, string bookPublisher)
         {
-            var entities = _allBookList.Where(b => b.Name == bookName && b.Publisher.Contains(bookPublisher))
+            var entities = _allBookList.Where(b => b.Name == bookName && (b.Publisher==null?false:b.Publisher.Contains(bookPublisher)))
                 .GroupBy(b => b.Website)
-                .Select(b => b.FirstOrDefault());
+                .Select(b => b.FirstOrDefault())
+                .OrderBy(b => ReplaceString(b?.Price));
             TempData["Entities"] = entities.ToList();
             TempData["BooksLogoUrl"] = BooksLogoUrl;
             return View("../Product/Search");
@@ -534,7 +513,8 @@ namespace WebScraping.WebUI.Controllers
 
         public ActionResult GetAllBooks(int page = 1)
         {
-            books = new List<Book>(AllBooks);
+            var allBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "All-books");
+            books = new List<Book>(allBooks);
             var booksView = new ItemViewModel
             {
                 BookPerPage = 24,

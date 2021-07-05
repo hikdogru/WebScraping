@@ -220,8 +220,10 @@
     <None Include="Properties\PublishProfiles\bestwebscraping - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bookscraping - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\IISProfile.pubxml" />
     <None Include="Properties\PublishProfiles\IISProfile1.pubxml" />
+    <None Include="Properties\PublishProfiles\IISProfile2.pubxml" />
     <None Include="Properties\PublishProfiles\WebScrapingWebUI20210329004209 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
