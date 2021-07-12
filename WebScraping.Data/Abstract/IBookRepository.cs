@@ -8,5 +8,6 @@ namespace WebScraping.Data.Abstract
     {
         List<Book> GetBooksWithWebsite();
 
+        void DeleteAllRecordsInTable();
     }
 }

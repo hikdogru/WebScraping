@@ -63,5 +63,10 @@ namespace WebScraping.Business.Concrete
         {
             return _bookRepository.GetBooksWithWebsite();
         }
+
+        public void DeleteAllRecordsInTable()
+        {
+            _bookRepository.DeleteAllRecordsInTable();
+        }
     }
 }

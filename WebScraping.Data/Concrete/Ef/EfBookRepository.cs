@@ -17,5 +17,11 @@ namespace WebScraping.Data.Concrete.Ef
                 return books;
             }
         }
+
+        public void DeleteAllRecordsInTable()
+        {
+            using var context = new WebScrapingContext();
+            context.Database.ExecuteSqlCommand("Delete From Books");
+        }
     }
 }

@@ -57,9 +57,6 @@
 
 
 
-<h3 class="alert alert-success">@(TempData["Message"] as string ?? "Hello")</h3>
-
-
 <div class="row m-1">
         @foreach (var book in Model.GroupBy(b => b.Website, b => b.Website.LogoUrl, (n, u) => new { WebsiteName = n.Name, LogoUrl = u.FirstOrDefault(), List = n.Books }))
         {
