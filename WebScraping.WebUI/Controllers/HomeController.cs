@@ -56,12 +56,12 @@ namespace WebScraping.WebUI.Controllers
 
         public ActionResult Index()
         {
-            Timer timer = new Timer(TimeSpan.FromMinutes(15).TotalMilliseconds);
+            Timer timer = new Timer(TimeSpan.FromMinutes(60).TotalMilliseconds);
             timer.AutoReset = true;
             timer.Elapsed += CallBookMethod;
             timer.Start();
 
-            
+
 
             if (_allBookList.Count == 0) Book();
             return View(_allBookList);
@@ -70,14 +70,8 @@ namespace WebScraping.WebUI.Controllers
 
         private void CallBookMethod(object sender, ElapsedEventArgs e)
         {
-            Debug.Write("Method is working...");
-            Stopwatch stopwatch = new Stopwatch();
-
-            stopwatch.Start();
+            _bookService.DeleteAllRecordsInTable();
             Scrape();
-            stopwatch.Stop();
-            Debug.WriteLine("Elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds);
-
         }
 
 
@@ -93,19 +87,10 @@ namespace WebScraping.WebUI.Controllers
                 }
             }
 
-            _bookService.DeleteAllRecordsInTable();
             if (_bookService.GetBooksWithWebsite().Count == 0)
             {
                 Scrape();
             }
-            //Debug.Write("Method is working...");
-            //Stopwatch stopwatch = new Stopwatch();
-
-            //stopwatch.Start();
-            //Scrape();
-            //stopwatch.Stop();
-            //Debug.WriteLine("Elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds);
-
 
             var bestSellerBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "Best-Seller");
             _bestSellerBooks = new List<Book>(bestSellerBooks);
@@ -118,8 +103,6 @@ namespace WebScraping.WebUI.Controllers
         private void Scrape()
         {
             var bookNodes = _bookNodeService.GetNodesByWebsite();
-            
-
             Parallel.ForEach(bookNodes, node =>
                {
                    {
@@ -203,20 +186,14 @@ namespace WebScraping.WebUI.Controllers
                     CategoryType = type
                 };
 
-                var entity = _bookService.GetAll().Where(b => b.BookDetailUrl == book.BookDetailUrl && b.CategoryType == book.CategoryType).FirstOrDefault();
+                var entity = _bookService.GetBooksWithWebsite().Where(b => b.BookDetailUrl == book.BookDetailUrl)
+                    .FirstOrDefault();
 
-                if (entity != null)
-                {
-                    if (book.Price != entity.Price)
-                    {
-                        entity.Price = book.Price;
-                        _bookService.Update(entity);
-                    }
-                }
-                else
-                {
+                if (entity == null)
                     _bookService.Add(book);
-                }
+
+
+
                 if (i == bookNode.ItemCount) break;
             }
         }
@@ -240,8 +217,6 @@ namespace WebScraping.WebUI.Controllers
 
             var nameNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Name);
             var authorNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Author);
-
-
             var publisherNode = String.IsNullOrEmpty(bookNodeXPath.Publisher) ? null : doc.DocumentNode.SelectNodes(bookNodeXPath.Publisher);
             var imageNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Image);
             var priceNode = doc.DocumentNode.SelectNodes(bookNodeXPath.Price);
@@ -292,7 +267,9 @@ namespace WebScraping.WebUI.Controllers
             ViewBag.TotalBooks = _filteredItems.Count;
             ViewBag.BookPerPage = itemViewModel.BookPerPage;
             ViewBag.CurrentPage = itemViewModel.CurrentPage;
-            GetItemsByChecked();
+
+
+            //GetItemsByChecked();
 
             // checkbox publishers value
             TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
@@ -394,15 +371,19 @@ namespace WebScraping.WebUI.Controllers
             }
         }
 
-        private static void GetItemsByChecked()
+        // TODO: Refactor this method 
+        private static void GetItemsByChecked(string categoryType = "")
         {
-            if (ItemCheckedModels.Count == 0)
+            if (ItemCheckedModels.Count == 0 || !String.IsNullOrEmpty(categoryType))
             {
+                ItemCheckedModels.Clear();
+
                 var publishers = (books ?? _allBooks).OrderBy(b => b.Publisher).GroupBy(b => b.Publisher)
                     .Select(b => b.Key).Distinct();
                 var authors = (books ?? _allBooks).OrderBy(b => b.Author).GroupBy(b => b.Author).Select(b => b.Key)
                     .Distinct();
-                var websites = (books ?? _allBooks).OrderBy(b => b.Website.Name).GroupBy(b => b.Website.Name).Select(b => b.Key)
+                var websites = (books ?? _allBooks).OrderBy(b => b.Website.Name).GroupBy(b => b.Website.Name)
+                    .Select(b => b.Key)
                     .Distinct();
                 var itemId = 1;
                 foreach (var publisherName in publishers)
@@ -413,11 +394,11 @@ namespace WebScraping.WebUI.Controllers
                         itemCheckedModel.ItemEntityName = "Publisher";
                         itemCheckedModel.IsCheck = false;
                         itemCheckedModel.ItemName = publisherName;
+                        itemCheckedModel.ItemCategoryType = categoryType;
                         itemCheckedModel.ItemId = itemId;
                         ItemCheckedModels.Add(itemCheckedModel);
                         itemId++;
                     }
-
                 }
 
                 foreach (var author in authors)
@@ -428,11 +409,11 @@ namespace WebScraping.WebUI.Controllers
                         itemCheckedModel.ItemEntityName = "Author";
                         itemCheckedModel.IsCheck = false;
                         itemCheckedModel.ItemName = author;
+                        itemCheckedModel.ItemCategoryType = categoryType;
                         itemCheckedModel.ItemId = itemId;
                         ItemCheckedModels.Add(itemCheckedModel);
                         itemId++;
                     }
-
                 }
 
                 foreach (var website in websites)
@@ -443,6 +424,7 @@ namespace WebScraping.WebUI.Controllers
                         itemCheckedModel.ItemEntityName = "Website";
                         itemCheckedModel.IsCheck = false;
                         itemCheckedModel.ItemName = website;
+                        itemCheckedModel.ItemCategoryType = categoryType;
                         itemCheckedModel.ItemId = itemId;
                         ItemCheckedModels.Add(itemCheckedModel);
                         itemId++;
@@ -510,21 +492,27 @@ namespace WebScraping.WebUI.Controllers
         public ActionResult GetBestSeller(int page = 1)
         {
             var bestSellerBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "Best-Seller").OrderBy(b => b.Id);
-            _bestSellerBooks = new List<Book>(bestSellerBooks);
-            books = new List<Book>(_bestSellerBooks);
+            books = new List<Book>(bestSellerBooks);
             TempData["WebsiteBooks"] = books;
             TempData["BooksLogoUrl"] = BooksLogoUrl;
             var booksView = new ItemViewModel
             {
                 BookPerPage = 24,
-                Books = _bestSellerBooks,
+                Books = books,
                 CurrentPage = page
             };
 
-            GetItemsByChecked();
-            ViewBag.Publishers = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
-            ViewBag.Authors = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
-            TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website");
+            GetItemsByChecked("Best-Seller");
+            //ViewBag.Publishers = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
+            //ViewBag.Authors = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
+
+
+            // checkbox publishers value
+            TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher" && m.ItemCategoryType == "Best-Seller");
+            // checkbox authors value
+            TempData["Authors"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Author" && m.ItemCategoryType == "Best-Seller");
+            // checkbox websites value
+            TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website" && m.ItemCategoryType == "Best-Seller");
             ViewBag.TotalBooks = books.Count;
 
             return RedirectToAction("GetWebsite", booksView);
@@ -541,9 +529,12 @@ namespace WebScraping.WebUI.Controllers
                 CurrentPage = page
             };
 
-            GetItemsByChecked();
-            ViewBag.Publishers = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
-            ViewBag.Authors = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
+            GetItemsByChecked("All-books");
+            TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher" && m.ItemCategoryType == "All-books");
+            // checkbox authors value
+            TempData["Authors"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Author" && m.ItemCategoryType == "All-books");
+            // checkbox websites value
+            TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website" && m.ItemCategoryType == "All-books");
             return RedirectToAction("GetWebsite", booksView);
         }
 

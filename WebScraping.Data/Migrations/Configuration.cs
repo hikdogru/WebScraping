@@ -215,7 +215,7 @@ namespace WebScraping.Data.Migrations
                     Author = "//div[@class='writer']/a",
                     Price = "//span[@class='price price_sale convert_cur']",
                     Image = "//a[@class='tooltip-ajax']/img",
-                    Detail = "//div[contains(@class, 'writer')]/a"
+                    Detail = "//div[contains(@class , 'image image_b')]/a"
                 }
             };
 
