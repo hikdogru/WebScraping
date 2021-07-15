@@ -279,25 +279,37 @@
                 display: block;
             }
 
-
-
             .carousel-inner .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
             .carousel-inner .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
                 transition: none;
             }
+            
+            /* forward direction > */
+
+            .carousel-item-next.carousel-item-left + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
+            .carousel-item-next.carousel-item-left + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
+                position: relative;
+                transform: translate3d(-100%, 0, 0);
+                visibility: visible;
+            }
 
 
-
+            .carousel-item-prev.carousel-item-right + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
+            .carousel-item-prev.carousel-item-right + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
+                position: relative;
+                transform: translate3d(100%, 0, 0);
+                visibility: visible;
+                display: block;
+                visibility: visible;
+            }
         }
 
 
-
-
-        /***** Top content *****/
+        /*/***** Top content *****/
 
         .top-content {
             width: 100%;
-            padding-top: 100px;
+            padding-top: 1rem;
         }
 
         .carousel-control-next, .carousel-control-prev {
@@ -306,199 +318,61 @@
     </style>
 
 
+}
+
+@{
+    var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
+
+    var websiteIds = (List<string>)ViewBag.WebsiteId;
+
+
+
+    for (int i = 0; i < itemViewModel.Books.ToList().Count; i++)
+    {
+        itemViewModel.Books.ToList()[i].Price = itemViewModel.Books.ToList()[i].Price.Replace("TL", "");
+        itemViewModel.Books.ToList()[i].Price = itemViewModel.Books.ToList()[i].Price.Replace(",", ".");
     }
+    double maxPrice = 0.0;
+    double minPrice = 0.0;
+    if (itemViewModel.Books.ToList().Count > 0)
+    {
+        maxPrice = itemViewModel.Books.Max(b => double.Parse(b.Price.Trim()));
+        minPrice = itemViewModel.Books.Min(b => double.Parse(b.Price));
 
-    @{
-        var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
-
-        var websiteIds = (List<string>)ViewBag.WebsiteId;
-
-
-
-        for (int i = 0; i < itemViewModel.Books.ToList().Count; i++)
-        {
-            itemViewModel.Books.ToList()[i].Price = itemViewModel.Books.ToList()[i].Price.Replace("TL", "");
-            itemViewModel.Books.ToList()[i].Price = itemViewModel.Books.ToList()[i].Price.Replace(",", ".");
-        }
-        double maxPrice = 0.0;
-        double minPrice = 0.0;
-        if (itemViewModel.Books.ToList().Count > 0)
-        {
-            maxPrice = itemViewModel.Books.Max(b => double.Parse(b.Price.Trim()));
-            minPrice = itemViewModel.Books.Min(b => double.Parse(b.Price));
-
-        }
-
-
-        int n = 1;
     }
 
 
+    int n = 1;
+}
 
 
-    @Html.Partial("_NavbarPartial")
-    @Html.Partial("_Slider", itemViewModel)
 
 
-    <div class="filter">
-        <button class="btn btn-default collapsed" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
-    </div>
-    <div id="mobile-filter" class="collapse">
-
-        <div class="py-5 border-bottom ml-3">
-            <form action="~/Home/GetFilteredItems" method="POST">
-                <article class="filter-group">
-                    <header class="card-header">
-                        <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
-                           data-abc="true" aria-expanded="true">
-                            <i class="icon-control fa fa-chevron-down"></i>
-                            <h6 class="title d-inline">Fiyat </h6>
-                        </a>
-                    </header>
-
-                    <div class="collapse show" id="collapse_aside2">
-                        <div class="card-body">
-                            @minPrice
-                            <i class='fa fa-try' aria-hidden='true'></i>
-                            <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="rangeSliderMobileFilter" id="rangeSliderMobileFilter" oninput="sliderChange(this.value)">
-                            @maxPrice
-                            <i class='fa fa-try' aria-hidden='true'></i>
-                            <hr>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label>Min</label>
-                                    <input class="form-control"
-                                           placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPriceMobileFilter">
-                                </div>
-                                <div class="form-group text-right col-md-6">
-                                    <label>Max</label>
-                                    <input class="form-control"
-                                           placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPriceMobileFilter">
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-xl" style="width: 100%;">
-                                Uygula
-                            </button>
-                        </div>
-                    </div>
-                </article>
-            </form>
-        </div>
-        <div class="py-2 border-bottom ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside6"
-                       data-abc="true" aria-expanded="True">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Website </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse show" id="collapse_aside6">
-
-                    <input type="text" placeholder="Website ara" id="websiteMobileSearchInput">
-                    <div class="card-body overflow-auto" id="websiteMobileDiv" style="height: 150px;">
+@Html.Partial("_NavbarPartial")
+@Html.Partial("_Slider", itemViewModel)
 
 
-                        @foreach (var book in (IEnumerable<ItemCheckedModel>)TempData["Websites"])
-                        {
-                            <input type="hidden" name="website" value="@book.ItemId">
-                            <label class="checkbox-btn">
-                                @if (websiteIds != null && websiteIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == book.ItemId))
-                                {
-                                    <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsiteMobile(@book.ItemId)" checked onclick="getProduct()" value="@book.ItemId">
-                                    <span class="btn btn-light"> @book.ItemName</span>
+<div class="filter">
+    <button class="btn btn-default collapsed" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
+</div>
+<div id="mobile-filter" class="collapse">
 
-                                }
-                                else
-                                {
-                                    <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsiteMobile(@book.ItemId)" onclick="getProduct()" value="@book.ItemId">
-                                    <span class="btn btn-light"> @book.ItemName</span>
-                                }
-
-                            </label>
-                        }
-
-
-                    </div>
-                </div>
-
-            </article>
-        </div>
-        <div class="py-2 border-bottom ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
-                       data-abc="true" class="collapsed" aria-expanded="false">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Yayınevleri </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse" id="collapse_aside3" style="">
-                    <div class="card-body overflow-auto" style="height: 20rem;">
-
-                        @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
-                        {
-                            <form action="~/Home/GetBooksByPublisher" method="POST">
-                                <input type="hidden" name="publisher" value="@publisher.ItemName" />
-                                <input type="hidden" name="publisherId" value="@publisher.ItemId" />
-                                <label class="checkbox-btn">
-                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
-                                </label>
-                            </form>
-                        }
-
-
-                    </div>
-                </div>
-
-            </article>
-        </div>
-        <div class="py-2 ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
-                       data-abc="true" class="collapsed" aria-expanded="false">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Yazarlar </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse" id="collapse_aside4">
-                    <div class="card-body overflow-auto" style="height: 20rem;">
-                        @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
-                        {
-                            <label class="custom-control">
-
-                                <input type="hidden" name="publisher" value="@author.ItemName" />
-                                <input type="hidden" name="publisherId" value="@author.ItemId" />
-                                <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck"
-                                       class="custom-control-input">
-                                <div class="custom-control-label">@author.ItemName</div>
-                            </label>
-                        }
-                    </div>
-                </div>
-            </article>
-        </div>
-    </div>
-    <!-- Sidebar filter section -->
-    <section id="sidebar">
-
-        <div class="pt-5 border-bottom ml-3">
-
+    <div class="py-5 border-bottom ml-3">
+        <form action="~/Home/GetFilteredItems" method="POST">
             <article class="filter-group">
                 <header class="card-header">
                     <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
-                       data-abc="true" aria-expanded="True">
+                       data-abc="true" aria-expanded="true">
                         <i class="icon-control fa fa-chevron-down"></i>
                         <h6 class="title d-inline">Fiyat </h6>
                     </a>
                 </header>
 
-                <div class="filter-content collapse show" id="collapse_aside2" style="">
+                <div class="collapse show" id="collapse_aside2">
                     <div class="card-body">
                         @minPrice
                         <i class='fa fa-try' aria-hidden='true'></i>
-                        <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="range" id="rangeSlider" oninput="sliderChange(this.value)">
+                        <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="rangeSliderMobileFilter" id="rangeSliderMobileFilter" oninput="sliderChange(this.value)">
                         @maxPrice
                         <i class='fa fa-try' aria-hidden='true'></i>
                         <hr>
@@ -506,100 +380,230 @@
                             <div class="form-group col-md-6">
                                 <label>Min</label>
                                 <input class="form-control"
-                                       placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPrice" min="0">
+                                       placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPriceMobileFilter">
                             </div>
                             <div class="form-group text-right col-md-6">
                                 <label>Max</label>
                                 <input class="form-control"
-                                       placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPrice">
+                                       placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPriceMobileFilter">
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary btn-xl" style="width: 100%;" onclick="getProduct()">
+                        <button type="submit" class="btn btn-primary btn-xl" style="width: 100%;">
                             Uygula
                         </button>
                     </div>
                 </div>
             </article>
+        </form>
+    </div>
+    <div class="py-2 border-bottom ml-3">
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside6"
+                   data-abc="true" aria-expanded="True">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Website </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse show" id="collapse_aside6">
 
-        </div>
-        <div class="py-2 border-bottom ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside5"
-                       data-abc="true" aria-expanded="True">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Website </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse show" id="collapse_aside5">
-
-                    <input type="text" placeholder="Website ara" id="websiteSearchInput">
-                    <div class="card-body overflow-auto" id="websiteDiv" style="height: 150px;">
-
-
-                        @foreach (var book in (IEnumerable<ItemCheckedModel>)TempData["Websites"])
-                        {
-                            <input type="hidden" name="website" value="@book.ItemId">
-                            <label class="checkbox-btn">
-                                @if (websiteIds != null && websiteIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == book.ItemId))
-                                {
-                                    <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.ItemId)" checked onclick="getProduct()" value="@book.ItemId">
-                                    <span class="btn btn-light"> @book.ItemName</span>
-
-                                }
-                                else
-                                {
-                                    <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.ItemId)" onclick="getProduct()" value="@book.ItemId">
-                                    <span class="btn btn-light"> @book.ItemName</span>
-                                }
-
-                            </label>
-                        }
+                <input type="text" placeholder="Website ara" id="websiteMobileSearchInput">
+                <div class="card-body overflow-auto" id="websiteMobileDiv" style="height: 150px;">
 
 
-                    </div>
+                    @foreach (var book in (IEnumerable<ItemCheckedModel>)TempData["Websites"])
+                    {
+                        <input type="hidden" name="website" value="@book.ItemId">
+                        <label class="checkbox-btn">
+                            @if (websiteIds != null && websiteIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == book.ItemId))
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsiteMobile(@book.ItemId)" checked onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
+
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsiteMobile(@book.ItemId)" onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
+                            }
+
+                        </label>
+                    }
+
+
                 </div>
+            </div>
 
-            </article>
-        </div>
-        <div class="py-2 border-bottom ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
-                       data-abc="true" aria-expanded="True">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Yayınevleri </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse show" id="collapse_aside3">
+        </article>
+    </div>
+    <div class="py-2 border-bottom ml-3">
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
+                   data-abc="true" class="collapsed" aria-expanded="false">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Yayınevleri </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse" id="collapse_aside3" style="">
+                <div class="card-body overflow-auto" style="height: 20rem;">
 
-                    <input type="text" placeholder="Yayınevi ara" id="searchInput">
-                    <div class="card-body overflow-auto" id="publisherDiv" style="height: 250px;">
-                        @{
-                            var publisherIds = (List<string>)ViewBag.publisherId;
-                            var authorIds = (List<string>)ViewBag.authorId;
-                        }
-                        @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
-                        {
-
+                    @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
+                    {
+                        <form action="~/Home/GetBooksByPublisher" method="POST">
                             <input type="hidden" name="publisher" value="@publisher.ItemName" />
                             <input type="hidden" name="publisherId" value="@publisher.ItemId" />
                             <label class="checkbox-btn">
-                                @if (publisherIds != null)
+                                <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
+                            </label>
+                        </form>
+                    }
+
+
+                </div>
+            </div>
+
+        </article>
+    </div>
+    <div class="py-2 ml-3">
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
+                   data-abc="true" class="collapsed" aria-expanded="false">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Yazarlar </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse" id="collapse_aside4">
+                <div class="card-body overflow-auto" style="height: 20rem;">
+                    @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
+                    {
+                        <label class="custom-control">
+
+                            <input type="hidden" name="publisher" value="@author.ItemName" />
+                            <input type="hidden" name="publisherId" value="@author.ItemId" />
+                            <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck"
+                                   class="custom-control-input">
+                            <div class="custom-control-label">@author.ItemName</div>
+                        </label>
+                    }
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+<!-- Sidebar filter section -->
+<section id="sidebar">
+
+    <div class="pt-5 border-bottom ml-3">
+
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
+                   data-abc="true" aria-expanded="True">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Fiyat </h6>
+                </a>
+            </header>
+
+            <div class="filter-content collapse show" id="collapse_aside2" style="">
+                <div class="card-body">
+                    @minPrice
+                    <i class='fa fa-try' aria-hidden='true'></i>
+                    <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="range" id="rangeSlider" oninput="sliderChange(this.value)">
+                    @maxPrice
+                    <i class='fa fa-try' aria-hidden='true'></i>
+                    <hr>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Min</label>
+                            <input class="form-control"
+                                   placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPrice" min="0">
+                        </div>
+                        <div class="form-group text-right col-md-6">
+                            <label>Max</label>
+                            <input class="form-control"
+                                   placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPrice">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-xl" style="width: 100%;" onclick="getProduct()">
+                        Uygula
+                    </button>
+                </div>
+            </div>
+        </article>
+
+    </div>
+    <div class="py-2 border-bottom ml-3">
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside5"
+                   data-abc="true" aria-expanded="True">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Website </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse show" id="collapse_aside5">
+
+                <input type="text" placeholder="Website ara" id="websiteSearchInput">
+                <div class="card-body overflow-auto" id="websiteDiv" style="height: 150px;">
+
+
+                    @foreach (var book in (IEnumerable<ItemCheckedModel>)TempData["Websites"])
+                    {
+                        <input type="hidden" name="website" value="@book.ItemId">
+                        <label class="checkbox-btn">
+                            @if (websiteIds != null && websiteIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == book.ItemId))
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.ItemId)" checked onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
+
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="chkWebsite" name="chkWebsite" id="chkWebsite(@book.ItemId)" onclick="getProduct()" value="@book.ItemId">
+                                <span class="btn btn-light"> @book.ItemName</span>
+                            }
+
+                        </label>
+                    }
+
+
+                </div>
+            </div>
+
+        </article>
+    </div>
+    <div class="py-2 border-bottom ml-3">
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
+                   data-abc="true" aria-expanded="True">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Yayınevleri </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse show" id="collapse_aside3">
+
+                <input type="text" placeholder="Yayınevi ara" id="searchInput">
+                <div class="card-body overflow-auto" id="publisherDiv" style="height: 250px;">
+                    @{
+                        var publisherIds = (List<string>)ViewBag.publisherId;
+                        var authorIds = (List<string>)ViewBag.authorId;
+                    }
+                    @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
+                    {
+
+                        <input type="hidden" name="publisher" value="@publisher.ItemName" />
+                        <input type="hidden" name="publisherId" value="@publisher.ItemId" />
+                        <label class="checkbox-btn">
+                            @if (publisherIds != null)
+                            {
+                                if (publisherIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == publisher.ItemId))
                                 {
-                                    if (publisherIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == publisher.ItemId))
-                                    {
-                                        <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" checked onclick="getProduct()" value="@publisher.ItemId">
-                                        <span class="btn btn-light"> @publisher.ItemName </span>
+                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" checked onclick="getProduct()" value="@publisher.ItemId">
+                                    <span class="btn btn-light"> @publisher.ItemName </span>
 
-                                    }
-
-                                    else
-                                    {
-                                        <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" onclick="getProduct()" value="@publisher.ItemId">
-                                        <span class="btn btn-light"> @publisher.ItemName </span>
-
-                                    }
                                 }
 
                                 else
@@ -608,48 +612,49 @@
                                     <span class="btn btn-light"> @publisher.ItemName </span>
 
                                 }
-                            </label>
+                            }
 
-                        }
+                            else
+                            {
+                                <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" class="chkPublisher" onclick="getProduct()" value="@publisher.ItemId">
+                                <span class="btn btn-light"> @publisher.ItemName </span>
+
+                            }
+                        </label>
+
+                    }
 
 
-                    </div>
                 </div>
+            </div>
 
-            </article>
-        </div>
-        <div class="py-2 ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
-                       data-abc="true" aria-expanded="True">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Yazarlar </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse show" id="collapse_aside4" style="">
-                    <input type="text" name="authorInput" id="authorInput" placeholder="Yazar ara">
-                    <div class="card-body overflow-auto" style="height: 250px;" id="authorDiv">
-                        @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
-                        {
+        </article>
+    </div>
+    <div class="py-2 ml-3">
+        <article class="filter-group">
+            <header class="card-header">
+                <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
+                   data-abc="true" aria-expanded="True">
+                    <i class="icon-control fa fa-chevron-down"></i>
+                    <h6 class="title d-inline">Yazarlar </h6>
+                </a>
+            </header>
+            <div class="filter-content collapse show" id="collapse_aside4" style="">
+                <input type="text" name="authorInput" id="authorInput" placeholder="Yazar ara">
+                <div class="card-body overflow-auto" style="height: 250px;" id="authorDiv">
+                    @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
+                    {
 
 
-                            <input type="hidden" name="author" value="@author.ItemName" />
-                            <input type="hidden" name="authorId" value="@author.ItemId" />
-                            <label class="checkbox-btn">
-                                @if (authorIds != null)
+                        <input type="hidden" name="author" value="@author.ItemName" />
+                        <input type="hidden" name="authorId" value="@author.ItemId" />
+                        <label class="checkbox-btn">
+                            @if (authorIds != null)
+                            {
+                                if (authorIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == author.ItemId))
                                 {
-                                    if (authorIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == author.ItemId))
-                                    {
-                                        <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" checked="checked" onclick="getProduct()" value="@author.ItemId">
-                                        <span class="btn btn-light">@author.ItemName</span>
-                                    }
-
-                                    else
-                                    {
-                                        <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" onclick="getProduct()" value="@author.ItemId">
-                                        <span class="btn btn-light">@author.ItemName</span>
-                                    }
+                                    <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" checked="checked" onclick="getProduct()" value="@author.ItemId">
+                                    <span class="btn btn-light">@author.ItemName</span>
                                 }
 
                                 else
@@ -657,86 +662,93 @@
                                     <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" onclick="getProduct()" value="@author.ItemId">
                                     <span class="btn btn-light">@author.ItemName</span>
                                 }
-                            </label>
-                        }
-                    </div>
+                            }
+
+                            else
+                            {
+                                <input type="checkbox" id="chkAuthor@(author.ItemId)" name="chkAuthor" class="chkAuthor" onclick="getProduct()" value="@author.ItemId">
+                                <span class="btn btn-light">@author.ItemName</span>
+                            }
+                        </label>
+                    }
                 </div>
-            </article>
-        </div>
-    </section>
-
-
-
-
-
-    <div class="row mb-3" id="product" style="margin-top: 2rem;">
-        @if (itemViewModel.Books.Count() > 0)
-        {
-            @Html.Partial("_GetProduct", itemViewModel)
-        }
-        else
-        {
-            <div class="col-md-12 alert alert-danger mt-5">İstenilen kritere göre ürün bulunamadı!</div>
-
-        }
+            </div>
+        </article>
     </div>
-
-
-    @* Sayfalar yüklenirken gelen gif*@
-    <div class="preload">
-        <img src="/Content/images/preloaders.gif" class="preload-img" />
-    </div>
+</section>
 
 
 
-    @section scripts
+
+
+<div class="row mb-3" id="product" style="margin-top: 2rem;">
+    @if (itemViewModel.Books.Count() > 0)
+    {
+        @Html.Partial("_GetProduct", itemViewModel)
+    }
+    else
+    {
+        <div class="col-md-12 alert alert-danger mt-5">İstenilen kritere göre ürün bulunamadı!</div>
+
+    }
+</div>
+
+
+@* Sayfalar yüklenirken gelen gif*@
+<div class="preload">
+    <img src="/Content/images/preloaders.gif" class="preload-img" />
+</div>
+
+
+
+@section scripts
 {
 
-        <script>
+    <script>
         function sliderChange(val) {
             document.getElementById('minPrice').value = parseInt(@minPrice);
             document.getElementById('maxPrice').value = parseInt(val);
         }
 
         document.getElementById('rangeSlider').value = 2;
-        </script>
+    </script>
 
-        @* Live Search*@
-        @* Bu metod çok fazla tekrar ediyor. Düzeltilecek *@
-        <script>
-            $("#searchInput").on("keyup",
-                function () {
-                    var value = $(this).val().toLowerCase();
-                    $("#publisherDiv *").filter(function () {
-                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                    });
+    @* Live Search*@
+    @* Bu metod çok fazla tekrar ediyor. Düzeltilecek *@
+    <script>
+        $("#searchInput").on("keyup",
+            function () {
+                var value = $(this).val().toLowerCase();
+                $("#publisherDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
+            });
 
-            $("#authorInput").on("keyup",
-                function () {
-                    var value = $(this).val().toLowerCase();
-                    $("#authorDiv *").filter(function () {
-                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                    });
+        $("#authorInput").on("keyup",
+            function () {
+                var value = $(this).val().toLowerCase();
+                $("#authorDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
+            });
 
-            $("#websiteSearchInput").on("keyup",
-                function () {
-                    var value = $(this).val().toLowerCase();
-                    $("#websiteDiv *").filter(function () {
-                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                    });
+        $("#websiteSearchInput").on("keyup",
+            function () {
+                var value = $(this).val().toLowerCase();
+                $("#websiteDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
-            $("#websiteMobileSearchInput").on("keyup",
-                function () {
-                    var value = $(this).val().toLowerCase();
-                    $("#websiteMobileDiv *").filter(function () {
-                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                    });
+            });
+        $("#websiteMobileSearchInput").on("keyup",
+            function () {
+                var value = $(this).val().toLowerCase();
+                $("#websiteMobileDiv *").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
-        </script>
+            });
+    </script>
 
-        <script>
+    <script>
 
         function getProduct(sort='', page = 1) {
             var minPrice = $('#minPrice').val();
@@ -796,80 +808,80 @@
         };
 
 
-        </script>
+    </script>
 
 
 
-        <script>
+    <script>
         @* Slide otomatik geçiş süresi. Default 5000ms *@
         $('.carousel').carousel({
             interval: 7000
         })
-        </script>
+    </script>
 
 
 
 
 
-        <script>
+    <script>
 
-            /*
+        /*
 Carousel
 */
-            $('#carousel-example').on('slide.bs.carousel', function (e) {
-                /*
-                    CC 2.0 License Iatek LLC 2018 - Attribution required
-                */
-                var $e = $(e.relatedTarget);
-                var idx = $e.index();
-                var itemsPerSlide = 5;
-                var totalItems = $('.carousel-item').length;
+        $('#carousel-example').on('slide.bs.carousel', function (e) {
+            /*
+                CC 2.0 License Iatek LLC 2018 - Attribution required
+            */
+            var $e = $(e.relatedTarget);
+            var idx = $e.index();
+            var itemsPerSlide = 5;
+            var totalItems = $('.carousel-item').length;
 
-                if (idx >= totalItems - (itemsPerSlide - 1)) {
-                    var it = itemsPerSlide - (totalItems - idx);
-                    for (var i = 0; i < it; i++) {
-                        // append slides to end
-                        if (e.direction == "left") {
-                            $('.carousel-item').eq(i).appendTo('.carousel-inner');
-                        }
-                        else {
-                            $('.carousel-item').eq(0).appendTo('.carousel-inner');
-                        }
+            if (idx >= totalItems - (itemsPerSlide - 1)) {
+                var it = itemsPerSlide - (totalItems - idx);
+                for (var i = 0; i < it; i++) {
+                    // append slides to end
+                    if (e.direction == "left") {
+                        $('.carousel-item').eq(i).appendTo('.carousel-inner');
+                    }
+                    else {
+                        $('.carousel-item').eq(0).appendTo('.carousel-inner');
                     }
                 }
-            });
-
-
-
-        </script>
-
-
-        <script>
-            function changeCardSize(btn) {
-                let divProduct = document.querySelectorAll("[id*='divProduct']");
-                let buttonCardSize = document.querySelectorAll("[class*='blockBtn']");
-                let cardSize = 12 / btn.value;
-                for (let node of divProduct) {
-                    if (node.classList.contains('col-lg-3')) {
-                        node.classList.remove('col-lg-3');
-                    } else if (node.classList.contains('col-lg-4')) {
-                        node.classList.remove('col-lg-4');
-                    } else {
-                        node.classList.remove('col-lg-2');
-                    }
-                    node.classList.add('col-lg-' + cardSize);
-                }
-                for (let button of buttonCardSize) {
-                    if (button.classList.contains('active')) {
-                        button.classList.remove('active');
-                    };
-                }
-                btn.firstChild.nextSibling.classList.add('active');
-
             }
-        </script>
+        });
 
 
-    }
+
+    </script>
+
+
+    <script>
+        function changeCardSize(btn) {
+            let divProduct = document.querySelectorAll("[id*='divProduct']");
+            let buttonCardSize = document.querySelectorAll("[class*='blockBtn']");
+            let cardSize = 12 / btn.value;
+            for (let node of divProduct) {
+                if (node.classList.contains('col-lg-3')) {
+                    node.classList.remove('col-lg-3');
+                } else if (node.classList.contains('col-lg-4')) {
+                    node.classList.remove('col-lg-4');
+                } else {
+                    node.classList.remove('col-lg-2');
+                }
+                node.classList.add('col-lg-' + cardSize);
+            }
+            for (let button of buttonCardSize) {
+                if (button.classList.contains('active')) {
+                    button.classList.remove('active');
+                };
+            }
+            btn.firstChild.nextSibling.classList.add('active');
+
+        }
+    </script>
+
+
+}
 
 

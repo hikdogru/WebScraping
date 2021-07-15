@@ -26,12 +26,25 @@
             </li>
 
         </ul>
-        @*<form class="form-inline" action="/Home/SearchItem" method="GET">*@
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" id="searchText" required>
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-            <i class="fa fa-search"></i>
-        </button>
-        @*</form>*@
+        <form class="form-inline" action="/Home/SearchItem" method="GET">
+
+
+
+            <select class="form-control m-1" id="sel1" name="searchOptionSelect">
+                <option selected disabled>Arama seçenekleri</option>
+                <option value="All-books" name="searchOptionValue" id="1">Edebiyat kitapları</option>
+                <option value="Best-seller" name="searchOptionValue" id="2">Çok satanlar</option>
+            </select>
+
+
+
+
+            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search" aria-label="Search" name="query" id="searchText" required>
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                <i class="fa fa-search"></i>
+            </button>
+
+        </form>
     </div>
 </nav>
 

@@ -56,22 +56,22 @@ namespace WebScraping.WebUI.Controllers
 
         public ActionResult Index()
         {
-            Timer timer = new Timer(TimeSpan.FromMinutes(60).TotalMilliseconds);
-            timer.AutoReset = true;
-            timer.Elapsed += CallBookMethod;
-            timer.Start();
-
-
-
             if (_allBookList.Count == 0) Book();
             return View(_allBookList);
         }
 
 
-        private void CallBookMethod(object sender, ElapsedEventArgs e)
+        public void CallBookMethod(object sender, ElapsedEventArgs e)
         {
+            Debug.Write("Method is working...");
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             _bookService.DeleteAllRecordsInTable();
             Scrape();
+
+            stopwatch.Stop();
+            Debug.WriteLine("Elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds);
         }
 
 
@@ -86,7 +86,7 @@ namespace WebScraping.WebUI.Controllers
                     BooksLogoUrl.Add(website.Name, website.LogoUrl);
                 }
             }
-
+            
             if (_bookService.GetBooksWithWebsite().Count == 0)
             {
                 Scrape();
@@ -452,7 +452,7 @@ namespace WebScraping.WebUI.Controllers
         }
 
 
-        public ActionResult SearchItem(string query)
+        public ActionResult SearchItem(string query, string searchOptionSelect)
         {
             if (!string.IsNullOrEmpty(query))
             {
@@ -463,11 +463,13 @@ namespace WebScraping.WebUI.Controllers
                     .Select(b => b.FirstOrDefault())
                     .OrderBy(b => ReplaceString(b.Price)).ToList();
 
-
+                if (!String.IsNullOrEmpty(searchOptionSelect)) otherPublishers = otherPublishers.Where(b => b.CategoryType == searchOptionSelect).ToList();
+                
                 if (otherPublishers.Count > 1) TempData["OtherPublishers"] = otherPublishers;
 
                 var entities = _allBookList.Where(b => b.Name.Trim() == query.Trim()).Distinct().GroupBy(b => b.Website).Select(b => b.FirstOrDefault()).OrderBy(b => ReplaceString(b.Price)).ToList();
-
+                if (!String.IsNullOrEmpty(searchOptionSelect)) entities = entities.Where(b => b.CategoryType == searchOptionSelect).ToList();
+                
                 TempData["SearchText"] = query;
                 TempData["Books"] = entities;
             }
@@ -584,7 +586,11 @@ namespace WebScraping.WebUI.Controllers
         }
     }
 
+   
+
 
 
 
 }
+
+    
