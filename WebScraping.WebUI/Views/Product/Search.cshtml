@@ -118,7 +118,7 @@
 
 }
 
-else if (viewDataBook != null && viewDataOtherPublishers == null)
+else if (viewDataBook != null && viewDataBook.Count > 0 && viewDataOtherPublishers == null)
 {
     <div class="image">
         <img src="@viewDataBook[0].Image" class="card-img-top img" alt="Item Image">
@@ -172,4 +172,12 @@ else if (viewDataBook != null && viewDataOtherPublishers == null)
         </div>
     </div>
 
+}
+
+
+
+
+@if (viewDataBook.Count == 0)
+{
+    <div class="alert alert-danger m-5 h3"> Aranılan ürün bulunamadı! </div>
 }

@@ -95,7 +95,8 @@
     </script>
 
     @* Autocomplete *@
-    <script>
+<script>
+    console.log($('#selectId>option:selected').text());
     $(function() {
         $('#searchText').autocomplete({
             source: function(request, response) {
@@ -111,7 +112,6 @@
                                 return {
                                     value: item.Image,
                                     label: item.Name,
-                                    
                                 }
                             }));
                     }
@@ -120,19 +120,20 @@
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             var innerHtml =
                 '<button style="border:0px;margin-bottom:2px;"><a href="/Home/SearchItem?query=' +
-                    item.label +
+                item.label + '&'+ 'searchOptionSelect='+
+                $('#selectSearchOption>option:selected').val() +
                     '">' +
                     '<div class="list_item_container"><div class="image1"><img src="' +
                     item.value +
-                '"></div><div class="label">' +
-                item.label
-                    '</div></a></button>';
+                    '"></div><div class="label">' +
+                    item.label
+            '</div></a></button>';
             return $("<li></li>")
                 .data("item.autocomplete", item)
                 .append(innerHtml)
                 .appendTo(ul);
         };;
     });
-    </script>
+</script>
 </body>
 </html>

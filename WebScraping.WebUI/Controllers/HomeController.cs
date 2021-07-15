@@ -467,7 +467,7 @@ namespace WebScraping.WebUI.Controllers
                 
                 if (otherPublishers.Count > 1) TempData["OtherPublishers"] = otherPublishers;
 
-                var entities = _allBookList.Where(b => b.Name.Trim() == query.Trim()).Distinct().GroupBy(b => b.Website).Select(b => b.FirstOrDefault()).OrderBy(b => ReplaceString(b.Price)).ToList();
+                var entities = _allBookList.Where(b => b.Name.ToUpper().Trim().Contains(query.ToUpper().Trim())).Distinct().GroupBy(b => b.Website).Select(b => b.FirstOrDefault()).OrderBy(b => ReplaceString(b.Price)).ToList();
                 if (!String.IsNullOrEmpty(searchOptionSelect)) entities = entities.Where(b => b.CategoryType == searchOptionSelect).ToList();
                 
                 TempData["SearchText"] = query;
