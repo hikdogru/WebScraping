@@ -14,6 +14,7 @@ using System.Timers;
 using System.Web;
 using System.Web.Mvc;
 using HtmlAgilityPack;
+using PagedList;
 using WebScraping.Business.Abstract;
 using WebScraping.Entities;
 using WebScraping.WebUI.Models;
@@ -86,7 +87,7 @@ namespace WebScraping.WebUI.Controllers
                     BooksLogoUrl.Add(website.Name, website.LogoUrl);
                 }
             }
-            
+
             if (_bookService.GetBooksWithWebsite().Count == 0)
             {
                 Scrape();
@@ -97,6 +98,7 @@ namespace WebScraping.WebUI.Controllers
 
             var allBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "All-books");
             _allBookList = new List<Book>(allBooks);
+            
 
         }
 
@@ -270,14 +272,17 @@ namespace WebScraping.WebUI.Controllers
 
 
             //GetItemsByChecked();
-
             // checkbox publishers value
             TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
+
             // checkbox authors value
             TempData["Authors"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
+
             // checkbox websites value
             TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website");
+            
             TempData["ItemViewModel"] = itemViewModel;
+            TempData["SliderBooks"] = books;
 
             if (Request.IsAjaxRequest())
                 return PartialView("/Views/Shared/_GetProduct.cshtml", itemViewModel);
@@ -294,11 +299,12 @@ namespace WebScraping.WebUI.Controllers
         private void Filtering(List<string> entityIdList, object entityName)
         {
             IEnumerable<string> entities = null;
+            List<string> idList = new();
             if (entityIdList[0].IndexOf(",") >= 0)
             {
-                var Id = entityIdList[0].Split(',').ToList();
+                idList = entityIdList[0].Split(',').ToList();
                 entities = ItemCheckedModels
-                    .Where(m => Id.Any(a => int.Parse(!string.IsNullOrEmpty(a) ? a : "0") == m.ItemId))
+                    .Where(m => idList.Any(a => int.Parse(!string.IsNullOrEmpty(a) ? a : "0") == m.ItemId))
                     .GroupBy(m => m.ItemName).Select(m => m.Key);
             }
             else
@@ -312,20 +318,20 @@ namespace WebScraping.WebUI.Controllers
             if (entityName == "Author")
             {
                 _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Author)).ToList();
-                ViewBag.authorId = entityIdList;
+                ViewBag.authorId = idList;
                 entityIdList.ForEach(p => ViewBag.author += p + (entityIdList.Count > 1 ? "," : ""));
             }
 
             else if (entityName == "Publisher")
             {
                 _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Publisher)).ToList();
-                ViewBag.publisherId = entityIdList;
+                ViewBag.publisherId = idList;
                 entityIdList.ForEach(p => ViewBag.publisher += p + (entityIdList.Count > 1 ? "," : ""));
             }
             else if (entityName == "Website")
             {
                 _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Website.Name)).ToList();
-                ViewBag.WebsiteId = entityIdList;
+                ViewBag.WebsiteId = idList;
                 entityIdList.ForEach(p => ViewBag.website += p + (entityIdList.Count > 1 ? "," : ""));
             }
         }
@@ -377,7 +383,6 @@ namespace WebScraping.WebUI.Controllers
             if (ItemCheckedModels.Count == 0 || !String.IsNullOrEmpty(categoryType))
             {
                 ItemCheckedModels.Clear();
-
                 var publishers = (books ?? _allBooks).OrderBy(b => b.Publisher).GroupBy(b => b.Publisher)
                     .Select(b => b.Key).Distinct();
                 var authors = (books ?? _allBooks).OrderBy(b => b.Author).GroupBy(b => b.Author).Select(b => b.Key)
@@ -386,6 +391,34 @@ namespace WebScraping.WebUI.Controllers
                     .Select(b => b.Key)
                     .Distinct();
                 var itemId = 1;
+                //foreach (var publisherName in publishers)
+                //{
+                //    if (!String.IsNullOrEmpty(publisherName))
+                //    {
+                //        ItemCheckedModel itemCheckedModel = new();
+                //        CreateItemCheckedModel(itemCheckedModel, "Publisher", publisherName, categoryType, itemId);
+                //        itemId++;
+                //    }
+                //}
+                //foreach (var author in authors)
+                //{
+                //    if (!String.IsNullOrEmpty(author))
+                //    {
+                //        ItemCheckedModel itemCheckedModel = new();
+                //        CreateItemCheckedModel(itemCheckedModel, "Author", author, categoryType, itemId);
+                //        itemId++;
+                //    }
+                //}
+                //foreach (var website in websites)
+                //{
+                //    if (!String.IsNullOrEmpty(website))
+                //    {
+                //        ItemCheckedModel itemCheckedModel = new();
+                //        CreateItemCheckedModel(itemCheckedModel, "Website", website, categoryType, itemId);
+                //        itemId++;
+                //    }
+                //}
+
                 foreach (var publisherName in publishers)
                 {
                     if (!String.IsNullOrEmpty(publisherName))
@@ -432,6 +465,17 @@ namespace WebScraping.WebUI.Controllers
                 }
             }
         }
+        
+        private static void CreateItemCheckedModel(ItemCheckedModel itemCheckedModel, string entityName, string entityValue, string categoryType, int itemId)
+        {
+            itemCheckedModel.ItemEntityName = entityName;
+            itemCheckedModel.IsCheck = false;
+            itemCheckedModel.ItemName = entityValue;
+            itemCheckedModel.ItemCategoryType = categoryType;
+            itemCheckedModel.ItemId = itemId;
+            ItemCheckedModels.Add(itemCheckedModel);
+        }
+
 
         // Search by autocomplete
         public JsonResult Search(string term)
@@ -464,12 +508,12 @@ namespace WebScraping.WebUI.Controllers
                     .OrderBy(b => ReplaceString(b.Price)).ToList();
 
                 if (!String.IsNullOrEmpty(searchOptionSelect)) otherPublishers = otherPublishers.Where(b => b.CategoryType == searchOptionSelect).ToList();
-                
+
                 if (otherPublishers.Count > 1) TempData["OtherPublishers"] = otherPublishers;
 
                 var entities = _allBookList.Where(b => b.Name.ToUpper().Trim().Contains(query.ToUpper().Trim())).Distinct().GroupBy(b => b.Website).Select(b => b.FirstOrDefault()).OrderBy(b => ReplaceString(b.Price)).ToList();
                 if (!String.IsNullOrEmpty(searchOptionSelect)) entities = entities.Where(b => b.CategoryType == searchOptionSelect).ToList();
-                
+
                 TempData["SearchText"] = query;
                 TempData["Books"] = entities;
             }
@@ -505,9 +549,6 @@ namespace WebScraping.WebUI.Controllers
             };
 
             GetItemsByChecked("Best-Seller");
-            //ViewBag.Publishers = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher");
-            //ViewBag.Authors = ItemCheckedModels.Where(m => m.ItemEntityName == "Author");
-
 
             // checkbox publishers value
             TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher" && m.ItemCategoryType == "Best-Seller");
@@ -586,11 +627,10 @@ namespace WebScraping.WebUI.Controllers
         }
     }
 
-   
+
 
 
 
 
 }
 
-    

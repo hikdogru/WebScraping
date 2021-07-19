@@ -1,4 +1,6 @@
-﻿@using WebScraping.WebUI.Models
+﻿@using PagedList
+@using WebScraping.Entities
+@using WebScraping.WebUI.Models
 @using WebScraping.WebUI.ViewModel
 @model ItemViewModel
 
@@ -283,7 +285,6 @@
             .carousel-inner .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
                 transition: none;
             }
-            
             /* forward direction > */
 
             .carousel-item-next.carousel-item-left + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
@@ -322,11 +323,9 @@
 
 @{
     var itemViewModel = (ItemViewModel)TempData["ItemViewModel"];
+    var sliderBooks = (List<Book>)TempData["SliderBooks"];
 
     var websiteIds = (List<string>)ViewBag.WebsiteId;
-
-
-
     for (int i = 0; i < itemViewModel.Books.ToList().Count; i++)
     {
         itemViewModel.Books.ToList()[i].Price = itemViewModel.Books.ToList()[i].Price.Replace("TL", "");
@@ -349,7 +348,7 @@
 
 
 @Html.Partial("_NavbarPartial")
-@Html.Partial("_Slider", itemViewModel)
+@Html.Partial("_Slider", sliderBooks)
 
 
 <div class="filter">
@@ -492,6 +491,11 @@
         </article>
     </div>
 </div>
+
+
+
+
+
 <!-- Sidebar filter section -->
 <section id="sidebar">
 
