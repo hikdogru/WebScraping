@@ -22,7 +22,6 @@ namespace WebScraping.WebUI
 
             
             var controller = DependencyResolver.Current.GetService<HomeController>();
-
             Timer timer = new Timer(TimeSpan.FromMinutes(60).TotalMilliseconds);
             timer.AutoReset = true;
             timer.Elapsed += controller.CallBookMethod;

@@ -6,10 +6,12 @@
         <div id="carousel-example" class="carousel slide text-center" data-ride="carousel">
             <h5 class="h2 text-primary mb-5">Çok satan kitaplar</h5>
             <div class="carousel-inner row w-100 mx-auto" role="listbox">
-                @for (int i = 0; i < Model.Count ; i++)
+                @for (int i = 0; i < Model.Count; i++)
                 {
                     <div class="carousel-item col-12 col-md-4 col-lg-2 @(i == 0 ? "active" : "")">
-                        <img src="@(Model[i].Image)" class="img-fluid mx-auto d-block img" alt="img">
+                        <a href="@Model[i].BookDetailUrl" target="_blank">
+                            <img src="@(Model[i].Image)" class="img-fluid mx-auto d-block img" alt="img">
+                        </a>
                     </div>
                 }
 

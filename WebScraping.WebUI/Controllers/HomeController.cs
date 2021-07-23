@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,23 +11,20 @@ using System.Timers;
 using System.Web;
 using System.Web.Mvc;
 using HtmlAgilityPack;
-using PagedList;
 using WebScraping.Business.Abstract;
 using WebScraping.Entities;
 using WebScraping.WebUI.Models;
 using WebScraping.WebUI.ViewModel;
-using Timer = System.Timers.Timer;
 
 
 namespace WebScraping.WebUI.Controllers
 {
     public class HomeController : Controller
     {
-
-
         private static List<Book> _bestSellerBooks = new();
         private static List<Book> _allBooks = new();
         private static List<Book> books;
+        private static List<Book> _tempAllBooks = new();
         private static readonly List<ItemCheckedModel> ItemCheckedModels = new List<ItemCheckedModel>();
         private List<Book> _filteredItems;
         private static List<Book> _allBookList = new List<Book>();
@@ -64,15 +58,7 @@ namespace WebScraping.WebUI.Controllers
 
         public void CallBookMethod(object sender, ElapsedEventArgs e)
         {
-            Debug.Write("Method is working...");
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            _bookService.DeleteAllRecordsInTable();
             Scrape();
-
-            stopwatch.Stop();
-            Debug.WriteLine("Elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds);
         }
 
 
@@ -98,8 +84,6 @@ namespace WebScraping.WebUI.Controllers
 
             var allBooks = _bookService.GetBooksWithWebsite().Where(b => b.CategoryType == "All-books");
             _allBookList = new List<Book>(allBooks);
-            
-
         }
 
         private void Scrape()
@@ -129,8 +113,9 @@ namespace WebScraping.WebUI.Controllers
                        }
                    }
                });
+            _bookService.DeleteAllRecordsInTable();
+            _tempAllBooks.ForEach(b=>_bookService.Add(b));
         }
-
 
         private void BookScraping(BookNodeModel bookNode, string websiteUrl, int websiteId, string type = "")
         {
@@ -188,15 +173,7 @@ namespace WebScraping.WebUI.Controllers
                     CategoryType = type
                 };
 
-                var entity = _bookService.GetBooksWithWebsite().Where(b => b.BookDetailUrl == book.BookDetailUrl)
-                    .FirstOrDefault();
-
-                if (entity == null)
-                    _bookService.Add(book);
-
-
-
-                if (i == bookNode.ItemCount) break;
+                _tempAllBooks.Add(book);
             }
         }
 
@@ -309,6 +286,7 @@ namespace WebScraping.WebUI.Controllers
             }
             else
             {
+                idList = entityIdList.Distinct().ToList();
                 entities = ItemCheckedModels
                         .Where(m => entityIdList.Any(a => int.Parse(a.Replace(",", "")) == m.ItemId))
                         .GroupBy(m => m.ItemName)
@@ -319,20 +297,17 @@ namespace WebScraping.WebUI.Controllers
             {
                 _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Author)).ToList();
                 ViewBag.authorId = idList;
-                entityIdList.ForEach(p => ViewBag.author += p + (entityIdList.Count > 1 ? "," : ""));
             }
 
             else if (entityName == "Publisher")
             {
                 _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Publisher)).ToList();
                 ViewBag.publisherId = idList;
-                entityIdList.ForEach(p => ViewBag.publisher += p + (entityIdList.Count > 1 ? "," : ""));
             }
             else if (entityName == "Website")
             {
                 _filteredItems = _filteredItems.Where(b => entities.Any(a => a == b.Website.Name)).ToList();
                 ViewBag.WebsiteId = idList;
-                entityIdList.ForEach(p => ViewBag.website += p + (entityIdList.Count > 1 ? "," : ""));
             }
         }
 
@@ -626,11 +601,5 @@ namespace WebScraping.WebUI.Controllers
             return w;
         }
     }
-
-
-
-
-
-
 }
 
