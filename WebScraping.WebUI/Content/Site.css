@@ -334,6 +334,13 @@ h6 {
         width: 70%;
     }
 
+    .preload-img {
+        position: absolute;
+        top: 20%;
+        left: 0;
+        z-index: 100;
+    }
+
     #products {
         width: 60%;
         padding: 10px;
@@ -368,6 +375,13 @@ h6 {
 
     input[type="range"] {
         width: 70%;
+    }
+
+    .preload-img {
+        position: absolute;
+        top: 30%;
+        left: -20% !important;
+        z-index: 100;
     }
 
     div[class=form-row] div {

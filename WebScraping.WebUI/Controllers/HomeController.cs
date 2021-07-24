@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Web;
@@ -114,7 +111,7 @@ namespace WebScraping.WebUI.Controllers
                    }
                });
             _bookService.DeleteAllRecordsInTable();
-            _tempAllBooks.ForEach(b=>_bookService.Add(b));
+            _tempAllBooks.ForEach(b => _bookService.Add(b));
         }
 
         private void BookScraping(BookNodeModel bookNode, string websiteUrl, int websiteId, string type = "")
@@ -139,27 +136,18 @@ namespace WebScraping.WebUI.Controllers
                                         : websiteUrl) +
                                     HttpUtility.UrlDecode(
                                         bookNode.Detail[i].GetAttributeValue("href", string.Empty));
-                if (websiteUrl.Contains("hepsiburada"))
-                {
-                    var bookNameAndAuthor = bookName.Replace(" – ", "*").Replace("-", "*").Split('*');
-                    bookName = bookNameAndAuthor[0];
-                    author = bookNameAndAuthor.Length > 1 ? bookNameAndAuthor[1] : "";
-                    bookPrice = bookNode.Price[i].GetAttributeValue("content", string.Empty);
-                    image = WebUtility.HtmlDecode(bookNode.Image[i].GetAttributeValue("src", ""));
-                }
+
+                if (bookNode.Price == null)
+                    bookPrice = "0";
                 else
-                {
-                    if (bookNode.Price == null)
-                        bookPrice = "0";
-                    else
-                        bookPrice = bookNode.Price[i].InnerText.Replace("\n", "")
-                            .Replace("TL", " TL")
-                            .Replace("₺", "TL")
-                            .Replace("\r", "")
-                            .Replace(" ", "")
-                            .Replace(" ", "TL")
-                            .Trim();
-                }
+                    bookPrice = bookNode.Price[i].InnerText.Replace("\n", "")
+                        .Replace("TL", " TL")
+                        .Replace("₺", "TL")
+                        .Replace("\r", "")
+                        .Replace(" ", "")
+                        .Replace(" ", "TL")
+                        .Trim();
+
                 var book = new Book
                 {
                     Id = i + 1,
@@ -211,9 +199,7 @@ namespace WebScraping.WebUI.Controllers
                 ItemCount = 200,
 
             };
-
             bookNodeModelList.Add(bookNode);
-
             return bookNodeModelList;
         }
 
@@ -257,7 +243,7 @@ namespace WebScraping.WebUI.Controllers
 
             // checkbox websites value
             TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website");
-            
+
             TempData["ItemViewModel"] = itemViewModel;
             TempData["SliderBooks"] = books;
 
@@ -352,7 +338,6 @@ namespace WebScraping.WebUI.Controllers
             }
         }
 
-        // TODO: Refactor this method 
         private static void GetItemsByChecked(string categoryType = "")
         {
             if (ItemCheckedModels.Count == 0 || !String.IsNullOrEmpty(categoryType))
@@ -366,81 +351,36 @@ namespace WebScraping.WebUI.Controllers
                     .Select(b => b.Key)
                     .Distinct();
                 var itemId = 1;
-                //foreach (var publisherName in publishers)
-                //{
-                //    if (!String.IsNullOrEmpty(publisherName))
-                //    {
-                //        ItemCheckedModel itemCheckedModel = new();
-                //        CreateItemCheckedModel(itemCheckedModel, "Publisher", publisherName, categoryType, itemId);
-                //        itemId++;
-                //    }
-                //}
-                //foreach (var author in authors)
-                //{
-                //    if (!String.IsNullOrEmpty(author))
-                //    {
-                //        ItemCheckedModel itemCheckedModel = new();
-                //        CreateItemCheckedModel(itemCheckedModel, "Author", author, categoryType, itemId);
-                //        itemId++;
-                //    }
-                //}
-                //foreach (var website in websites)
-                //{
-                //    if (!String.IsNullOrEmpty(website))
-                //    {
-                //        ItemCheckedModel itemCheckedModel = new();
-                //        CreateItemCheckedModel(itemCheckedModel, "Website", website, categoryType, itemId);
-                //        itemId++;
-                //    }
-                //}
-
                 foreach (var publisherName in publishers)
                 {
                     if (!String.IsNullOrEmpty(publisherName))
                     {
-                        var itemCheckedModel = new ItemCheckedModel();
-                        itemCheckedModel.ItemEntityName = "Publisher";
-                        itemCheckedModel.IsCheck = false;
-                        itemCheckedModel.ItemName = publisherName;
-                        itemCheckedModel.ItemCategoryType = categoryType;
-                        itemCheckedModel.ItemId = itemId;
-                        ItemCheckedModels.Add(itemCheckedModel);
+                        ItemCheckedModel itemCheckedModel = new();
+                        CreateItemCheckedModel(itemCheckedModel, "Publisher", publisherName, categoryType, itemId);
                         itemId++;
                     }
                 }
-
                 foreach (var author in authors)
                 {
                     if (!String.IsNullOrEmpty(author))
                     {
-                        var itemCheckedModel = new ItemCheckedModel();
-                        itemCheckedModel.ItemEntityName = "Author";
-                        itemCheckedModel.IsCheck = false;
-                        itemCheckedModel.ItemName = author;
-                        itemCheckedModel.ItemCategoryType = categoryType;
-                        itemCheckedModel.ItemId = itemId;
-                        ItemCheckedModels.Add(itemCheckedModel);
+                        ItemCheckedModel itemCheckedModel = new();
+                        CreateItemCheckedModel(itemCheckedModel, "Author", author, categoryType, itemId);
                         itemId++;
                     }
                 }
-
                 foreach (var website in websites)
                 {
                     if (!String.IsNullOrEmpty(website))
                     {
-                        var itemCheckedModel = new ItemCheckedModel();
-                        itemCheckedModel.ItemEntityName = "Website";
-                        itemCheckedModel.IsCheck = false;
-                        itemCheckedModel.ItemName = website;
-                        itemCheckedModel.ItemCategoryType = categoryType;
-                        itemCheckedModel.ItemId = itemId;
-                        ItemCheckedModels.Add(itemCheckedModel);
+                        ItemCheckedModel itemCheckedModel = new();
+                        CreateItemCheckedModel(itemCheckedModel, "Website", website, categoryType, itemId);
                         itemId++;
                     }
                 }
             }
         }
-        
+
         private static void CreateItemCheckedModel(ItemCheckedModel itemCheckedModel, string entityName, string entityValue, string categoryType, int itemId)
         {
             itemCheckedModel.ItemEntityName = entityName;
@@ -524,16 +464,22 @@ namespace WebScraping.WebUI.Controllers
             };
 
             GetItemsByChecked("Best-Seller");
-
-            // checkbox publishers value
-            TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher" && m.ItemCategoryType == "Best-Seller");
-            // checkbox authors value
-            TempData["Authors"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Author" && m.ItemCategoryType == "Best-Seller");
-            // checkbox websites value
-            TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website" && m.ItemCategoryType == "Best-Seller");
+            GetCheckboxValues("Best-Seller");
             ViewBag.TotalBooks = books.Count;
-
             return RedirectToAction("GetWebsite", booksView);
+        }
+
+        private void GetCheckboxValues(string categoryType)
+        {
+            // checkbox publishers value
+            TempData["Publishers"] =
+                ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher" && m.ItemCategoryType == categoryType);
+            // checkbox authors value
+            TempData["Authors"] =
+                ItemCheckedModels.Where(m => m.ItemEntityName == "Author" && m.ItemCategoryType == categoryType);
+            // checkbox websites value
+            TempData["Websites"] =
+                ItemCheckedModels.Where(m => m.ItemEntityName == "Website" && m.ItemCategoryType == categoryType);
         }
 
         public ActionResult GetAllBooks(int page = 1)
@@ -546,13 +492,9 @@ namespace WebScraping.WebUI.Controllers
                 Books = books,
                 CurrentPage = page
             };
-
             GetItemsByChecked("All-books");
-            TempData["Publishers"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Publisher" && m.ItemCategoryType == "All-books");
-            // checkbox authors value
-            TempData["Authors"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Author" && m.ItemCategoryType == "All-books");
-            // checkbox websites value
-            TempData["Websites"] = ItemCheckedModels.Where(m => m.ItemEntityName == "Website" && m.ItemCategoryType == "All-books");
+            GetCheckboxValues("All-books");
+            ViewBag.TotalBooks = books.Count;
             return RedirectToAction("GetWebsite", booksView);
         }
 
@@ -579,27 +521,6 @@ namespace WebScraping.WebUI.Controllers
         }
 
 
-    }
-
-    public class BookNodeXPath
-    {
-        public string Name { get; set; }
-        public string Author { get; set; }
-        public string Publisher { get; set; }
-        public string Price { get; set; }
-        public string Image { get; set; }
-        public string Detail { get; set; }
-
-    }
-
-    public class MyWebClient : WebClient
-    {
-        protected override WebRequest GetWebRequest(Uri uri)
-        {
-            WebRequest w = base.GetWebRequest(uri);
-            w.Timeout = 20 * 60 * 1000;
-            return w;
-        }
     }
 }
 

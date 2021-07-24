@@ -155,6 +155,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="Models\BookNodeXPath.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
@@ -164,6 +165,9 @@
     <Compile Include="Models\BookNodeModel.cs" />
     <Compile Include="Models\BookSortModel.cs" />
     <Compile Include="Models\ItemCheckedModel.cs" />
+    <Compile Include="Models\MyWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -180,6 +184,7 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\GetWebsite.css" />
     <Content Include="Content\images\animatedbook.gif" />
     <Content Include="Content\images\birthday-62.gif" />
     <Content Include="Content\images\preloaders.gif" />

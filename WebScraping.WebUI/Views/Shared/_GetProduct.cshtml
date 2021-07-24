@@ -1,72 +1,70 @@
 ﻿@using WebScraping.WebUI.ViewModel
 @model ItemViewModel
 
-@{
-
-    int count =1;
-    
-}
 
 
-
-
-@Html.Partial("_FilterSortPanel")
-
-
-
-@foreach (var book in Model.PaginatedBooks())
+@if (Model.PaginatedBooks().Count() > 0)
 {
-    <div class="col-sm-10 col-md-6 col-lg-3 offset-md-0 offset-sm-1" style="margin-bottom: 1rem" id="divProduct@(book.Id)">
-        <div class="card border-3" style="width: 100%; height: 100%;">
-            <div class="a-row a-spacing-none aok-inline-block">
-                <span class="a-size-small aok-float-left zg-badge-body zg-badge-color">
-                    <span class="zg-badge-text">#@book.Id</span>
-                </span><span class="aok-float-left zg-badge-triangle zg-badge-color"></span>
+
+    @Html.Partial("_FilterSortPanel")
+
+    foreach (var book in Model.PaginatedBooks())
+    {
+        <div class="col-sm-10 col-md-6 col-lg-3 offset-md-0 offset-sm-1" style="margin-bottom: 1rem" id="divProduct@(book.Id)">
+            <div class="card border-3" style="width: 100%; height: 100%;">
+                <div class="a-row a-spacing-none aok-inline-block">
+                    <span class="a-size-small aok-float-left zg-badge-body zg-badge-color">
+                        <span class="zg-badge-text">#@book.Id</span>
+                    </span><span class="aok-float-left zg-badge-triangle zg-badge-color"></span>
 
 
 
-                <span class="a-size-small aok-float-right zg-badge-body zg-badge-color" style="background-color: #a08fce !important;">
-                    <span class="zg-badge-text">#@book.Website.Name</span>
-                </span><span class="aok-float-right zg-badge-triangle zg-badge-color"></span>
-            </div>
-            <div class="image">
-                <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
-            </div>
-            <div class="card-body text-center">
-                <h5 class="card-title" style="color: #ea8987;">@(book.Name.Length > 20 ? book.Name.Substring(0, 20) + "..." : book.Name)</h5>
-                <h5 class="card-title" style="color: #f58322; font-size: 90%;">@(book.Author.Length > 20 ? book.Author.Substring(0, 20) + "..." : book.Author)</h5>
+                    <span class="a-size-small aok-float-right zg-badge-body zg-badge-color" style="background-color: #a08fce !important;">
+                        <span class="zg-badge-text">#@book.Website.Name</span>
+                    </span><span class="aok-float-right zg-badge-triangle zg-badge-color"></span>
+                </div>
+                <div class="image">
+                    <img src="@book.Image" class="card-img-top img img-fluid" alt="..." id="img">
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="color: #ea8987;">@(book.Name.Length > 20 ? book.Name.Substring(0, 20) + "..." : book.Name)</h5>
+                    <h5 class="card-title" style="color: #f58322; font-size: 90%;">@(book.Author.Length > 20 ? book.Author.Substring(0, 20) + "..." : book.Author)</h5>
 
-                <p class="card-text">
-                    <h4>
-                        <span class="badge badge-pill" style="background-color: cornflowerblue; color: white">
-                            @book.Price <i class='fa fa-try' aria-hidden='true'></i>
-                        </span>
-                    </h4>
-                </p>
-                <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> @book.Publisher</p>
-                <a href="@book.BookDetailUrl" class="btn btn-secondary" target="_blank">Ürüne git</a>
+                    <p class="card-text">
+                        <h4>
+                            <span class="badge badge-pill" style="background-color: cornflowerblue; color: white">
+                                @book.Price <i class='fa fa-try' aria-hidden='true'></i>
+                            </span>
+                        </h4>
+                    </p>
+                    <p class="card-text font-weight-bold h5"><i class="fa fa-book fa-lg" aria-hidden="true"></i> @book.Publisher</p>
+                    <a href="@book.BookDetailUrl" class="btn btn-secondary" target="_blank">Ürüne git</a>
+                </div>
             </div>
         </div>
-    </div>
 
 
 
-}
+    }
 
-@if (Model.PageCount() > 1)
-{
-    <div class="center" style="margin-top: 1rem;">
-        <div class="pagination">
-            <a href="javascript:;" onclick="getProduct('', 1)" class="page-link">İlk</a>
-            @for (int i = Model.GetPageNumber().startPage; i <= Model.GetPageNumber().endPage; i++)
-            {
-                <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="javascript:;" onclick="getProduct('',@i)">@i</a>
-            }
-            <a href="javascript:;" onclick="getProduct('',@Model.PageCount())" class="page-link">Son</a>
+    if (Model.PageCount() > 1)
+    {
+        <div class="center" style="margin-top: 1rem;">
+            <div class="pagination">
+                <a href="javascript:;" onclick="getProduct('', 1)" class="page-link">İlk</a>
+                @for (int i = Model.GetPageNumber().startPage; i <= Model.GetPageNumber().endPage; i++)
+                {
+                    <a class="page-link @(i == Model.CurrentPage ? "page-item active" : "page-item")" href="javascript:;" onclick="getProduct('',@i)">@i</a>
+                }
+                <a href="javascript:;" onclick="getProduct('',@Model.PageCount())" class="page-link">Son</a>
+            </div>
         </div>
-    </div>
+
+    }
 
 }
 
-
-
+else
+{
+    <div class="col-md-12 alert alert-danger mt-5">İstenilen kritere göre ürün bulunamadı!</div>
+}
