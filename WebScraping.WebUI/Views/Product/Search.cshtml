@@ -74,8 +74,8 @@
                 {
                     if (logo.Key.ToLower().Contains(book.Website.Name.ToLower()))
                     {
-                        <div class="row center" style="width: 80%; background-color: antiquewhite;">
-                            <div class="col-md-3">
+                        <div class="row center" style="width: 90%; background-color: antiquewhite;">
+                            <div class="col-md-2">
                                 <span class="site_logo">
                                     <img src="@logo.Value" class="logo">
                                 </span>
@@ -86,7 +86,7 @@
                                     <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher)
                                 </h5>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <h3>
                                     <span class="badge badge-pill badge-secondary">
                                         @book.Price <i class='fa fa-try' aria-hidden='true'></i>
@@ -95,16 +95,20 @@
                             </div>
                             <div class="col-md-2">
 
-                                <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                <a href="@book.BookDetailUrl" class="btn btn-primary btn-sm" style="border-radius: 20px;">
                                     <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Siteye git
                                 </a>
                             </div>
                             @if (book.WebsiteId == viewDataItem[0].WebsiteId)
                             {
-                                <div class="col-md-1">
-
-                                    <h5><span class="badge badge-pill badge-success"> @(viewDataItem.Count == 1 ? "" : "En ucuz") </span></h5>
-                                </div>
+                                if (viewDataItem.Count > 1)
+                                {
+                                    <div class="col-md-1">
+                                        <h5>
+                                            <span class="badge badge-pill badge-success">En ucuz</span>
+                                        </h5>
+                                    </div>
+                                }
                             }
 
                         </div>
@@ -134,8 +138,8 @@ else if (viewDataBook != null && viewDataBook.Count > 0 && viewDataOtherPublishe
                 {
                     if (book.Website.Name.Equals(logo.Key))
                     {
-                        <div class="row center" style="width: 80%; background-color: antiquewhite;">
-                            <div class="col-md-3">
+                        <div class="row center" style="width: 90%; background-color: antiquewhite;">
+                            <div class="col-md-2">
                                 <span class="site_logo">
                                     <img src="@logo.Value" class="logo">
                                 </span>
@@ -143,7 +147,7 @@ else if (viewDataBook != null && viewDataBook.Count > 0 && viewDataOtherPublishe
                             <div class="col-md-4">
                                 <h5> <i class="fa fa-book" aria-hidden="true"></i> @(book.Publisher) </h5>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <h3>
                                     <span class="badge badge-pill badge-secondary ">
                                         @book.Price <i class='fa fa-try' aria-hidden='true'></i>
@@ -151,7 +155,7 @@ else if (viewDataBook != null && viewDataBook.Count > 0 && viewDataOtherPublishe
                                 </h3>
                             </div>
                             <div class="col-md-2">
-                                <a href="@book.BookDetailUrl" class="btn btn-primary" style="border-radius: 20px;">
+                                <a href="@book.BookDetailUrl" class="btn btn-primary btn-sm" style="border-radius: 20px;">
                                     <i class="fa fa-arrow-circle-right fa-lg" aria-hidden="true"></i> Siteye git
                                 </a>
 
@@ -159,15 +163,17 @@ else if (viewDataBook != null && viewDataBook.Count > 0 && viewDataOtherPublishe
 
                             @if (book.WebsiteId == viewDataBook[0].WebsiteId)
                             {
-                                <div class="col-md-1">
+                                if (viewDataItem.Count > 1)
+                                {
+                                    <div class="col-md-1">
 
-                                    <h5><span class="badge badge-pill badge-success">En ucuz</span></h5>
-                                </div>
+                                        <h5><span class="badge badge-pill badge-success">En ucuz</span></h5>
+                                    </div>
+                                }
                             }
                         </div>
                     }
                 }
-
             }
         </div>
     </div>
@@ -177,7 +183,7 @@ else if (viewDataBook != null && viewDataBook.Count > 0 && viewDataOtherPublishe
 
 
 
-@if (viewDataBook.Count == 0)
+@if (viewDataBook?.Count == 0)
 {
     <div class="alert alert-danger m-5 h3"> Aranılan ürün bulunamadı! </div>
 }

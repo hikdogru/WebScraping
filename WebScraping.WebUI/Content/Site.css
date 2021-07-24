@@ -128,6 +128,7 @@ h6 {
     border: none
 }
 
+
 .btn {
     border-radius: 10px;
 }
@@ -148,13 +149,13 @@ h6 {
 
 
 @media(min-width:1200px) {
-
+    #divCardViews {
+        display: block !important;
+    }
 
     .text {
         display: none
     }
-
-
 
     #sidebar {
         width: 20%;
@@ -163,7 +164,7 @@ h6 {
     }
 
     #products {
-        width: 70%;
+        width: 75%;
         padding: 10px;
         margin: 0;
         float: right
@@ -182,22 +183,49 @@ h6 {
     del {
         padding-right: 2px
     }
-
-    .filter,
-    #mobile-filter {
-        display: none
-    }
 }
 
 @media(min-width:992px) and (max-width:1199px) {
-
-
-    .text {
-        display: none
+    #btnCardSize6 {
+        display: none;
     }
 
+    #selectSearchOption {
+        width: 30% !important;
+    }
+
+   #searchText {
+        width: 55% !important;
+    }
+
+    /* Autocomplete*/ 
+     ul#ui-id-1 {
+        width: auto;
+        max-width: 400px !important;
+        height: auto !important;
+        max-height: 300px;
+        overflow: scroll;
+    }
+
+    .list_item_container {
+        width: 200px !important;
+        margin-bottom: 3rem;
+    }
+
+    .image1 {
+        width: 20% !important;
+        height: 20% !important;
+        margin-right: 5px !important;
+        float: left;
+        border: none;
+    }
+
+    .image1 img {
+        width: 70% !important;
+    }
+    /* End Autocomplete css */ 
     #sidebar {
-        width: 20%;
+        width: 30%;
         padding: 20px;
         float: left
     }
@@ -220,9 +248,11 @@ h6 {
         height: 200px;
         border-radius: 10px
     }
+
     .center {
         margin-top: 5% !important;
     }
+
     .sign {
         height: 25px
     }
@@ -230,14 +260,15 @@ h6 {
     .price {
         width: 99px
     }
-
-    .filter,
-    #mobile-filter {
-        display: none
-    }
 }
 
 @media(min-width:768px) and (max-width:991px) {
+    #divCardViews div {
+        display: none !important;
+    }
+
+
+
     #search {
         width: 300px;
         padding: 5px;
@@ -273,19 +304,21 @@ h6 {
     .card {
         border: none
     }
-
-    .filter,
-    #mobile-filter {
-        display: none
-    }
 }
 
 @media(min-width:576px) and (max-width:767px) {
+    #divCardViews div {
+        display: none !important;
+    }
+
+    div[class=form-row] div {
+        display: inline-block;
+        width: 45%;
+    }
+
     .text {
         display: none
     }
-
-
 
     .fa-search {
         padding: 3px;
@@ -293,9 +326,12 @@ h6 {
     }
 
     #sidebar {
-        width: 40%;
+        display: block;
         padding: 20px;
-        float: left
+    }
+
+    input[type="range"] {
+        width: 70%;
     }
 
     #products {
@@ -317,19 +353,38 @@ h6 {
     #res {
         font-size: 14px
     }
-
-    .filter,
-    #mobile-filter {
-        display: none
-    }
 }
 
 @media(max-width:575px) {
 
+    #divCardViews div {
+        display: none !important;
+    }
 
     #sidebar {
-        display: none
+        display: block;
+        padding: 20px;
     }
+
+    input[type="range"] {
+        width: 70%;
+    }
+
+    div[class=form-row] div {
+        display: inline-block;
+        width: 45%;
+    }
+
+    #publisherDiv, #authorDiv {
+        height: 10rem !important;
+    }
+
+
+    #divInfo, #divSorting {
+        text-align: center;
+    }
+
+
 
     .filter {
         margin-left: 70%;
@@ -341,6 +396,4 @@ h6 {
         font-size: 12px;
         margin-top: 2%
     }
-
-    
 }

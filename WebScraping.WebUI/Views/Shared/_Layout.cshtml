@@ -11,29 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
     <link href="~/Content/Site.css" rel="stylesheet" />
     <style>
-        .switch {
-            align-self: center;
-        }
-
-        .inner-switch {
-            display: inline-block;
-            cursor: pointer;
-            border: 1px solid #555;
-            border-radius: 1.25rem;
-            width: 3.125rem;
-            text-align: center;
-            font-size: 1rem;
-            padding: 0.1875rem;
-            margin-left: 0.3125rem;
-        }
-
-        .dark,
-        .dark * {
-            background-color: #222;
-            color: #e6e6e6;
-            border-color: #e6e6e6;
-        }
-
 
         @* Autocomplete *@
         ul#ui-id-1 {
@@ -81,21 +58,10 @@
     @RenderSection("scripts", required: false)
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
-    @* Darkmode switch *@
-    <script>
-        $(".inner-switch").on("click", function () {
-            if ($("body").hasClass("dark")) {
-                $("body").removeClass("dark");
-                $(".inner-switch").text("OFF");
-            } else {
-                $("body").addClass("dark");
-                $(".inner-switch").text("ON");
-            }
-        });
-    </script>
+
 
     @* Autocomplete *@
-<script>
+    <script>
     console.log($('#selectId>option:selected').text());
     $(function() {
         $('#searchText').autocomplete({
@@ -134,6 +100,6 @@
                 .appendTo(ul);
         };;
     });
-</script>
+    </script>
 </body>
 </html>

@@ -280,11 +280,24 @@
                 display: block;
             }
 
+
+
             .carousel-inner .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
             .carousel-inner .carousel-item.active:not(.carousel-item-right):not(.carousel-item-left) + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
                 transition: none;
             }
-            /* forward direction > */
+
+
+            .carousel-inner .active.carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
+                position: absolute;
+                top: 0;
+                right: -16.666666666%;
+                z-index: -1;
+                display: block;
+                visibility: visible;
+            }
+
+
 
             .carousel-item-next.carousel-item-left + .carousel-item + .carousel-item + .carousel-item + .carousel-item,
             .carousel-item-next.carousel-item-left + .carousel-item + .carousel-item + .carousel-item + .carousel-item + .carousel-item {
@@ -351,143 +364,6 @@
 @if (itemViewModel.Books.Count() > 0)
 {
     @Html.Partial("_Slider", sliderBooks)
-    <div class="filter">
-        <button class="btn btn-default collapsed" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters<span class="fa fa-filter pl-1"></span></button>
-    </div>
-    <div id="mobile-filter" class="collapse">
-
-        <div class="py-5 border-bottom ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside2"
-                       data-abc="true" aria-expanded="true">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Fiyat </h6>
-                    </a>
-                </header>
-
-                <div class="collapse show" id="collapse_aside2">
-                    <div class="card-body">
-                        @minPrice
-                        <i class='fa fa-try' aria-hidden='true'></i>
-                        <input type="range" class="custom-range" min="@minPrice" max="@maxPrice" name="rangeSliderMobileFilter" id="rangeSliderMobileFilter" oninput="sliderChange(this.value)">
-                        @maxPrice
-                        <i class='fa fa-try' aria-hidden='true'></i>
-                        <hr>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label>Min</label>
-                                <input class="form-control"
-                                       placeholder="@(Convert.ToInt32(minPrice))₺" type="number" name="minPrice" id="minPriceMobileFilter">
-                            </div>
-                            <div class="form-group text-right col-md-6">
-                                <label>Max</label>
-                                <input class="form-control"
-                                       placeholder="@(Convert.ToInt32(maxPrice))₺" type="number" name="maxPrice" id="maxPriceMobileFilter">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-xl" style="width: 100%;" onclick="getProduct()">
-                            Uygula
-                        </button>
-                    </div>
-                </div>
-            </article>
-        </div>
-        <div class="py-2 border-bottom ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside6"
-                       data-abc="true" aria-expanded="True">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Website </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse show" id="collapse_aside6">
-
-                    <input type="text" placeholder="Website ara" id="websiteMobileSearchInput">
-                    <div class="card-body overflow-auto" id="websiteMobileDiv" style="height: 150px;">
-
-
-                        @foreach (var book in (IEnumerable<ItemCheckedModel>)TempData["Websites"])
-                        {
-                            <input type="hidden" name="website" value="@book.ItemId">
-                            <label class="checkbox-btn">
-                                @if (websiteIds != null && websiteIds.Any(i => int.Parse(!String.IsNullOrEmpty(i) ? i : "0") == book.ItemId))
-                                {
-                                    <input type="checkbox" class="chkWebsiteMobile" name="chkWebsiteMobile" id="chkWebsiteMobile(@book.ItemId)" checked onclick="getProduct()" value="@book.ItemId">
-                                    <span class="btn btn-light"> @book.ItemName</span>
-
-                                }
-                                else
-                                {
-                                    <input type="checkbox" class="chkWebsiteMobile" name="chkWebsiteMobile" id="chkWebsiteMobile(@book.ItemId)" onclick="getProduct()" value="@book.ItemId">
-                                    <span class="btn btn-light"> @book.ItemName</span>
-                                }
-
-                            </label>
-                        }
-                    </div>
-                </div>
-
-            </article>
-        </div>
-        <div class="py-2 border-bottom ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside3"
-                       data-abc="true" class="collapsed" aria-expanded="false">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Yayınevleri </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse" id="collapse_aside3" style="">
-                    <div class="card-body overflow-auto" style="height: 20rem;">
-
-                        @foreach (var publisher in (IEnumerable<ItemCheckedModel>)TempData["Publishers"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Publishers : (IEnumerable<ItemCheckedModel>)TempData["Publishers"])
-                        {
-                            <form action="~/Home/GetBooksByPublisher" method="POST">
-                                <input type="hidden" name="publisher" value="@publisher.ItemName" />
-                                <input type="hidden" name="publisherId" value="@publisher.ItemId" />
-                                <label class="checkbox-btn">
-                                    <input type="checkbox" name="chkPublisher" id="chkPublisher@(publisher.ItemId)" checked="@publisher.IsCheck" onclick="if (this.checked || this.checked == false) { this.form.submit() }"> <span class="btn btn-light"> @publisher.ItemName </span>
-                                </label>
-                            </form>
-                        }
-
-
-                    </div>
-                </div>
-
-            </article>
-        </div>
-        <div class="py-2 ml-3">
-            <article class="filter-group">
-                <header class="card-header">
-                    <a href="#" data-toggle="collapse" data-target="#collapse_aside4"
-                       data-abc="true" class="collapsed" aria-expanded="false">
-                        <i class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title d-inline">Yazarlar </h6>
-                    </a>
-                </header>
-                <div class="filter-content collapse" id="collapse_aside4">
-                    <div class="card-body overflow-auto" style="height: 20rem;">
-                        @foreach (var author in (IEnumerable<ItemCheckedModel>)TempData["Authors"] == null ? (IEnumerable<ItemCheckedModel>)ViewBag.Authors : (IEnumerable<ItemCheckedModel>)TempData["Authors"])
-                        {
-                            <label class="custom-control">
-
-                                <input type="hidden" name="publisher" value="@author.ItemName" />
-                                <input type="hidden" name="publisherId" value="@author.ItemId" />
-                                <input type="checkbox" id="chkAuthor@(author.ItemId)" checked="@author.IsCheck"
-                                       class="custom-control-input">
-                                <div class="custom-control-label">@author.ItemName</div>
-                            </label>
-                        }
-                    </div>
-                </div>
-            </article>
-        </div>
-    </div>
-
 
 
 
@@ -709,9 +585,6 @@ else
         function sliderChange(val) {
             document.getElementById('minPrice').value = parseInt(@minPrice);
             document.getElementById('maxPrice').value = parseInt(val);
-
-            document.getElementById('minPriceMobileFilter').value = parseInt(@minPrice);
-            document.getElementById('maxPriceMobileFilter').value = parseInt(val);
         }
 
         document.getElementById('rangeSlider').value = 2;
@@ -721,32 +594,32 @@ else
     @* Bu metod çok fazla tekrar ediyor. Düzeltilecek *@
     <script>
         $("#searchInput").on("keyup",
-            function() {
+            function () {
                 var value = $(this).val().toLowerCase();
-                $("#publisherDiv *").filter(function() {
+                $("#publisherDiv *").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
 
         $("#authorInput").on("keyup",
-            function() {
+            function () {
                 var value = $(this).val().toLowerCase();
-                $("#authorDiv *").filter(function() {
+                $("#authorDiv *").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
 
         $("#websiteSearchInput").on("keyup",
-            function() {
+            function () {
                 var value = $(this).val().toLowerCase();
-                $("#websiteDiv *").filter(function() {
+                $("#websiteDiv *").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
         $("#websiteMobileSearchInput").on("keyup",
-            function() {
+            function () {
                 var value = $(this).val().toLowerCase();
-                $("#websiteMobileDiv *").filter(function() {
+                $("#websiteMobileDiv *").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
@@ -840,7 +713,7 @@ else
 Carousel
 */
         $('#carousel-example').on('slide.bs.carousel',
-            function(e) {
+            function (e) {
                 /*
                     CC 2.0 License Iatek LLC 2018 - Attribution required
                 */

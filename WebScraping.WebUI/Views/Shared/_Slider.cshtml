@@ -8,9 +8,9 @@
             <div class="carousel-inner row w-100 mx-auto" role="listbox">
                 @for (int i = 0; i < Model.Count; i++)
                 {
-                    <div class="carousel-item col-12 col-md-4 col-lg-2 @(i == 0 ? "active" : "")">
+                    <div class="carousel-item col-12 col-sm-6 col-md-4 col-lg-2 @(i == 0 ? "active" : "")">
                         <a href="@Model[i].BookDetailUrl" target="_blank">
-                            <img src="@(Model[i].Image)" class="img-fluid mx-auto d-block img" alt="img">
+                            <img src="@(Model[i].Image)" class="img-fluid mx-auto d-block img" style="margin-left: 50% !important;left: 0" alt="img">
                         </a>
                     </div>
                 }

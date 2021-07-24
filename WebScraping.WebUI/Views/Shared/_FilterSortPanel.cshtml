@@ -1,16 +1,12 @@
 ﻿
-<div class="col-md-4">
+<div class="col-md-4" id="divInfo">
     <h5 class="text-muted text-info">
         @ViewBag.TotalBooks kitap arasından
         @((ViewBag.BookPerPage * (ViewBag.CurrentPage -1) == 0 ? 1 : ViewBag.BookPerPage * (ViewBag.CurrentPage - 1)) + "-" + ViewBag.BookPerPage * ViewBag.CurrentPage) arası gösteriliyor.
     </h5>
 </div>
 
-<div class="col-md-5">
-    @*<input type="button" class="m-2" id="btnCardSize3" value="3" onclick="changeCardSize(this.value)">
-        <input type="button" class="m-2" id="btnCardSize4" value="4" onclick="changeCardSize(this.value)">
-        <input type="button" class="m-2" id="btnCardSize6" value="6" onclick="changeCardSize(this.value)">*@
-
+<div class="col-md-5" id="divCardViews">
     <div class="d-flex card-size" style="margin-left: 100px;">
         <button id="btnCardSize3" value="3" onclick="changeCardSize(this)">
             <span class="blockBtn threeBlock">
@@ -59,7 +55,7 @@
     </div>
 </div>
 
-<div class="col-md-3 mb-3">
+<div class="col-md-3 mb-3" id="divSorting">
     <select class="custom-select" id="selectSort" onchange="getProduct(this.value, 1)">
         <option selected disabled>Sıralama</option>
         <option value="1">Fiyat Düşükten Yükseğe</option>
