@@ -25,7 +25,7 @@ namespace WebScraping.WebUI.Controllers
         private static readonly List<ItemCheckedModel> ItemCheckedModels = new List<ItemCheckedModel>();
         private List<Book> _filteredItems;
         private static List<Book> _allBookList = new List<Book>();
-        private static List<BookNodeModel> BookNodeList = new List<BookNodeModel>();
+        
 
 
         private static readonly Dictionary<string, string> BooksLogoUrl = new Dictionary<string, string>();
